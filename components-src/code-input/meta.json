@@ -1,0 +1,20 @@
+{
+  "slug": "code-input",
+  "name": "Verification Code Input",
+  "type": "input",
+  "week": 1,
+  "date": "2026-09-26",
+  "summary": "Six slots that behave like one field: paste spreads across them, backspace walks back, arrows navigate, and mobile autofill dropping the whole code into one box distributes correctly.",
+  "attempts": [
+    {
+      "prompt": "Build a six-digit verification code input with separate boxes.",
+      "problem": "Six inputs that advanced on keypress and nothing else. Pasting a code put all six digits in the first box. Backspace on an empty box did nothing, so correcting a typo meant clicking back manually. Arrow keys moved the caret inside a one-character field instead of moving between fields, and nothing was announced when the code completed."
+    },
+    {
+      "prompt": "Add paste support and backspace handling.",
+      "problem": "Paste worked only when the first box was focused, so pasting into the fourth box dropped five digits. Backspace cleared the previous box but left focus where it was. The bigger miss was mobile: iOS one-time-code autofill delivers the entire code into a single input, and since the handler truncated anything longer than one character, autofill silently filled one box with the first digit and discarded the rest."
+    }
+  ],
+  "finalPrompt": "Build a six-digit verification code input in plain HTML, CSS and vanilla JavaScript, no dependencies.\n\nSix single-character inputs that behave as one field. The separate boxes are the easy part; the behaviours below are the component.\n\nPaste must work from any slot, not only the first: intercept the paste event, strip non-digits, and distribute the digits from the slot that received the paste onward, then move focus to the last filled slot and select it.\n\nMobile autofill is the case that is usually missed. iOS one-time-code autofill delivers the entire code into a single input, so in the input handler, if a slot's value is longer than one character, run it through the same distribution logic as paste rather than truncating it. Put autocomplete=\"one-time-code\" and inputmode=\"numeric\" on the first slot.\n\nBackspace on an empty slot clears the previous slot and moves focus there. Arrow left and right move between slots and must call preventDefault, otherwise the caret moves inside a one-character field instead.\n\nFocusing a slot selects its contents so typing replaces rather than appends.\n\nMark filled slots with a data attribute and style from that, so the visual state lives in CSS rather than in class juggling.\n\nWhen six digits are present, validate and set a state attribute on the form: accepted or rejected. Report the outcome in an element with role=\"status\" and aria-live=\"polite\" so it is announced without moving focus. On rejection, clear every slot, return focus to the first, and shake the row once.\n\nEach slot needs an aria-label naming its position, as digit 1 of 6.\n\nUnder prefers-reduced-motion: reduce, remove the shake and the focus lift.\n\nColour comes only from CSS custom properties: var(--surface), var(--border), var(--text), var(--text-dim), var(--accent), var(--mono), with color-mix for the tinted states. No literal hex, rgb or hsl values.",
+  "why": "This component is almost entirely edge cases, and a prompt that describes the appearance gets you none of them. Six boxes that advance on keypress is what the phrase \"code input\" means to a model, and it is the least interesting eighth of the problem.\n\nThe autofill case is the one worth remembering. It cannot be discovered by looking at the component on a desktop, and no amount of asking for polish surfaces it, because the behaviour only exists on a platform the model is not looking at. It had to be stated as a fact about the world: iOS delivers the whole code into one input. Once stated, the fix is three lines and reuses the paste path.\n\nThe general shape: for anything users type into, enumerate the input methods rather than describing the control. Keyboard, paste, autofill, and correction are four different paths through the same widget, and a model will implement the first one and call it done."
+}

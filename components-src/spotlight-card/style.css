@@ -1,0 +1,69 @@
+.sc {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.sc__card {
+  position: relative;
+  isolation: isolate;
+  padding: 1px;                       /* room for the lit edge */
+  border-radius: 16px;
+  background: var(--surface);
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transition: transform 260ms cubic-bezier(.2,.7,.3,1), box-shadow 260ms ease;
+  box-shadow: var(--shadow);
+}
+.sc__card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* Pointer position arrives as --mx/--my in percent; both default to the
+   centre so the card looks deliberate before anything moves. */
+.sc__card { --mx: 50%; --my: 50%; --lit: 0; }
+
+.sc__light {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  border-radius: inherit;
+  opacity: var(--lit);
+  transition: opacity 240ms ease;
+  background: radial-gradient(
+    280px circle at var(--mx) var(--my),
+    color-mix(in oklab, var(--accent) 26%, transparent),
+    transparent 62%);
+}
+
+.sc__edge {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  border-radius: inherit;
+  padding: 1px;
+  opacity: var(--lit);
+  transition: opacity 240ms ease;
+  background: radial-gradient(
+    220px circle at var(--mx) var(--my),
+    color-mix(in oklab, var(--accent) 85%, transparent),
+    transparent 60%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask-composite: exclude;
+}
+
+.sc__body {
+  position: relative; z-index: 3;
+  padding: 20px;
+  border-radius: 15px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.sc__kicker { margin: 0; font-family: var(--mono); font-size: .68rem; letter-spacing: .08em; color: var(--accent); }
+.sc__card h3 { margin: 8px 0 6px; font-size: 1.12rem; }
+.sc__text { margin: 0; color: var(--text-dim); font-size: .88rem; line-height: 1.55; }
+
+.sc__spec { display: flex; gap: 22px; margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--border); }
+.sc__spec dt { font-family: var(--mono); font-size: .64rem; color: var(--text-dim); }
+.sc__spec dd { margin: 3px 0 0; font-size: .86rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sc__card { transition: none; transform: none !important; }
+}

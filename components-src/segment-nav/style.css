@@ -1,0 +1,53 @@
+.sn {
+  position: relative;
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.sn::-webkit-scrollbar { display: none; }
+
+/* The indicator is one element that moves, not a background on each item:
+   a single transition instead of two crossfades, and it can overshoot. */
+.sn__indicator {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  height: calc(100% - 8px);
+  border-radius: 999px;
+  background: var(--accent);
+  translate: var(--x, 0) 0;
+  width: var(--w, 0);
+  opacity: var(--ready, 0);
+  transition: translate 380ms cubic-bezier(.34, 1.4, .3, 1),
+              width 380ms cubic-bezier(.34, 1.4, .3, 1),
+              opacity 160ms ease;
+  pointer-events: none;
+}
+
+.sn__item {
+  position: relative;
+  z-index: 1;
+  padding: 8px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-dim);
+  font: inherit;
+  font-size: .88rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 220ms ease;
+}
+.sn__item:hover { color: var(--text); }
+.sn__item[aria-current="page"] { color: var(--accent-fg); }
+.sn__item:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sn__indicator { transition: opacity 160ms ease; }
+}

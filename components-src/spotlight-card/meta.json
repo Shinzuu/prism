@@ -1,0 +1,20 @@
+{
+  "slug": "spotlight-card",
+  "name": "Spotlight Card",
+  "type": "card",
+  "week": 1,
+  "date": "2026-09-26",
+  "summary": "A card that lights where the pointer is and tilts toward it, with the lit edge traced by a masked gradient border. Pointer position lives in custom properties so the work stays in CSS.",
+  "attempts": [
+    {
+      "prompt": "Make a card with a spotlight effect that follows the mouse.",
+      "problem": "Wrote mouse position straight into style.background on every mousemove, rebuilding a full radial-gradient string dozens of times a second and forcing style recalculation on each one. It also lit instantly on the first move and cut out the moment the pointer left, so the card flickered on entry and exit rather than settling."
+    },
+    {
+      "prompt": "Optimise it and add a tilt.",
+      "problem": "Added a transform on the same unthrottled handler and set the tilt to twenty degrees, which reads as a toy rather than as depth. Keyboard users got nothing at all, since everything hung off pointer events, and the card still had no resting appearance: with no pointer it was flat and unlit, so a screenshot of it looked broken."
+    }
+  ],
+  "finalPrompt": "Build a spotlight card in plain HTML, CSS and vanilla JavaScript, no dependencies.\n\nThe pointer lights the card surface and tilts it toward the cursor. All visual work stays in CSS: JavaScript writes only three custom properties, --mx and --my as percentages and --lit as 0 or 1, plus the transform. Never rebuild a gradient string in JavaScript.\n\nGive --mx and --my a default of 50% in the stylesheet so the card has a deliberate resting appearance before anything moves. A component that looks broken in a screenshot is broken.\n\nThrottle pointermove through requestAnimationFrame: store the latest position and paint once per frame, so a fast pointer cannot schedule more work than the display can show.\n\nCap the tilt at six degrees. Past about eight it stops reading as depth and starts reading as a gimmick. Apply it as perspective(720px) rotateX/rotateY with translateZ(0).\n\nDraw the lit edge as a separate absolutely positioned layer using the gradient-border technique: padding 1px, the gradient as background, and mask-composite exclude with both the prefixed -webkit- and unprefixed properties, so the glow traces the border rather than filling the card.\n\nFade --lit in and out over about 240ms so entry and exit settle instead of snapping.\n\nThe card is focusable with tabindex. On focus, light it but do not tilt it — motion the user did not drive with their own pointer is disorienting. Restore everything on blur.\n\nUnder prefers-reduced-motion: reduce, disable the transform entirely with transform: none and remove the transition.\n\nColour comes only from CSS custom properties: var(--surface), var(--border), var(--text), var(--text-dim), var(--accent), var(--mono), and color-mix against the accent for the glow. No literal hex, rgb or hsl values.",
+  "why": "Two different mistakes, and only one of them is about performance.\n\nThe performance one is worth stating as a rule rather than as an optimisation: JavaScript writes numbers, CSS decides what they look like. Once the position is just two custom properties, the gradient, the mask and the transition are all declarative and the handler does almost nothing. Saying that explicitly is what stopped the model rebuilding gradient strings.\n\nThe more useful lesson is the resting state. Effects that depend on a pointer have no appearance when there is no pointer, and a model will happily produce a card that only looks designed while you are touching it. Stating the default values in the stylesheet, and giving the reason — it must survive a screenshot — fixes that in one line.\n\nThe keyboard case follows the same shape. The instinct is to mirror the whole effect onto focus, but a tilt nobody's hand caused is unpleasant. Describing which half of the effect belongs to which input is more precise than asking for accessibility."
+}

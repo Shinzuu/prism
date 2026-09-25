@@ -1,0 +1,20 @@
+{
+  "slug": "scroll-filmstrip",
+  "name": "Scroll-Driven Filmstrip",
+  "type": "section",
+  "week": 1,
+  "date": "2026-09-26",
+  "summary": "Scrolling the section vertically pans a strip of panels sideways, with a progress rail. Native CSS scroll timelines, no script, and it works inside a box as small as a preview frame.",
+  "attempts": [
+    {
+      "prompt": "Make a section where cards fade in as you scroll to them.",
+      "problem": "Reached for IntersectionObserver and a .is-visible class, which ships JavaScript for something the browser now does natively and hides every card behind opacity 0 until the script runs. Worse, the effect was tied to the page scroll, so inside a preview frame that never scrolls it showed four static cards and demonstrated nothing."
+    },
+    {
+      "prompt": "Use CSS scroll-driven animation with animation-timeline: view() instead.",
+      "problem": "Still bound to the document scrollport. Dropped into a small container it did nothing at all, and in a browser without support the keyframes left the panels at their from state permanently. A component whose whole point is motion has to be able to show that motion wherever it is placed."
+    }
+  ],
+  "finalPrompt": "Build a scroll-driven filmstrip section in plain HTML and CSS with no JavaScript.\n\nThe critical constraint: the effect must be self-contained. Declare a named scroll timeline on the component's own scroll container with scroll-timeline: --strip block, and drive the animation from that named timeline rather than from the document scrollport. The section must behave identically at full page width and inside a 300px preview frame, because it will be shown in both.\n\nStructure: an outer scroller that owns the timeline, a sticky stage inside it that stays in view, a flex rail of four panels inside the stage, and an empty runway element after the stage whose height supplies the scroll distance. Scrolling the outer container vertically translates the rail horizontally.\n\nAdd a progress rail pinned to the bottom of the stage whose fill is driven by the same named timeline using scale on the inline axis, transform-origin left. Do not animate width.\n\nWrap every timeline rule in @supports (animation-timeline: scroll()) and give the runway zero height outside that block, so that without support the component collapses to a plain horizontal scroller with all four panels reachable. The content must never depend on the animation running. Assume it will not run and make sure the section still reads.\n\nUnder prefers-reduced-motion: reduce, drop the mapped movement entirely and fall back to the same horizontal scroller rather than shortening the animation.\n\nThe container takes tabindex=\"0\" and role=\"region\" with an aria-label so it is reachable and scrollable by keyboard. Hide the scrollbar visually but keep the element scrollable.\n\nColour comes only from CSS custom properties: var(--surface), var(--border), var(--text), var(--text-dim), var(--accent), var(--mono). No literal hex, rgb or hsl values.",
+  "why": "The first two attempts failed for the same underlying reason, which took a while to see. Both bound the animation to the document scrollport, and the component is displayed inside a frame that never scrolls. It was not that the effect was wrong — it was that the effect had no way to occur where the effect was being watched.\n\nNaming the timeline on the component's own container is the whole fix, and it is not something a model volunteers, because the tutorials all animate against the page. The constraint that produced it was stating where the component would be shown: at full width and inside a 300px frame, behaving the same in both.\n\nThe second lesson is the one from the earlier attempt that still applies. Stating an invariant — assume the animation will not run and the section must still read — puts the @supports wrapper around the animation rather than around the visibility, which is the difference between a graceful fallback and a permanently blank section.\n\nDescribe where the thing will live, not only what it should do."
+}

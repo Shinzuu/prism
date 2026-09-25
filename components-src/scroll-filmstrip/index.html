@@ -1,0 +1,30 @@
+<div class="fs" tabindex="0" role="region" aria-label="Scroll-driven filmstrip">
+  <div class="fs__stage">
+    <div class="fs__rail">
+      <article class="fs__panel">
+        <p class="fs__no">01</p>
+        <h3>Vertical in, horizontal out</h3>
+        <p>Scrolling this box down drives the strip sideways. The browser maps one axis onto the other with no script listening for anything.</p>
+      </article>
+      <article class="fs__panel">
+        <p class="fs__no">02</p>
+        <h3>Runs off the main thread</h3>
+        <p>A declarative timeline can be handed to the compositor, so the pan holds its frame rate while the page is busy elsewhere.</p>
+      </article>
+      <article class="fs__panel">
+        <p class="fs__no">03</p>
+        <h3>Self-contained</h3>
+        <p>The timeline is named on this container, not on the document, so the section behaves the same inside a preview frame as it does full width.</p>
+      </article>
+      <article class="fs__panel">
+        <p class="fs__no">04</p>
+        <h3>Nothing hidden behind support</h3>
+        <p>Where scroll timelines are unavailable the strip stays a plain horizontal scroller. Every panel is reachable either way.</p>
+      </article>
+    </div>
+
+    <div class="fs__bar" aria-hidden="true"><i></i></div>
+    <p class="fs__hint" aria-hidden="true">scroll inside</p>
+  </div>
+  <div class="fs__runway" aria-hidden="true"></div>
+</div>

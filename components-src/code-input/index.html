@@ -1,0 +1,17 @@
+<form class="ci" data-ci novalidate>
+  <label class="ci__label" for="ci-0">Verification code</label>
+  <p class="ci__hint" id="ci-help">Six digits, sent to your device. Paste works.</p>
+
+  <div class="ci__slots" role="group" aria-labelledby="ci-help">
+    <input class="ci__slot" id="ci-0" inputmode="numeric" autocomplete="one-time-code"
+      maxlength="1" aria-label="Digit 1 of 6" />
+    <input class="ci__slot" inputmode="numeric" maxlength="1" aria-label="Digit 2 of 6" />
+    <input class="ci__slot" inputmode="numeric" maxlength="1" aria-label="Digit 3 of 6" />
+    <span class="ci__gap" aria-hidden="true"></span>
+    <input class="ci__slot" inputmode="numeric" maxlength="1" aria-label="Digit 4 of 6" />
+    <input class="ci__slot" inputmode="numeric" maxlength="1" aria-label="Digit 5 of 6" />
+    <input class="ci__slot" inputmode="numeric" maxlength="1" aria-label="Digit 6 of 6" />
+  </div>
+
+  <p class="ci__status" data-ci-status role="status" aria-live="polite"></p>
+</form>
