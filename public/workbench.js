@@ -76,6 +76,18 @@ window.onerror=(m,s,l)=>{parent.postMessage({wb:'error',msg:m+' (line '+l+')'},'
       panes.forEach(x => { x.hidden = x.dataset.wbPane !== t.dataset.wbTab; });
     }));
 
+    /* Viewport rig: components are judged at the widths they actually ship to. */
+    const rig = wb.querySelector('[data-wb-rig]');
+    const wrap = wb.querySelector('[data-wb-wrap]');
+    rig?.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-w]');
+      if (!b) return;
+      rig.querySelectorAll('[data-w]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+      const w = b.dataset.w;
+      wrap.style.maxWidth = w === 'full' ? '100%' : w + 'px';
+      wrap.dataset.narrow = String(w !== 'full');
+    });
+
     reset?.addEventListener('click', () => {
       panes.forEach(p => { p.value = original[p.dataset.wbPane]; });
       render();

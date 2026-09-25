@@ -26,9 +26,16 @@ const files = [
     </header>
 
     <figure class="stage">
-      <iframe class="stage__frame" data-wb-frame title={`${c.name}, running`} sandbox="allow-scripts"></iframe>
+      <div class="stage__wrap" data-wb-wrap>
+        <iframe class="stage__frame" data-wb-frame title={`${c.name}, running`} sandbox="allow-scripts"></iframe>
+      </div>
       <figcaption class="stage__bar">
         <span data-wb-status data-state="edit">loading</span>
+        <span class="rig" data-wb-rig>
+          <button type="button" data-w="360" aria-pressed="false">360</button>
+          <button type="button" data-w="768" aria-pressed="false">768</button>
+          <button type="button" data-w="full" aria-pressed="true">full</button>
+        </span>
         <button class="link" type="button" data-wb-reset>restore original</button>
       </figcaption>
     </figure>
@@ -103,7 +110,17 @@ const files = [
 
   .stage, .src { grid-column: wide; }
   .stage { margin: var(--s-s) 0 0; border: var(--rule); border-radius: var(--radius); overflow: hidden; }
+  .stage__wrap { margin: 0 auto; transition: max-width 220ms cubic-bezier(.2,.7,.3,1); }
+  .stage__wrap[data-narrow="true"] { border-inline: var(--rule); }
   .stage__frame { display: block; width: 100%; height: clamp(240px, 34vh, 380px); border: 0; background: var(--bg); }
+
+  .rig { display: inline-flex; gap: 2px; margin-left: var(--s-2xs); }
+  .rig button {
+    padding: 2px 7px; cursor: pointer; background: var(--bg);
+    border: var(--rule); border-radius: var(--radius);
+    font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim);
+  }
+  .rig button[aria-pressed="true"] { color: var(--accent-fg); background: var(--accent); border-color: var(--accent); }
   .stage__bar {
     display: flex; align-items: center; gap: var(--s-s);
     padding: var(--s-3xs) var(--s-xs); border-top: var(--rule); background: var(--surface);
