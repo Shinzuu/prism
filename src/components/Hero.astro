@@ -24,18 +24,6 @@ const { count, total } = Astro.props;
       <circle class="craft__cockpit" cx="450" cy="128" r="13" />
     </g>
 
-    <g class="plate__leads">
-      <path d="M474 214 L760 176" /><path d="M426 296 L150 336" />
-      <path d="M450 128 L716 96" /><path d="M450 426 L268 436" />
-    </g>
-
-    <g class="plate__tags">
-      <text x="766" y="172">01 · wing root</text>
-      <text x="146" y="332" text-anchor="end">03 · ventral fin</text>
-      <text x="722" y="92">02 · canopy</text>
-      <text x="262" y="440" text-anchor="end">04 · nozzle</text>
-    </g>
-
     <g class="plate__marks" aria-hidden="true">
       <path d="M22 22 h20 M22 22 v20 M878 22 h-20 M878 22 v20
                M22 438 h20 M22 438 v-20 M878 438 h-20 M878 438 v-20" />
@@ -63,8 +51,7 @@ const { count, total } = Astro.props;
     position: relative; isolation: isolate;
     display: grid; grid-template-columns: 1.05fr 1fr; gap: var(--s-l);
     align-items: center; min-height: 66vh;
-    padding: var(--s-l) 0 var(--s-xl);
-    border-bottom: var(--rule);
+    padding: var(--s-l) 0 var(--s-2xl);
   }
 
   .hero__grid {
@@ -72,7 +59,7 @@ const { count, total } = Astro.props;
     background:
       repeating-linear-gradient(to right, var(--border) 0 1px, transparent 1px 64px),
       repeating-linear-gradient(to bottom, var(--border) 0 1px, transparent 1px 64px);
-    mask-image: radial-gradient(120% 90% at 30% 45%, #000 30%, transparent 78%);
+    mask-image: radial-gradient(90% 70% at 32% 46%, #000 12%, transparent 72%);
   }
 
   .hero__plate { width: 100%; height: auto; overflow: visible; }
@@ -84,18 +71,27 @@ const { count, total } = Astro.props;
     fill: none; stroke: var(--text); stroke-width: 1.6;
     stroke-linejoin: round; stroke-linecap: round;
   }
-  .craft__body { fill: var(--surface); }
+  .craft__body { fill: color-mix(in oklab, var(--surface) 80%, transparent); }
   .craft__cockpit { fill: var(--accent); stroke: var(--accent); }
 
-  .plate__leads path { stroke: var(--accent); stroke-width: 1; fill: none; stroke-dasharray: 2 4; }
-  .plate__tags text { fill: var(--text-dim); font-family: var(--mono); font-size: 11px; }
+
+
   .plate__marks path { stroke: var(--accent); stroke-width: 1.4; fill: none; }
 
-  .hero__plateno { font-family: var(--mono); font-size: var(--f-n2); color: var(--accent); }
-  .hero__say h1 { margin-top: var(--s-2xs); font-size: var(--f-5); line-height: var(--lh-display); letter-spacing: var(--tr-display); }
+  .hero__plateno {
+    display: inline-block; font-family: var(--mono); font-size: var(--f-n2); color: var(--accent);
+    padding: 4px 11px; border-radius: 999px;
+    background: color-mix(in oklab, var(--accent) 14%, transparent);
+  }
+  .hero__say h1 { margin-top: var(--s-s); font-size: var(--f-6); line-height: var(--lh-display); letter-spacing: var(--tr-display); }
   .hero__lead { margin-top: var(--s-s); font-size: var(--f-1); line-height: var(--lh-lead); color: var(--text-dim); max-width: 42ch; }
 
-  .hero__spec { display: flex; flex-wrap: wrap; gap: var(--s-m); margin-top: var(--s-m); padding-top: var(--s-s); border-top: var(--rule); }
+  .hero__spec { display: flex; flex-wrap: wrap; gap: var(--s-2xs); margin-top: var(--s-m); }
+  .hero__spec > div {
+    padding: var(--s-2xs) var(--s-s); border-radius: var(--radius-sm);
+    background: color-mix(in oklab, var(--surface) 70%, transparent);
+    border: var(--rule);
+  }
   .hero__spec dt { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
   .hero__spec dd { margin: 2px 0 0; font-size: var(--f-n1); }
 
@@ -108,9 +104,7 @@ const { count, total } = Astro.props;
       animation: draw 1.9s cubic-bezier(.65,0,.35,1) forwards .35s;
     }
     .craft__body { fill-opacity: 0; animation: draw 1.9s cubic-bezier(.65,0,.35,1) forwards .35s, fill .8s ease forwards 1.7s; }
-    .plate__leads path { stroke-dasharray: 340; stroke-dashoffset: 340; animation: draw .7s ease forwards 1.85s; }
-    .plate__tags text { opacity: 0; animation: rise .5s ease forwards 2.15s; }
-    .plate__marks path { opacity: 0; animation: fade .5s ease forwards 2.4s; }
+    .plate__marks path { opacity: 0; animation: fade .5s ease forwards 1.9s; }
     .hero__say > * { opacity: 0; animation: rise .6s cubic-bezier(.2,.7,.3,1) forwards; }
     .hero__say > :nth-child(1) { animation-delay: .25s }
     .hero__say > :nth-child(2) { animation-delay: .35s }

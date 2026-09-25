@@ -5,7 +5,7 @@ import { allComponents } from '../lib/registry.js';
 const cs = allComponents();
 const TOTAL = 30;
 ---
-<Base title="Index" scope={true}>
+<Base title="Index">
   <Hero count={cs.length} total={TOTAL} />
 
   <div class="tally">
@@ -37,30 +37,41 @@ const TOTAL = 30;
   /* Ledger. 1120px well on a 1440 screen, 5:7 split so the specimen leads
      while the text column holds 46 characters. */
   .tally {
-    margin-top: var(--s-l);
-    display: flex; flex-wrap: wrap; gap: var(--s-3xs) var(--s-m);
-    padding: var(--s-2xs) 0; border-top: var(--rule); border-bottom: var(--rule);
+    margin: var(--s-xl) 0 var(--s-l);
+    display: flex; flex-wrap: wrap; gap: var(--s-2xs) var(--s-2xs);
     font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim);
     letter-spacing: var(--tr-mono);
+  }
+  .tally span {
+    padding: 5px 12px; border-radius: 999px;
+    background: color-mix(in oklab, var(--text) 6%, transparent);
   }
 
   .list { list-style: none; margin: 0; padding: 0; }
   .line {
-    display: grid; grid-template-columns: 2.4em 5fr 7fr; gap: var(--s-s) var(--s-m);
-    padding: var(--s-m) 0; border-bottom: var(--rule); align-items: start;
+    display: grid; grid-template-columns: 5fr 7fr; gap: var(--s-m);
+    padding: var(--s-m); margin-bottom: var(--s-s);
+    border-radius: var(--radius); align-items: center;
+    background: color-mix(in oklab, var(--surface) 55%, transparent);
+    border: var(--rule);
+    transition: background 200ms ease, border-color 200ms ease;
   }
-  .line__no { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); padding-top: 0.6em; }
+  .line:hover { background: var(--surface); border-color: color-mix(in oklab, var(--accent) 40%, transparent); }
+  .line__no { display: none; }
+  .line__say h2 { font-size: var(--f-2); }
   .line__say h2 a { text-decoration: none; }
   .line__say h2 a:hover { color: var(--accent); }
   .line__say p { margin-top: var(--s-3xs); color: var(--text-dim); font-size: var(--f-n1); max-width: 46ch; }
   .line__meta { display: block; margin-top: var(--s-2xs); font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
 
-  .line__see { display: block; border: var(--rule); border-radius: var(--radius); overflow: hidden; background: var(--surface); }
-  .line__see:hover { border-color: var(--accent); }
+  .line__see {
+    display: block; overflow: hidden; background: var(--bg);
+    border: var(--rule); border-radius: var(--radius-sm);
+  }
   .line__see iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; }
 
   @media (max-width: 760px) {
-    .line { grid-template-columns: 2.4em 1fr; }
+    .line { grid-template-columns: 1fr; }
     .line__see { grid-column: 1 / -1; }
     .line__see iframe { aspect-ratio: 4 / 3; }
   }

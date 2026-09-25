@@ -15,7 +15,6 @@ const { title, description = 'Thirty components that read their palette out of a
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" />
   <script is:inline src="/theme.js"></script>
-  <script is:inline defer src="/scope.js"></script>
 </head>
 <body>
   <header class="mast">
@@ -27,22 +26,6 @@ const { title, description = 'Thirty components that read their palette out of a
     </nav>
   </header>
 
-  {Astro.props.scope && (
-    <section class="scope" aria-label="How this palette was derived">
-      <div class="scope__panel">
-        <h2 class="scope__h">Where this palette came from</h2>
-        <p class="scope__p">Every pixel of the reference image converted to OKLab, greys discarded, the rest collected into thirty-six bins weighted by chroma. Tallest bin sets the page. The tallest at least sixty degrees away sets the accent. Nobody typed these values.</p>
-        <div class="scope__hist" id="scope-hist" role="img" aria-label="Hue distribution of the current image"></div>
-      </div>
-      <div class="scope__panel">
-        <h2 class="scope__h">Contrast, as measured</h2>
-        <p class="scope__p">Recomputed from the live palette on every change. Lightness is fixed, so these hold for any image — which is the whole reason lightness never comes from the picture.</p>
-        <div class="scope__grid" id="scope-contrast"></div>
-        <dl class="rig__read" id="readout" aria-label="Computed palette"></dl>
-      </div>
-    </section>
-  )}
-
   <main><slot /></main>
 
   <footer class="colo">
@@ -51,37 +34,26 @@ const { title, description = 'Thirty components that read their palette out of a
   </footer>
 
   <script is:inline>
-    const SHOWN = [['--bg','page'],['--surface','field'],['--border','rule'],['--text','ink'],['--accent','accent']];
-    function paintReadout() {
-      const cs = getComputedStyle(document.documentElement);
-      const dl = document.getElementById('readout');
-      if (!dl) return;
-      dl.textContent = '';
-      for (const [tok, label] of SHOWN) {
-        const dt = document.createElement('dt');
-        dt.style.background = `var(${tok})`;
-        const dd = document.createElement('dd');
-        const b = document.createElement('b'); b.textContent = label;
-        const s = document.createElement('span'); s.textContent = cs.getPropertyValue(tok).trim();
-        dd.append(b, s);
-        dl.append(dt, dd);
-      }
-    }
-    addEventListener('prism:theme', paintReadout);
-    addEventListener('DOMContentLoaded', paintReadout);
   </script>
 
   <style is:global>
-    :root { --well: 1120px; --gutter: var(--s-l); }
+    :root { --well: 1180px; --gutter: var(--s-l); }
 
     .mast {
-      display: flex; align-items: baseline; gap: var(--s-m);
-      max-width: var(--well); margin: 0 auto; padding: var(--s-m) var(--gutter) var(--s-s);
+      position: sticky; top: 0; z-index: 40;
+      display: flex; align-items: center; gap: var(--s-m);
+      max-width: var(--well); margin: 0 auto; padding: var(--s-s) var(--gutter);
+      backdrop-filter: blur(14px) saturate(130%);
+      background: color-mix(in oklab, var(--bg) 72%, transparent);
     }
     .mast__id { font-family: var(--serif); font-size: var(--f-1); font-weight: 600; letter-spacing: var(--tr-head); text-decoration: none; }
     .mast__nav { display: flex; gap: var(--s-s); margin-left: auto; font-size: var(--f-n1); }
-    .mast__nav a { color: var(--text-dim); text-decoration: none; }
-    .mast__nav a:hover { color: var(--accent); }
+    .mast__nav a {
+      color: var(--text-dim); text-decoration: none;
+      padding: 6px 12px; border-radius: 999px;
+      transition: color 160ms ease, background 160ms ease;
+    }
+    .mast__nav a:hover { color: var(--text); background: color-mix(in oklab, var(--text) 8%, transparent); }
 
     
     
@@ -98,40 +70,8 @@ const { title, description = 'Thirty components that read their palette out of a
 
     main { max-width: var(--well); margin: 0 auto; padding: 0 var(--gutter) var(--s-3xl); }
 
-    .scope {
-      max-width: var(--well); margin: 0 auto var(--s-xl); padding: 0 var(--gutter);
-      display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-l);
-    }
-    .scope__h { font-size: var(--f-0); font-family: var(--sans); font-weight: 500; letter-spacing: 0; }
-    .scope__p { margin-top: var(--s-3xs); font-size: var(--f-n2); line-height: 1.5; color: var(--text-dim); max-width: 48ch; }
-
-    .scope__hist {
-      display: flex; align-items: flex-end; gap: 2px;
-      height: 76px; margin-top: var(--s-xs);
-      padding: var(--s-3xs); border: var(--rule); border-radius: var(--radius);
-    }
-    .scope__bar { flex: 1; border-radius: 1px 1px 0 0; position: relative; }
-    .scope__bar[data-mark]::after {
-      content: attr(data-mark); position: absolute; top: -13px; left: 50%;
-      translate: -50% 0; font-family: var(--mono); font-size: 9px; color: var(--text-dim);
-    }
-    .scope__bar[data-mark] { outline: 1px solid var(--text); outline-offset: 1px; }
-
-    .scope__grid { margin-top: var(--s-xs); display: grid; gap: 1px; }
-    .scope__row { display: grid; grid-template-columns: 2.6em 1fr auto; gap: var(--s-2xs); align-items: center; }
-    .scope__pair {
-      display: grid; place-items: center; height: 21px;
-      border: var(--rule); border-radius: 2px;
-      font-size: var(--f-n2); font-family: var(--serif);
-    }
-    .scope__name { font-size: var(--f-n2); color: var(--text-dim); }
-    .scope__val { font-family: var(--mono); font-size: var(--f-n2); }
-    .scope__row[data-pass="false"] .scope__val { color: oklch(56% 0.2 25); }
-
-    @media (max-width: 720px) { .scope { grid-template-columns: 1fr; gap: var(--s-m); } }
-
     .colo {
-      max-width: var(--well); margin: 0 auto; padding: var(--s-m) var(--gutter) var(--s-2xl);
+      max-width: var(--well); margin: var(--s-2xl) auto 0; padding: var(--s-l) var(--gutter) var(--s-2xl);
       border-top: var(--rule); color: var(--text-dim); font-size: var(--f-n1);
     }
     .colo p { max-width: var(--measure); }

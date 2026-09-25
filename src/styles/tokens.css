@@ -18,8 +18,9 @@
   --accent-dim:oklch(92.0% calc(var(--ca) * 0.30) var(--ha));
 
   /* Structure comes from rules and spacing, not from cards and shadows. */
-  --radius: 3px;
-  --rule: 1px solid var(--border);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --rule: 1px solid color-mix(in oklab, var(--border) 62%, transparent);
   /* One elevation, for overlays only. Nothing else on the site casts a shadow. */
   --shadow: 0 2px 4px oklch(20% 0.02 var(--h) / 0.08), 0 18px 44px oklch(20% 0.02 var(--h) / 0.16);
   --serif: "IBM Plex Serif", Georgia, serif;
@@ -39,7 +40,8 @@
   --accent:    oklch(72.0% var(--ca) var(--ha));
   --accent-fg: oklch(16.0% 0.02 var(--ha));
   --accent-dim:oklch(28.0% calc(var(--ca) * 0.40) var(--ha));
-  --shadow: 0 2px 4px oklch(0% 0 0 / 0.4), 0 18px 44px oklch(0% 0 0 / 0.55);
+  --shadow: 0 1px 2px oklch(0% 0 0 / 0.35), 0 24px 60px -12px oklch(0% 0 0 / 0.6);
+  --glow: radial-gradient(90% 70% at 50% 0%, oklch(from var(--accent) l c h / 0.10), transparent 70%);
   color-scheme: dark;
 }
 
@@ -62,6 +64,8 @@
 body {
   margin: 0;
   background: var(--bg);
+  background-image: radial-gradient(120% 80% at 50% -10%, color-mix(in oklab, var(--accent) 7%, transparent), transparent 60%);
+  background-attachment: fixed;
   color: var(--text);
   font-family: var(--sans);
   font-size: var(--f-0);

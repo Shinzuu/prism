@@ -1,43 +1,41 @@
 /* Calculated scale. Nothing here is eyeballed.
-   Type: modular scale, base 16.0px at 360px viewport growing to 18.0px at 1440px,
-   ratio 1.2 on phones (minor third) widening to 1.25 on desktop (major third).
-   Larger steps need less leading and tighter tracking, so both are functions of size.
-   Space: the same fluid interpolation applied to multiples of the base, so vertical
-   rhythm and type stay locked together at every viewport. */
+   Base 16.5px at 380px viewport to 19.0px at 1560px.
+   Ratio 1.22 on phones widening to 1.3 on desktop: a wider ratio gives
+   display type real presence without touching reading sizes.
+   Space uses the same interpolation, with the upper steps opened up so
+   sections breathe rather than stack. */
 :root {
-  --f-n2: clamp(0.6944rem, 0.6859rem + 0.0379vw, 0.7200rem);
-  --f-n1: clamp(0.8333rem, 0.8111rem + 0.0988vw, 0.9000rem);
-  --f-0: clamp(1.0000rem, 0.9583rem + 0.1852vw, 1.1250rem);
-  --f-1: clamp(1.2000rem, 1.1312rem + 0.3056vw, 1.4062rem);
-  --f-2: clamp(1.4400rem, 1.3341rem + 0.4708vw, 1.7578rem);
-  --f-3: clamp(1.7280rem, 1.5716rem + 0.6952vw, 2.1973rem);
-  --f-4: clamp(2.0736rem, 1.8493rem + 0.9970vw, 2.7466rem);
-  --f-5: clamp(2.4883rem, 2.1734rem + 1.3999vw, 3.4332rem);
+  --f-n2: clamp(0.6929rem, 0.6897rem + 0.0133vw, 0.7027rem);
+  --f-n1: clamp(0.8453rem, 0.8233rem + 0.0924vw, 0.9135rem);
+  --f-0: clamp(1.0312rem, 0.9809rem + 0.2119vw, 1.1875rem);
+  --f-1: clamp(1.2581rem, 1.1661rem + 0.3873vw, 1.5437rem);
+  --f-2: clamp(1.5349rem, 1.3829rem + 0.6399vw, 2.0069rem);
+  --f-3: clamp(1.8726rem, 1.6355rem + 0.9984vw, 2.6089rem);
+  --f-4: clamp(2.2846rem, 1.9281rem + 1.5011vw, 3.3916rem);
+  --f-5: clamp(2.7872rem, 2.2648rem + 2.1992vw, 4.4091rem);
+  --f-6: clamp(3.4003rem, 2.6495rem + 3.1613vw, 5.7318rem);
 
-  --s-3xs: clamp(0.2500rem, 0.2396rem + 0.0463vw, 0.2812rem);
-  --s-2xs: clamp(0.5000rem, 0.4792rem + 0.0926vw, 0.5625rem);
-  --s-xs: clamp(0.7500rem, 0.7188rem + 0.1389vw, 0.8438rem);
-  --s-s: clamp(1.0000rem, 0.9583rem + 0.1852vw, 1.1250rem);
-  --s-m: clamp(1.5000rem, 1.4375rem + 0.2778vw, 1.6875rem);
-  --s-l: clamp(2.0000rem, 1.9167rem + 0.3704vw, 2.2500rem);
-  --s-xl: clamp(3.0000rem, 2.8750rem + 0.5556vw, 3.3750rem);
-  --s-2xl: clamp(4.0000rem, 3.8333rem + 0.7407vw, 4.5000rem);
-  --s-3xl: clamp(6.0000rem, 5.7500rem + 1.1111vw, 6.7500rem);
-  --s-4xl: clamp(8.0000rem, 7.6667rem + 1.4815vw, 9.0000rem);
+  --s-3xs: clamp(0.2578rem, 0.2452rem + 0.0530vw, 0.2969rem);
+  --s-2xs: clamp(0.5156rem, 0.4905rem + 0.1059vw, 0.5938rem);
+  --s-xs: clamp(0.7734rem, 0.7357rem + 0.1589vw, 0.8906rem);
+  --s-s: clamp(1.0312rem, 0.9809rem + 0.2119vw, 1.1875rem);
+  --s-m: clamp(1.5469rem, 1.4714rem + 0.3178vw, 1.7812rem);
+  --s-l: clamp(2.5781rem, 2.4523rem + 0.5297vw, 2.9688rem);
+  --s-xl: clamp(4.1250rem, 3.9237rem + 0.8475vw, 4.7500rem);
+  --s-2xl: clamp(6.1875rem, 5.8856rem + 1.2712vw, 7.1250rem);
+  --s-3xl: clamp(9.2812rem, 8.8284rem + 1.9068vw, 10.6875rem);
+  --s-4xl: clamp(13.4062rem, 12.7521rem + 2.7542vw, 15.4375rem);
 
-  /* Leading falls as size rises: generous for reading, tight for display. */
-  --lh-body: 1.55;
+  --lh-body: 1.6;
   --lh-lead: 1.45;
-  --lh-head: 1.14;
-  --lh-display: 1.04;
+  --lh-head: 1.1;
+  --lh-display: 0.98;
 
-  /* Tracking follows the same curve in the other direction. */
-  --tr-head: -0.015em;
-  --tr-display: -0.028em;
+  --tr-head: -0.018em;
+  --tr-display: -0.035em;
   --tr-mono: -0.005em;
 
-  /* Measure: 45-75 characters is the readable band; 66 is the target for body sans. */
-  --measure: 66ch;
+  --measure: 68ch;
   --measure-tight: 52ch;
-  --measure-lead: 38ch;
+  --measure-lead: 34ch;
 }
