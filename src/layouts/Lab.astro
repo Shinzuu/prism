@@ -1,0 +1,64 @@
+---
+import '../styles/tokens.css';
+import '../styles/scale.css';
+const { title, variant } = Astro.props;
+const variants = [
+  { slug: 'ledger', name: 'Ledger' },
+  { slug: 'rail', name: 'Rail' },
+  { slug: 'bleed', name: 'Bleed' }
+];
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;500;600&family=IBM+Plex+Serif:wght@400;600&display=swap" />
+  <script is:inline src="/theme.js"></script>
+</head>
+<body>
+  <div class="switcher">
+    <span class="switcher__label">layout</span>
+    {variants.map((v) => (
+      <a class={`switcher__opt ${v.slug === variant ? 'is-on' : ''}`} href={`/lab/${v.slug}`}>{v.name}</a>
+    ))}
+    <span class="switcher__spec" id="spec"></span>
+    <button class="switcher__opt" type="button" id="mode">invert</button>
+  </div>
+  <slot />
+  <script is:inline>
+    document.getElementById('mode').addEventListener('click', () => window.prism.toggleMode());
+    const spec = document.getElementById('spec');
+    function measure() {
+      const main = document.querySelector('[data-well]');
+      if (!main) return;
+      const w = Math.round(main.getBoundingClientRect().width);
+      const cs = getComputedStyle(document.body);
+      spec.textContent = `well ${w}px · viewport ${innerWidth}px · body ${cs.fontSize} / ${cs.lineHeight}`;
+    }
+    addEventListener('resize', measure);
+    addEventListener('DOMContentLoaded', measure);
+  </script>
+  <style is:global>
+    body { font-size: var(--f-0); line-height: var(--lh-body); }
+    .switcher {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; gap: var(--s-xs); flex-wrap: wrap;
+      padding: var(--s-2xs) var(--s-s);
+      background: var(--surface); border-bottom: var(--rule);
+      font-family: var(--mono); font-size: var(--f-n2);
+    }
+    .switcher__label { color: var(--text-dim); }
+    .switcher__opt {
+      padding: 3px 9px; border: var(--rule); border-radius: var(--radius);
+      color: var(--text-dim); text-decoration: none; background: var(--bg);
+      font: inherit; cursor: pointer;
+    }
+    .switcher__opt.is-on { color: var(--accent-fg); background: var(--accent); border-color: var(--accent); }
+    .switcher__spec { margin-left: auto; color: var(--text-dim); }
+    h1, h2, h3 { font-family: var(--serif); }
+  </style>
+</body>
+</html>

@@ -1,0 +1,68 @@
+---
+import Lab from '../../layouts/Lab.astro';
+import { allComponents } from '../../lib/registry.js';
+const cs = allComponents();
+---
+<Lab title="Rail layout" variant="rail">
+  <div class="shell">
+    <aside class="rail">
+      <h1>prism</h1>
+      <p class="rail__lead">Thirty components that read their palette out of an image.</p>
+      <nav class="rail__nav">
+        {cs.map((c, i) => (
+          <a href={`#c-${c.slug}`}>
+            <span>{String(i + 1).padStart(2, '0')}</span>{c.name}
+          </a>
+        ))}
+      </nav>
+      <p class="rail__count">{cs.length} of 30</p>
+    </aside>
+
+    <main class="well" data-well>
+      {cs.map((c) => (
+        <section class="item" id={`c-${c.slug}`}>
+          <div class="item__head">
+            <h2>{c.name}</h2>
+            <span class="item__meta">{c.type}, week {c.week}</span>
+          </div>
+          <p class="item__sum">{c.summary}</p>
+          <iframe class="item__view" src={`/preview/${c.slug}`} loading="lazy"
+            sandbox="allow-scripts" title={c.name}></iframe>
+        </section>
+      ))}
+    </main>
+  </div>
+</Lab>
+
+<style>
+  /* Rail is 264px — wide enough for a two-line component name at f-n1,
+     narrow enough that the well keeps 60ch+ on a 1280 screen.
+     Navigation never scrolls away, which matters at thirty entries. */
+  .shell { display: grid; grid-template-columns: 264px minmax(0, 1fr); gap: var(--s-2xl); max-width: 1320px; margin: 0 auto; padding: var(--s-l) var(--s-l) var(--s-3xl); }
+
+  .rail { position: sticky; top: calc(var(--s-2xl) + var(--s-xs)); align-self: start; max-height: 82vh; overflow-y: auto; }
+  .rail h1 { margin: 0 0 var(--s-2xs); font-size: var(--f-3); line-height: var(--lh-head); letter-spacing: var(--tr-head); }
+  .rail__lead { margin: 0 0 var(--s-m); font-size: var(--f-n1); color: var(--text-dim); }
+  .rail__nav { display: grid; border-top: var(--rule); }
+  .rail__nav a {
+    display: grid; grid-template-columns: 2.4em 1fr; gap: var(--s-2xs);
+    padding: var(--s-2xs) 0; border-bottom: var(--rule);
+    font-size: var(--f-n1); text-decoration: none; color: var(--text);
+  }
+  .rail__nav a span { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
+  .rail__nav a:hover { color: var(--accent); }
+  .rail__count { margin: var(--s-s) 0 0; font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
+
+  .well { display: grid; gap: var(--s-2xl); }
+  .item__head { display: flex; align-items: baseline; gap: var(--s-s); }
+  .item__head h2 { margin: 0; font-size: var(--f-3); line-height: var(--lh-head); letter-spacing: var(--tr-head); }
+  .item__meta { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
+  .item__sum { margin: var(--s-3xs) 0 var(--s-s); color: var(--text-dim); max-width: var(--measure); }
+  .item__view { width: 100%; aspect-ratio: 16 / 9; border: var(--rule); border-radius: var(--radius); background: var(--surface); }
+
+  @media (max-width: 860px) {
+    .shell { grid-template-columns: 1fr; gap: var(--s-l); }
+    .rail { position: static; max-height: none; }
+    .rail__nav { display: none; }
+  }
+</style>

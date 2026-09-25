@@ -64,13 +64,17 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--sans);
-  font-size: 15.5px;
-  line-height: 1.55;
+  font-size: var(--f-0);
+  line-height: var(--lh-body);
   font-feature-settings: "cv05" 1;
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -0.012em; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0; }
+h1 { font-size: var(--f-4); line-height: var(--lh-display); letter-spacing: var(--tr-display); }
+h2 { font-size: var(--f-2); line-height: var(--lh-head); letter-spacing: var(--tr-head); }
+h3 { font-size: var(--f-1); line-height: var(--lh-head); letter-spacing: var(--tr-head); }
+p  { margin: 0; }
 a { color: var(--text); text-underline-offset: 3px; text-decoration-thickness: 1px; }
 a:hover { color: var(--accent); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

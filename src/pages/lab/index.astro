@@ -1,0 +1,50 @@
+---
+import Lab from '../../layouts/Lab.astro';
+---
+<Lab title="Layout lab" variant="none">
+  <div class="pick" data-well>
+    <h1>Three architectures</h1>
+    <p class="pick__lead">Same type scale, same palette, same components. Only the structure differs.</p>
+
+    <dl>
+      <dt><a href="/lab/ledger">Ledger</a></dt>
+      <dd>
+        1120px well, 78% of a 1440 screen. Every component is a row split 5:7, text left and
+        specimen right. Scans fastest — thirty entries stay one continuous list, and the eye
+        tracks a single left edge down the page. Text column holds 46 characters, near the
+        floor of comfortable reading.
+      </dd>
+
+      <dt><a href="/lab/rail">Rail</a></dt>
+      <dd>
+        264px sticky rail against a fluid well, 1320px overall. Navigation never leaves the
+        screen, which is what thirty components actually need. Costs you the widest specimen
+        and reads more like documentation than like a gallery.
+      </dd>
+
+      <dt><a href="/lab/bleed">Bleed</a></dt>
+      <dd>
+        66-character prose column centred, specimens breaking out to 1280px. Highest contrast
+        between reading and looking. Most editorial, most spacious, and the slowest to scan
+        because each entry occupies close to a full screen.
+      </dd>
+    </dl>
+
+    <p class="pick__note">
+      The readout in the bar above reports the live well width, viewport and computed body
+      type at whatever size your window is. Resize and watch the numbers move.
+    </p>
+  </div>
+</Lab>
+
+<style>
+  .pick { max-width: var(--measure); margin: 0 auto; padding: var(--s-xl) var(--s-l) var(--s-3xl); }
+  .pick h1 { margin: 0 0 var(--s-2xs); font-size: var(--f-4); line-height: var(--lh-display); letter-spacing: var(--tr-display); }
+  .pick__lead { margin: 0 0 var(--s-l); font-size: var(--f-1); color: var(--text-dim); }
+  dl { margin: 0; }
+  dt { margin-top: var(--s-m); font-size: var(--f-2); font-family: var(--serif); }
+  dt a { text-decoration: none; }
+  dt a:hover { color: var(--accent); }
+  dd { margin: var(--s-3xs) 0 0; color: var(--text-dim); }
+  .pick__note { margin-top: var(--s-xl); padding-top: var(--s-s); border-top: var(--rule); font-size: var(--f-n1); color: var(--text-dim); }
+</style>

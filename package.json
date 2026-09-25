@@ -10,8 +10,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "prebuild": "node -e \"require('node:fs').copyFileSync('src/styles/tokens.css','public/tokens-preview.css')\"",
-    "predev": "node -e \"require('node:fs').copyFileSync('src/styles/tokens.css','public/tokens-preview.css')\""
+    "prebuild": "node -e \"const f=require('node:fs');f.writeFileSync('public/tokens-preview.css',f.readFileSync('src/styles/tokens.css','utf8')+f.readFileSync('src/styles/scale.css','utf8'))\"",
+    "predev": "node -e \"const f=require('node:fs');f.writeFileSync('public/tokens-preview.css',f.readFileSync('src/styles/tokens.css','utf8')+f.readFileSync('src/styles/scale.css','utf8'))\""
   },
   "dependencies": {
     "astro": "^7.3.5"

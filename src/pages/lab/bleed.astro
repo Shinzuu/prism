@@ -1,0 +1,69 @@
+---
+import Lab from '../../layouts/Lab.astro';
+import { allComponents } from '../../lib/registry.js';
+const cs = allComponents();
+---
+<Lab title="Bleed layout" variant="bleed">
+  <div class="doc" data-well>
+    <header class="intro">
+      <h1>Every colour here was read out of an image.</h1>
+      <p>
+        Hue and chroma come from the pixels. Lightness never does — it sits on a fixed ladder,
+        which is what keeps a photograph of a night sky and a photograph of a lemon both
+        readable rather than merely colourful.
+      </p>
+    </header>
+
+    {cs.map((c, i) => (
+      <>
+        <div class="caption">
+          <span class="caption__no">{String(i + 1).padStart(2, '0')}</span>
+          <h2>{c.name}</h2>
+          <p>{c.summary}</p>
+          <span class="caption__meta">{c.type}, week {c.week}</span>
+        </div>
+        <figure class="bleed">
+          <iframe src={`/preview/${c.slug}`} loading="lazy" sandbox="allow-scripts" title={c.name}></iframe>
+        </figure>
+      </>
+    ))}
+  </div>
+</Lab>
+
+<style>
+  /* Prose holds a 66ch measure and stays centred; specimens break the column
+     and run to 1280px. The eye returns to the same left edge for every caption,
+     so the wide figures read as interruptions rather than as layout drift. */
+  .doc {
+    display: grid;
+    grid-template-columns:
+      [full-start] minmax(var(--s-l), 1fr)
+      [wide-start] minmax(0, 1280px)
+      [text-start] min(var(--measure), 100% - var(--s-l) * 2) [text-end]
+      minmax(0, 1280px) [wide-end]
+      minmax(var(--s-l), 1fr) [full-end];
+    padding-block: var(--s-xl) var(--s-3xl);
+    row-gap: var(--s-m);
+  }
+  .doc > * { grid-column: text; }
+
+  .intro { margin-bottom: var(--s-l); }
+  .intro h1 { margin: 0 0 var(--s-s); font-size: var(--f-4); line-height: var(--lh-display); letter-spacing: var(--tr-display); }
+  .intro p { margin: 0; font-size: var(--f-1); line-height: var(--lh-lead); color: var(--text-dim); }
+
+  .caption { margin-top: var(--s-l); }
+  .caption__no { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
+  .caption h2 { margin: var(--s-3xs) 0 var(--s-3xs); font-size: var(--f-3); line-height: var(--lh-head); letter-spacing: var(--tr-head); }
+  .caption p { margin: 0 0 var(--s-3xs); color: var(--text-dim); }
+  .caption__meta { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
+
+  .bleed { grid-column: wide; margin: 0; }
+  .bleed iframe {
+    display: block; width: 100%; aspect-ratio: 21 / 9;
+    border: var(--rule); border-radius: var(--radius); background: var(--surface);
+  }
+
+  @media (max-width: 760px) {
+    .bleed iframe { aspect-ratio: 4 / 3; }
+  }
+</style>

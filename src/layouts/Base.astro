@@ -1,6 +1,7 @@
 ---
 import '../styles/tokens.css';
-const { title, description = 'Thirty components that take their palette from an image.' } = Astro.props;
+import '../styles/scale.css';
+const { title, description = 'Thirty components that read their palette out of an image.' } = Astro.props;
 const wallpapers = ['dusk', 'forest', 'ember', 'ice', 'sand'];
 ---
 <!doctype html>
@@ -17,52 +18,45 @@ const wallpapers = ['dusk', 'forest', 'ember', 'ice', 'sand'];
   <script is:inline src="/theme.js"></script>
 </head>
 <body>
-  <header class="masthead">
-    <a class="masthead__id" href="/">prism</a>
-    <nav class="masthead__nav">
+  <header class="mast">
+    <a class="mast__id" href="/">prism</a>
+    <nav class="mast__nav">
       <a href="/">Index</a>
       <a href="/about">Method</a>
       <a href="https://github.com/Shinzuu/prism">Source</a>
     </nav>
   </header>
 
-  <div class="instrument">
-    <div class="instrument__picker">
+  <div class="rig">
+    <div class="rig__chips">
       {wallpapers.map((w) => (
         <button class="chip" type="button" data-wall={`/wallpapers/${w}.svg`}>
-          <img src={`/wallpapers/${w}.svg`} alt="" width="44" height="28" loading="lazy" />
-          <span class="chip__name">{w}</span>
+          <img src={`/wallpapers/${w}.svg`} alt="" width="40" height="26" loading="lazy" />
+          {w}
         </button>
       ))}
-      <label class="chip chip--file">
+      <label class="chip">
         <input type="file" accept="image/*" hidden id="wall-upload" />
-        <span class="chip__plus" aria-hidden="true">＋</span>
-        <span class="chip__name">your image</span>
+        <span class="chip__box" aria-hidden="true">＋</span>your image
       </label>
-      <button class="chip chip--mode" type="button" id="mode-toggle">
-        <span class="chip__plus" aria-hidden="true">◐</span>
-        <span class="chip__name" id="mode-name">dark</span>
+      <button class="chip" type="button" id="mode-toggle">
+        <span class="chip__box" aria-hidden="true">◐</span><span id="mode-name">invert</span>
       </button>
     </div>
-    <dl class="readout" id="readout" aria-label="Current palette values"></dl>
+    <dl class="rig__read" id="readout" aria-label="Computed palette"></dl>
   </div>
 
   <main><slot /></main>
 
-  <footer class="colophon">
-    <p>Built for a ninety-day challenge. Two components a week, thirty in total, each one recorded with the prompt that produced it.</p>
-    <p class="colophon__meta">Set in IBM Plex. Palette derived in OKLab.</p>
+  <footer class="colo">
+    <p>Two components a week for ninety days. Each one keeps the prompt that produced it.</p>
+    <p class="colo__set">Set in IBM Plex. Palette derived in OKLab, lightness held on a fixed ladder.</p>
   </footer>
 
   <script is:inline>
     document.querySelectorAll('[data-wall]').forEach((b) =>
       b.addEventListener('click', () => window.prism.fromImage(b.dataset.wall)));
-
-    document.getElementById('mode-toggle')?.addEventListener('click', () => {
-      const next = window.prism.toggleMode();
-      document.getElementById('mode-name').textContent = next === 'dark' ? 'light' : 'dark';
-    });
-
+    document.getElementById('mode-toggle')?.addEventListener('click', () => window.prism.toggleMode());
     document.getElementById('wall-upload')?.addEventListener('change', (e) => {
       const f = e.target.files?.[0];
       if (!f) return;
@@ -70,9 +64,7 @@ const wallpapers = ['dusk', 'forest', 'ember', 'ice', 'sand'];
       window.prism.fromImage(url).finally(() => URL.revokeObjectURL(url));
     });
 
-    // The readout is the point of the whole site: show the palette it computed.
-    const SHOWN = [['--bg','page'],['--surface','field'],['--border','rule'],
-                   ['--text','ink'],['--accent','accent']];
+    const SHOWN = [['--bg','page'],['--surface','field'],['--border','rule'],['--text','ink'],['--accent','accent']];
     function paintReadout() {
       const cs = getComputedStyle(document.documentElement);
       const dl = document.getElementById('readout');
@@ -80,11 +72,11 @@ const wallpapers = ['dusk', 'forest', 'ember', 'ice', 'sand'];
       dl.textContent = '';
       for (const [tok, label] of SHOWN) {
         const dt = document.createElement('dt');
-        dt.className = 'readout__swatch';
         dt.style.background = `var(${tok})`;
         const dd = document.createElement('dd');
-        dd.className = 'readout__val';
-        dd.innerHTML = `<b>${label}</b><span>${cs.getPropertyValue(tok).trim()}</span>`;
+        const b = document.createElement('b'); b.textContent = label;
+        const s = document.createElement('span'); s.textContent = cs.getPropertyValue(tok).trim();
+        dd.append(b, s);
         dl.append(dt, dd);
       }
     }
@@ -93,58 +85,49 @@ const wallpapers = ['dusk', 'forest', 'ember', 'ice', 'sand'];
   </script>
 
   <style is:global>
-    main { max-width: 1120px; margin: 0 auto; padding: 0 28px 96px; }
+    :root { --well: 1120px; --gutter: var(--s-l); }
 
-    .masthead {
-      display: flex; align-items: baseline; gap: 26px;
-      max-width: 1120px; margin: 0 auto; padding: 22px 28px 16px;
+    .mast {
+      display: flex; align-items: baseline; gap: var(--s-m);
+      max-width: var(--well); margin: 0 auto; padding: var(--s-m) var(--gutter) var(--s-s);
     }
-    .masthead__id {
-      font-family: var(--serif); font-size: 21px; font-weight: 600;
-      letter-spacing: -0.02em; text-decoration: none;
-    }
-    .masthead__nav { display: flex; gap: 18px; margin-left: auto; font-size: 14px; }
-    .masthead__nav a { color: var(--text-dim); text-decoration: none; }
-    .masthead__nav a:hover { color: var(--accent); }
+    .mast__id { font-family: var(--serif); font-size: var(--f-1); font-weight: 600; letter-spacing: var(--tr-head); text-decoration: none; }
+    .mast__nav { display: flex; gap: var(--s-s); margin-left: auto; font-size: var(--f-n1); }
+    .mast__nav a { color: var(--text-dim); text-decoration: none; }
+    .mast__nav a:hover { color: var(--accent); }
 
-    .instrument {
-      max-width: 1120px; margin: 0 auto 40px; padding: 0 28px;
-      display: grid; gap: 14px;
+    .rig {
+      max-width: var(--well); margin: 0 auto var(--s-xl);
+      padding: var(--s-xs) var(--gutter);
       border-top: var(--rule); border-bottom: var(--rule);
-      padding-block: 16px;
+      display: grid; gap: var(--s-2xs);
     }
-    .instrument__picker { display: flex; flex-wrap: wrap; gap: 8px; }
-
+    .rig__chips { display: flex; flex-wrap: wrap; gap: var(--s-3xs); }
     .chip {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 5px 10px 5px 5px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: var(--s-3xs);
+      padding: var(--s-3xs) var(--s-2xs) var(--s-3xs) var(--s-3xs); cursor: pointer;
       background: transparent; color: var(--text-dim);
       border: var(--rule); border-radius: var(--radius);
-      font: inherit; font-size: 13px;
+      font-family: var(--mono); font-size: var(--f-n2); letter-spacing: var(--tr-mono);
     }
     .chip:hover { color: var(--text); border-color: var(--accent); }
-    .chip img { display: block; width: 44px; height: 28px; object-fit: cover; border-radius: 1px; }
-    .chip__plus {
-      width: 44px; height: 28px; display: grid; place-items: center;
-      background: var(--surface); border-radius: 1px; font-size: 13px;
-    }
-    .chip__name { font-family: var(--mono); font-size: 11.5px; }
+    .chip img, .chip__box { display: block; width: 40px; height: 26px; border-radius: 1px; object-fit: cover; }
+    .chip__box { display: grid; place-items: center; background: var(--surface); }
 
-    .readout { display: flex; flex-wrap: wrap; gap: 0 22px; margin: 0; align-items: center; }
-    .readout__swatch {
-      width: 13px; height: 13px; margin-right: -14px;
-      border: var(--rule); border-radius: 2px;
-    }
-    .readout__val { margin: 0 0 0 22px; display: flex; gap: 7px; align-items: baseline; }
-    .readout__val b { font-weight: 500; font-size: 12px; }
-    .readout__val span { font-family: var(--mono); font-size: 10.5px; color: var(--text-dim); }
+    .rig__read { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--s-m); margin: 0; }
+    .rig__read dt { width: 11px; height: 11px; border: var(--rule); border-radius: 2px; }
+    .rig__read dd { margin: 0 0 0 var(--s-3xs); display: flex; gap: var(--s-3xs); align-items: baseline; }
+    .rig__read b { font-weight: 450; font-size: var(--f-n2); }
+    .rig__read span { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
 
-    .colophon {
-      max-width: 1120px; margin: 0 auto; padding: 22px 28px 56px;
-      border-top: var(--rule); color: var(--text-dim); font-size: 13.5px;
+    main { max-width: var(--well); margin: 0 auto; padding: 0 var(--gutter) var(--s-3xl); }
+
+    .colo {
+      max-width: var(--well); margin: 0 auto; padding: var(--s-m) var(--gutter) var(--s-2xl);
+      border-top: var(--rule); color: var(--text-dim); font-size: var(--f-n1);
     }
-    .colophon p { margin: 0 0 6px; max-width: var(--measure); }
-    .colophon__meta { font-family: var(--mono); font-size: 11.5px; }
+    .colo p { max-width: var(--measure); }
+    .colo__set { margin-top: var(--s-3xs); font-family: var(--mono); font-size: var(--f-n2); }
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }

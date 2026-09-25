@@ -1,82 +1,79 @@
 ---
 import Base from '../layouts/Base.astro';
 import { allComponents } from '../lib/registry.js';
-const components = allComponents();
+const cs = allComponents();
 const TOTAL = 30;
 ---
 <Base title="Index">
-  <section class="statement">
+  <section class="open">
     <h1>Every colour on this page was read out of that image.</h1>
-    <p>
-      Pick another one and watch the whole site follow it, components included. Nothing here
-      contains a literal colour value — the build rejects a component that does. Hue and chroma
-      come from the pixels; lightness stays on a fixed ladder, which is what keeps any image
-      readable rather than merely colourful.
+    <p class="open__lead">
+      Change it and the whole site follows, components included. Hue and chroma come from the
+      pixels; lightness never does. It sits on a fixed ladder, which is why a night sky and a
+      lemon both stay readable instead of merely colourful.
     </p>
   </section>
 
-  <div class="ledger">
-    <span>{components.length} of {TOTAL}</span>
+  <div class="tally">
+    <span>{cs.length} of {TOTAL}</span>
     <span>two each week</span>
     <span>plain HTML, CSS, JavaScript</span>
+    <span>no literal colour compiles</span>
   </div>
 
-  <ol class="index">
-    {components.map((c, i) => (
-      <li class="entry">
-        <a class="entry__link" href={`/components/${c.slug}`}>
-          <span class="entry__no">{String(i + 1).padStart(2, '0')}</span>
-          <span class="entry__body">
-            <h2 class="entry__name">{c.name}</h2>
-            <p class="entry__sum">{c.summary}</p>
-            <span class="entry__meta">{c.type}, week {c.week}</span>
-          </span>
+  <ol class="list">
+    {cs.map((c, i) => (
+      <li class="line">
+        <span class="line__no">{String(i + 1).padStart(2, '0')}</span>
+        <div class="line__say">
+          <h2><a href={`/components/${c.slug}`}>{c.name}</a></h2>
+          <p>{c.summary}</p>
+          <span class="line__meta">{c.type}, week {c.week}</span>
+        </div>
+        <a class="line__see" href={`/components/${c.slug}`} tabindex="-1" aria-hidden="true">
+          <iframe src={`/preview/${c.slug}`} loading="lazy" sandbox="allow-scripts"
+            title={c.name} tabindex="-1"></iframe>
         </a>
-        <iframe class="entry__view" src={`/preview/${c.slug}`} title={`${c.name}, live`}
-          loading="lazy" sandbox="allow-scripts" tabindex="-1"></iframe>
       </li>
     ))}
   </ol>
 </Base>
 
 <style>
-  .statement { max-width: 30ch; margin: 8px 0 0; }
-  .statement h1 {
-    margin: 0 0 14px; font-size: clamp(30px, 4.6vw, 46px);
-    line-height: 1.06; letter-spacing: -0.022em;
-  }
-  .statement p { margin: 0; max-width: 58ch; color: var(--text-dim); }
-
-  .ledger {
-    display: flex; flex-wrap: wrap; gap: 26px;
-    margin: 34px 0 0; padding: 9px 0;
-    border-top: var(--rule); border-bottom: var(--rule);
-    font-family: var(--mono); font-size: 11.5px; color: var(--text-dim);
+  /* Ledger. 1120px well on a 1440 screen, 5:7 split so the specimen leads
+     while the text column holds 46 characters. */
+  .open { max-width: var(--measure-lead); margin-bottom: var(--s-l); }
+  .open h1 { font-size: var(--f-5); }
+  .open__lead {
+    margin-top: var(--s-s); font-size: var(--f-1); line-height: var(--lh-lead);
+    color: var(--text-dim); max-width: var(--measure);
   }
 
-  .index { list-style: none; margin: 0; padding: 0; }
-
-  .entry {
-    display: grid; grid-template-columns: 1fr 1.25fr; gap: 30px; align-items: start;
-    padding: 26px 0; border-bottom: var(--rule);
-  }
-  .entry__link { display: flex; gap: 16px; text-decoration: none; color: inherit; }
-  .entry__no {
-    font-family: var(--mono); font-size: 11.5px; color: var(--text-dim);
-    padding-top: 6px; min-width: 2.2em;
-  }
-  .entry__name { margin: 0 0 5px; font-size: 22px; }
-  .entry__link:hover .entry__name { color: var(--accent); }
-  .entry__sum { margin: 0 0 8px; color: var(--text-dim); font-size: 14px; max-width: 42ch; }
-  .entry__meta { font-family: var(--mono); font-size: 11px; color: var(--text-dim); }
-
-  .entry__view {
-    width: 100%; height: 190px; border: var(--rule); border-radius: var(--radius);
-    background: var(--surface); display: block;
+  .tally {
+    display: flex; flex-wrap: wrap; gap: var(--s-3xs) var(--s-m);
+    padding: var(--s-2xs) 0; border-top: var(--rule); border-bottom: var(--rule);
+    font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim);
+    letter-spacing: var(--tr-mono);
   }
 
-  @media (max-width: 720px) {
-    .entry { grid-template-columns: 1fr; gap: 16px; }
-    .entry__view { height: 165px; order: -1; }
+  .list { list-style: none; margin: 0; padding: 0; }
+  .line {
+    display: grid; grid-template-columns: 2.4em 5fr 7fr; gap: var(--s-s) var(--s-m);
+    padding: var(--s-m) 0; border-bottom: var(--rule); align-items: start;
+  }
+  .line__no { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); padding-top: 0.6em; }
+  .line__say h2 a { text-decoration: none; }
+  .line__say h2 a:hover { color: var(--accent); }
+  .line__say p { margin-top: var(--s-3xs); color: var(--text-dim); font-size: var(--f-n1); max-width: 46ch; }
+  .line__meta { display: block; margin-top: var(--s-2xs); font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
+
+  .line__see { display: block; border: var(--rule); border-radius: var(--radius); overflow: hidden; background: var(--surface); }
+  .line__see:hover { border-color: var(--accent); }
+  .line__see iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; }
+
+  @media (max-width: 760px) {
+    .line { grid-template-columns: 2.4em 1fr; }
+    .line__see { grid-column: 1 / -1; }
+    .line__see iframe { aspect-ratio: 4 / 3; }
   }
 </style>

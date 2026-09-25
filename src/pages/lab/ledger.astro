@@ -1,0 +1,58 @@
+---
+import Lab from '../../layouts/Lab.astro';
+import { allComponents } from '../../lib/registry.js';
+const cs = allComponents();
+---
+<Lab title="Ledger layout" variant="ledger">
+  <div class="page" data-well>
+    <header class="top">
+      <h1>prism</h1>
+      <p class="top__lead">Thirty components that read their palette out of an image.</p>
+    </header>
+
+    <ol class="rows">
+      {cs.map((c, i) => (
+        <li class="row">
+          <div class="row__text">
+            <span class="row__no">{String(i + 1).padStart(2, '0')}</span>
+            <div>
+              <h2>{c.name}</h2>
+              <p>{c.summary}</p>
+              <span class="row__meta">{c.type}, week {c.week}</span>
+            </div>
+          </div>
+          <iframe class="row__view" src={`/preview/${c.slug}`} loading="lazy"
+            sandbox="allow-scripts" title={c.name} tabindex="-1"></iframe>
+        </li>
+      ))}
+    </ol>
+  </div>
+</Lab>
+
+<style>
+  /* 1120px well on a 1440 screen = 78% occupancy, 160px gutters.
+     Rows split 5:7 so the specimen dominates without the text column
+     dropping under 45 characters. */
+  .page { max-width: 1120px; margin: 0 auto; padding: var(--s-xl) var(--s-l) var(--s-3xl); }
+
+  .top { margin-bottom: var(--s-xl); }
+  .top h1 { margin: 0 0 var(--s-2xs); font-size: var(--f-5); line-height: var(--lh-display); letter-spacing: var(--tr-display); }
+  .top__lead { margin: 0; font-size: var(--f-1); line-height: var(--lh-lead); color: var(--text-dim); max-width: var(--measure-tight); }
+
+  .rows { list-style: none; margin: 0; padding: 0; border-top: var(--rule); }
+  .row {
+    display: grid; grid-template-columns: 5fr 7fr; gap: var(--s-l);
+    padding: var(--s-m) 0; border-bottom: var(--rule); align-items: start;
+  }
+  .row__text { display: flex; gap: var(--s-s); }
+  .row__no { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); padding-top: 0.55em; }
+  .row h2 { margin: 0 0 var(--s-3xs); font-size: var(--f-2); line-height: var(--lh-head); letter-spacing: var(--tr-head); }
+  .row p { margin: 0 0 var(--s-2xs); color: var(--text-dim); font-size: var(--f-n1); max-width: 46ch; }
+  .row__meta { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
+  .row__view { width: 100%; aspect-ratio: 16 / 9; border: var(--rule); border-radius: var(--radius); background: var(--surface); }
+
+  @media (max-width: 760px) {
+    .row { grid-template-columns: 1fr; gap: var(--s-s); }
+    .row__view { order: -1; aspect-ratio: 4 / 3; }
+  }
+</style>
