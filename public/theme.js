@@ -69,9 +69,9 @@
 
     return {
       h: peak * step + step / 2,
-      c: Math.max(0.02, Math.min(meanC(peak) || 0.05, 0.07)),
+      c: Math.max(0.025, Math.min(meanC(peak) || 0.055, 0.085)),
       ha: accent * step + step / 2,
-      ca: Math.max(0.10, Math.min(meanC(accent) * 2 || 0.16, 0.20))
+      ca: Math.max(0.15, Math.min(meanC(accent) * 2.4 || 0.21, 0.27))
     };
   }
 

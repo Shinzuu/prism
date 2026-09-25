@@ -6,22 +6,59 @@ const { count, total } = Astro.props;
 
   <svg class="hero__plate" viewBox="0 0 900 460" role="img" aria-label="Orthographic plan view of a fighter airframe with callouts">
     <g class="plate__rules" aria-hidden="true">
-      <line x1="450" y1="14" x2="450" y2="446" />
-      <line x1="60" y1="230" x2="840" y2="230" />
-      <circle cx="450" cy="230" r="150" />
-      <circle cx="450" cy="230" r="92" />
+      <line x1="450" y1="10" x2="450" y2="450" />
+      <line x1="40" y1="230" x2="860" y2="230" />
+      <circle cx="450" cy="230" r="196" />
+      <circle cx="450" cy="230" r="118" />
+      <path d="M254 230 a196 196 0 0 1 392 0" />
     </g>
 
-    <!-- plan view, drawn as one continuous outline so it can be stroked on -->
     <g class="plate__craft">
-      <path class="craft__body" d="M450 34 L462 96 L470 176 L474 214
-        L640 262 L706 286 L712 306 L474 296 L472 344
-        L520 380 L522 396 L452 386 L450 426 L448 386 L378 396 L380 380
-        L428 344 L426 296 L188 306 L194 286 L260 262 L426 214
-        L430 176 L438 96 Z" />
-      <path class="craft__spine" d="M450 60 L450 420" />
-      <path class="craft__intake" d="M424 224 L424 268 M476 224 L476 268" />
-      <circle class="craft__cockpit" cx="450" cy="128" r="13" />
+      <!-- fuselage -->
+      <path class="ln ln--hull" d="M450 26
+        C458 52 463 84 466 118
+        L470 168 L473 206 L474 236
+        L476 282 L474 318
+        L479 344 L482 372 L478 392 L466 404
+        L455 410 L450 434 L445 410 L434 404
+        L422 392 L418 372 L421 344 L426 318
+        L424 282 L426 236 L427 206 L430 168
+        L434 118 C437 84 442 52 450 26 Z" />
+
+      <!-- main delta wing, port and starboard -->
+      <path class="ln ln--wing" d="M474 214 L658 258 L712 282 L718 300 L690 302 L474 292 Z" />
+      <path class="ln ln--wing" d="M426 214 L242 258 L188 282 L182 300 L210 302 L426 292 Z" />
+
+      <!-- leading-edge root extensions -->
+      <path class="ln ln--lerx" d="M466 150 L500 196 L474 208 Z" />
+      <path class="ln ln--lerx" d="M434 150 L400 196 L426 208 Z" />
+
+      <!-- canards -->
+      <path class="ln ln--canard" d="M463 116 L534 138 L556 150 L534 154 L464 140 Z" />
+      <path class="ln ln--canard" d="M437 116 L366 138 L344 150 L366 154 L436 140 Z" />
+
+      <!-- twin canted tailfins -->
+      <path class="ln ln--fin" d="M470 300 L520 246 L534 250 L500 310 Z" />
+      <path class="ln ln--fin" d="M430 300 L380 246 L366 250 L400 310 Z" />
+
+      <!-- horizontal stabilators -->
+      <path class="ln ln--stab" d="M476 330 L556 352 L570 364 L544 366 L476 350 Z" />
+      <path class="ln ln--stab" d="M424 330 L344 352 L330 364 L356 366 L424 350 Z" />
+
+      <!-- intakes -->
+      <path class="ln ln--intake" d="M479 206 L497 214 L497 268 L479 262 Z" />
+      <path class="ln ln--intake" d="M421 206 L403 214 L403 268 L421 262 Z" />
+
+      <!-- exhaust nozzles -->
+      <path class="ln ln--nozzle" d="M438 380 L440 404 L448 408 L448 380 Z" />
+      <path class="ln ln--nozzle" d="M462 380 L460 404 L452 408 L452 380 Z" />
+
+      <!-- canopy and spine -->
+      <path class="ln ln--canopy" d="M450 52 C462 62 466 86 465 112 L450 118 L435 112 C434 86 438 62 450 52 Z" />
+      <path class="ln ln--detail" d="M450 118 L450 214 M450 292 L450 380" />
+      <path class="ln ln--detail" d="M474 236 L640 268 M426 236 L260 268" />
+      <path class="ln ln--detail" d="M466 168 L474 214 M434 168 L426 214" />
+      <circle class="ln ln--detail" cx="450" cy="88" r="5" />
     </g>
 
     <g class="plate__marks" aria-hidden="true">
@@ -64,15 +101,23 @@ const { count, total } = Astro.props;
 
   .hero__plate { width: 100%; height: auto; overflow: visible; }
 
-  .plate__rules line, .plate__rules circle { stroke: var(--border); stroke-width: 1; fill: none; }
-  .plate__rules circle { stroke-dasharray: 3 7; }
-
-  .plate__craft path, .plate__craft circle {
-    fill: none; stroke: var(--text); stroke-width: 1.6;
-    stroke-linejoin: round; stroke-linecap: round;
+  .plate__rules line, .plate__rules circle, .plate__rules path {
+    stroke: var(--border); stroke-width: 1; fill: none;
   }
-  .craft__body { fill: color-mix(in oklab, var(--surface) 80%, transparent); }
-  .craft__cockpit { fill: var(--accent); stroke: var(--accent); }
+  .plate__rules circle { stroke-dasharray: 3 8; }
+  .plate__rules path { stroke: color-mix(in oklab, var(--accent) 45%, transparent); stroke-dasharray: 1 6; }
+
+  .ln { fill: none; stroke: var(--text); stroke-width: 1.35; stroke-linejoin: round; stroke-linecap: round; }
+  .ln--hull   { fill: color-mix(in oklab, var(--surface) 88%, transparent); stroke-width: 1.7; }
+  .ln--wing   { fill: color-mix(in oklab, var(--surface) 62%, transparent); }
+  .ln--lerx,
+  .ln--canard,
+  .ln--stab   { fill: color-mix(in oklab, var(--surface) 50%, transparent); }
+  .ln--fin    { fill: color-mix(in oklab, var(--accent) 16%, transparent); stroke: color-mix(in oklab, var(--accent) 70%, var(--text)); }
+  .ln--intake { fill: color-mix(in oklab, var(--bg) 82%, transparent); }
+  .ln--nozzle { fill: var(--accent); stroke: var(--accent); }
+  .ln--canopy { fill: color-mix(in oklab, var(--accent) 24%, transparent); stroke: color-mix(in oklab, var(--accent) 80%, var(--text)); }
+  .ln--detail { stroke: color-mix(in oklab, var(--text) 45%, transparent); stroke-width: 0.9; }
 
 
 
@@ -99,12 +144,19 @@ const { count, total } = Astro.props;
      leaders extend, tags fade up. Nothing loops, nothing repeats on scroll. */
   @media (prefers-reduced-motion: no-preference) {
     .plate__rules line, .plate__rules circle { opacity: 0; animation: fade .6s ease forwards .1s; }
-    .plate__craft path, .plate__craft circle {
-      stroke-dasharray: 2400; stroke-dashoffset: 2400;
-      animation: draw 1.9s cubic-bezier(.65,0,.35,1) forwards .35s;
-    }
-    .craft__body { fill-opacity: 0; animation: draw 1.9s cubic-bezier(.65,0,.35,1) forwards .35s, fill .8s ease forwards 1.7s; }
-    .plate__marks path { opacity: 0; animation: fade .5s ease forwards 1.9s; }
+    .ln { stroke-dasharray: 1400; stroke-dashoffset: 1400; fill-opacity: 0;
+          animation: draw 1.5s cubic-bezier(.6,0,.3,1) forwards, fill .7s ease forwards; }
+    .ln--hull   { animation-delay: .30s, 1.45s }
+    .ln--wing   { animation-delay: .55s, 1.60s }
+    .ln--lerx   { animation-delay: .70s, 1.68s }
+    .ln--canard { animation-delay: .80s, 1.74s }
+    .ln--fin    { animation-delay: .90s, 1.80s }
+    .ln--stab   { animation-delay: .98s, 1.86s }
+    .ln--intake { animation-delay: 1.06s, 1.92s }
+    .ln--nozzle { animation-delay: 1.14s, 1.98s }
+    .ln--canopy { animation-delay: 1.22s, 2.04s }
+    .ln--detail { animation-delay: 1.34s, 2.10s; stroke-dasharray: 400; stroke-dashoffset: 400; }
+    .plate__marks path { opacity: 0; animation: fade .5s ease forwards 2.3s; }
     .hero__say > * { opacity: 0; animation: rise .6s cubic-bezier(.2,.7,.3,1) forwards; }
     .hero__say > :nth-child(1) { animation-delay: .25s }
     .hero__say > :nth-child(2) { animation-delay: .35s }

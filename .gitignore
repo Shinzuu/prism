@@ -34,3 +34,6 @@ pnpm-debug.log*
 !.env.example
 submissions/
 scripts-gen.mjs
+
+test/hero.png
+test-results/

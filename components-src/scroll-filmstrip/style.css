@@ -1,7 +1,10 @@
 .fs {
+  /* A definite height, because the runway below multiplies it. A percentage
+     height against an indefinite parent resolves to zero and the strip then
+     has nothing to scroll. */
+  --fs-h: 320px;
   position: relative;
-  height: 100%;
-  min-height: 260px;
+  block-size: var(--fs-h);
   overflow-y: auto;
   overflow-x: hidden;
   scroll-timeline: --strip block;
@@ -14,8 +17,7 @@
 .fs__stage {
   position: sticky;
   top: 0;
-  height: 100%;
-  min-height: 260px;
+  block-size: var(--fs-h);
   overflow: hidden;
   display: grid;
   align-content: center;
@@ -74,11 +76,11 @@
 
 /* Runway gives the container something to scroll. Without a timeline it
    collapses, so the strip degrades to a plain horizontal scroller. */
-.fs__runway { height: 0; }
+.fs__runway { block-size: 0; }
 
 @supports (animation-timeline: scroll()) {
   .fs { overflow-x: hidden; }
-  .fs__runway { height: 300%; }
+  .fs__runway { block-size: calc(var(--fs-h) * 2.6); }
 
   @media (prefers-reduced-motion: no-preference) {
     .fs__rail {
@@ -94,7 +96,7 @@
   /* Reduced motion keeps the layout but drops the mapped movement. */
   @media (prefers-reduced-motion: reduce) {
     .fs { overflow-x: auto; }
-    .fs__runway { height: 0; }
+    .fs__runway { block-size: 0; }
     .fs__stage { position: static; }
   }
 }

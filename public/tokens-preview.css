@@ -31,15 +31,15 @@
 }
 
 :root[data-theme="dark"] {
-  --bg:        oklch(14.0% calc(var(--c) * 0.55) var(--h));
-  --surface:   oklch(18.5% calc(var(--c) * 0.70) var(--h));
-  --raised:    oklch(23.0% calc(var(--c) * 0.85) var(--h));
-  --border:    oklch(31.0% calc(var(--c) * 1.00) var(--h));
-  --text-dim:  oklch(70.0% calc(var(--c) * 0.90) var(--h));
-  --text:      oklch(96.0% calc(var(--c) * 0.40) var(--h));
-  --accent:    oklch(72.0% var(--ca) var(--ha));
-  --accent-fg: oklch(16.0% 0.02 var(--ha));
-  --accent-dim:oklch(28.0% calc(var(--ca) * 0.40) var(--ha));
+  --bg:        oklch(11.5% calc(var(--c) * 0.70) var(--h));
+  --surface:   oklch(16.5% calc(var(--c) * 0.95) var(--h));
+  --raised:    oklch(21.5% calc(var(--c) * 1.15) var(--h));
+  --border:    oklch(30.0% calc(var(--c) * 1.30) var(--h));
+  --text-dim:  oklch(72.0% calc(var(--c) * 0.70) var(--h));
+  --text:      oklch(97.5% calc(var(--c) * 0.25) var(--h));
+  --accent:    oklch(78.0% var(--ca) var(--ha));
+  --accent-fg: oklch(13.0% 0.03 var(--ha));
+  --accent-dim:oklch(26.0% calc(var(--ca) * 0.45) var(--ha));
   --shadow: 0 1px 2px oklch(0% 0 0 / 0.35), 0 24px 60px -12px oklch(0% 0 0 / 0.6);
   --glow: radial-gradient(90% 70% at 50% 0%, oklch(from var(--accent) l c h / 0.10), transparent 70%);
   color-scheme: dark;
