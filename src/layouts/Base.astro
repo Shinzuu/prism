@@ -1,6 +1,6 @@
 ---
 import '../styles/tokens.css';
-const { title, description = 'A component gallery where every component themes itself from your wallpaper.' } = Astro.props;
+const { title, description = 'Thirty components that take their palette from an image.' } = Astro.props;
 const wallpapers = ['dusk', 'forest', 'ember', 'ice', 'sand'];
 ---
 <!doctype html>
@@ -11,126 +11,144 @@ const wallpapers = ['dusk', 'forest', 'ember', 'ice', 'sand'];
   <title>{title} · prism</title>
   <meta name="description" content={description} />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" />
   <script is:inline src="/theme.js"></script>
 </head>
 <body>
-  <header class="bar">
-    <a class="bar__brand" href="/">
-      <span class="bar__mark" aria-hidden="true"></span>
-      prism
-    </a>
-
-    <nav class="bar__nav">
-      <a href="/">Components</a>
-      <a href="/about">About</a>
+  <header class="masthead">
+    <a class="masthead__id" href="/">prism</a>
+    <nav class="masthead__nav">
+      <a href="/">Index</a>
+      <a href="/about">Method</a>
+      <a href="https://github.com/Shinzuu/prism">Source</a>
     </nav>
-
-    <div class="bar__theme">
-      <span class="bar__label">Theme from</span>
-      {wallpapers.map((w) => (
-        <button class="swatch" type="button" data-wall={`/wallpapers/${w}.svg`} title={`Theme from ${w}`}>
-          <img src={`/wallpapers/${w}.svg`} alt="" width="34" height="22" />
-          <span class="sr-only">{w}</span>
-        </button>
-      ))}
-      <label class="swatch swatch--upload" title="Theme from your own image">
-        <input type="file" accept="image/*" hidden id="wall-upload" />
-        <span aria-hidden="true">+</span>
-        <span class="sr-only">Upload an image</span>
-      </label>
-      <button class="mode" type="button" id="mode-toggle" aria-label="Toggle dark mode">
-        <span aria-hidden="true">◐</span>
-      </button>
-    </div>
   </header>
 
-  <main class="wrap">
-    <slot />
-  </main>
+  <div class="instrument">
+    <div class="instrument__picker">
+      {wallpapers.map((w) => (
+        <button class="chip" type="button" data-wall={`/wallpapers/${w}.svg`}>
+          <img src={`/wallpapers/${w}.svg`} alt="" width="44" height="28" loading="lazy" />
+          <span class="chip__name">{w}</span>
+        </button>
+      ))}
+      <label class="chip chip--file">
+        <input type="file" accept="image/*" hidden id="wall-upload" />
+        <span class="chip__plus" aria-hidden="true">＋</span>
+        <span class="chip__name">your image</span>
+      </label>
+      <button class="chip chip--mode" type="button" id="mode-toggle">
+        <span class="chip__plus" aria-hidden="true">◐</span>
+        <span class="chip__name" id="mode-name">dark</span>
+      </button>
+    </div>
+    <dl class="readout" id="readout" aria-label="Current palette values"></dl>
+  </div>
 
-  <footer class="foot">
-    <span>prism · built for the LofiStack 90 Day Build Challenge</span>
-    <a href="https://github.com/Shinzuu/prism">Source</a>
+  <main><slot /></main>
+
+  <footer class="colophon">
+    <p>Built for a ninety-day challenge. Two components a week, thirty in total, each one recorded with the prompt that produced it.</p>
+    <p class="colophon__meta">Set in IBM Plex. Palette derived in OKLab.</p>
   </footer>
 
   <script is:inline>
-    document.querySelectorAll('[data-wall]').forEach((b) => {
-      b.addEventListener('click', () => window.prism.fromImage(b.dataset.wall));
+    document.querySelectorAll('[data-wall]').forEach((b) =>
+      b.addEventListener('click', () => window.prism.fromImage(b.dataset.wall)));
+
+    document.getElementById('mode-toggle')?.addEventListener('click', () => {
+      const next = window.prism.toggleMode();
+      document.getElementById('mode-name').textContent = next === 'dark' ? 'light' : 'dark';
     });
-    document.getElementById('mode-toggle')?.addEventListener('click', () => window.prism.toggleMode());
+
     document.getElementById('wall-upload')?.addEventListener('change', (e) => {
       const f = e.target.files?.[0];
       if (!f) return;
       const url = URL.createObjectURL(f);
       window.prism.fromImage(url).finally(() => URL.revokeObjectURL(url));
     });
+
+    // The readout is the point of the whole site: show the palette it computed.
+    const SHOWN = [['--bg','page'],['--surface','field'],['--border','rule'],
+                   ['--text','ink'],['--accent','accent']];
+    function paintReadout() {
+      const cs = getComputedStyle(document.documentElement);
+      const dl = document.getElementById('readout');
+      if (!dl) return;
+      dl.textContent = '';
+      for (const [tok, label] of SHOWN) {
+        const dt = document.createElement('dt');
+        dt.className = 'readout__swatch';
+        dt.style.background = `var(${tok})`;
+        const dd = document.createElement('dd');
+        dd.className = 'readout__val';
+        dd.innerHTML = `<b>${label}</b><span>${cs.getPropertyValue(tok).trim()}</span>`;
+        dl.append(dt, dd);
+      }
+    }
+    addEventListener('prism:theme', paintReadout);
+    addEventListener('DOMContentLoaded', paintReadout);
   </script>
 
   <style is:global>
-    .wrap { max-width: 940px; margin: 0 auto; padding: 40px 20px 80px; }
+    main { max-width: 1120px; margin: 0 auto; padding: 0 28px 96px; }
 
-    .bar {
-      position: sticky; top: 0; z-index: 30;
-      display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
-      padding: 12px 20px;
-      background: color-mix(in oklab, var(--bg) 88%, transparent);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
+    .masthead {
+      display: flex; align-items: baseline; gap: 26px;
+      max-width: 1120px; margin: 0 auto; padding: 22px 28px 16px;
     }
-    .bar__brand {
-      display: inline-flex; align-items: center; gap: 9px;
-      font-weight: 620; letter-spacing: -.01em; font-size: 16px;
-      color: var(--text); text-decoration: none;
+    .masthead__id {
+      font-family: var(--serif); font-size: 21px; font-weight: 600;
+      letter-spacing: -0.02em; text-decoration: none;
     }
-    .bar__mark {
-      width: 15px; height: 15px; border-radius: 4px;
-      background: linear-gradient(135deg,
-        oklch(62% var(--ca) var(--ha)),
-        oklch(62% var(--ca) calc(var(--ha) + 120)),
-        oklch(62% var(--ca) calc(var(--ha) + 240)));
-    }
-    .bar__nav { display: flex; gap: 16px; }
-    .bar__nav a { color: var(--text-dim); text-decoration: none; font-size: 14px; }
-    .bar__nav a:hover { color: var(--text); }
+    .masthead__nav { display: flex; gap: 18px; margin-left: auto; font-size: 14px; }
+    .masthead__nav a { color: var(--text-dim); text-decoration: none; }
+    .masthead__nav a:hover { color: var(--accent); }
 
-    .bar__theme { display: flex; align-items: center; gap: 6px; margin-left: auto; }
-    .bar__label { font-size: 12px; color: var(--text-dim); margin-right: 2px; }
-
-    .swatch {
-      width: 36px; height: 24px; padding: 0; cursor: pointer;
-      border: 1px solid var(--border); border-radius: 6px;
-      background: var(--surface); overflow: hidden; line-height: 0;
-      display: inline-grid; place-items: center;
-      transition: border-color 140ms ease, scale 140ms ease;
+    .instrument {
+      max-width: 1120px; margin: 0 auto 40px; padding: 0 28px;
+      display: grid; gap: 14px;
+      border-top: var(--rule); border-bottom: var(--rule);
+      padding-block: 16px;
     }
-    .swatch:hover { border-color: var(--accent); scale: 1.06; }
-    .swatch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-    .swatch img { width: 100%; height: 100%; object-fit: cover; }
-    .swatch--upload { font-size: 15px; color: var(--text-dim); line-height: 1; }
+    .instrument__picker { display: flex; flex-wrap: wrap; gap: 8px; }
 
-    .mode {
-      width: 30px; height: 30px; margin-left: 4px; cursor: pointer;
-      border: 1px solid var(--border); border-radius: 8px;
-      background: var(--surface); color: var(--text);
+    .chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 5px 10px 5px 5px; cursor: pointer;
+      background: transparent; color: var(--text-dim);
+      border: var(--rule); border-radius: var(--radius);
+      font: inherit; font-size: 13px;
     }
-    .mode:hover { border-color: var(--accent); }
-    .mode:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .chip:hover { color: var(--text); border-color: var(--accent); }
+    .chip img { display: block; width: 44px; height: 28px; object-fit: cover; border-radius: 1px; }
+    .chip__plus {
+      width: 44px; height: 28px; display: grid; place-items: center;
+      background: var(--surface); border-radius: 1px; font-size: 13px;
+    }
+    .chip__name { font-family: var(--mono); font-size: 11.5px; }
 
-    .foot {
-      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
-      max-width: 940px; margin: 0 auto; padding: 22px 20px 40px;
-      border-top: 1px solid var(--border);
-      font-size: 13px; color: var(--text-dim);
+    .readout { display: flex; flex-wrap: wrap; gap: 0 22px; margin: 0; align-items: center; }
+    .readout__swatch {
+      width: 13px; height: 13px; margin-right: -14px;
+      border: var(--rule); border-radius: 2px;
     }
-    .foot a { color: var(--text-dim); }
+    .readout__val { margin: 0 0 0 22px; display: flex; gap: 7px; align-items: baseline; }
+    .readout__val b { font-weight: 500; font-size: 12px; }
+    .readout__val span { font-family: var(--mono); font-size: 10.5px; color: var(--text-dim); }
 
-    .sr-only {
-      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-      overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+    .colophon {
+      max-width: 1120px; margin: 0 auto; padding: 22px 28px 56px;
+      border-top: var(--rule); color: var(--text-dim); font-size: 13.5px;
     }
-    a { color: var(--accent); }
-    h1, h2, h3 { letter-spacing: -.018em; }
-    @media (prefers-reduced-motion: reduce) { * { animation-duration: .001ms !important; transition-duration: .001ms !important; } }
+    .colophon p { margin: 0 0 6px; max-width: var(--measure); }
+    .colophon__meta { font-family: var(--mono); font-size: 11.5px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
   </style>
 </body>
 </html>

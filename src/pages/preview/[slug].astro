@@ -1,0 +1,38 @@
+---
+import { allComponents } from '../../lib/registry.js';
+export async function getStaticPaths() {
+  return allComponents().map((c) => ({ params: { slug: c.slug }, props: { c } }));
+}
+const { c } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{c.name}</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;500;600&display=swap" />
+  <style>
+    @import '/tokens-preview.css';
+    html, body { margin: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); padding: 22px; }
+  </style>
+  <style set:html={c.css}></style>
+</head>
+<body>
+  <Fragment set:html={c.html} />
+  {c.js && <script is:inline set:html={c.js} />}
+  <script is:inline>
+    // Inherit the parent's palette: an iframe does not get custom properties for free.
+    addEventListener('message', (e) => {
+      if (!e.data || e.data.prism !== 'tokens') return;
+      for (const [k, v] of Object.entries(e.data.tokens)) {
+        if (k.startsWith('--')) document.documentElement.style.setProperty(k, v);
+      }
+      document.documentElement.style.colorScheme = e.data.tokens['color-scheme'] || 'light';
+    });
+    parent.postMessage({ prism: 'ready' }, '*');
+  </script>
+</body>
+</html>

@@ -4,61 +4,79 @@ import { allComponents } from '../lib/registry.js';
 const components = allComponents();
 const TOTAL = 30;
 ---
-<Base title="Components">
-  <section class="hero">
-    <h1>Components that take their colour from your wallpaper.</h1>
+<Base title="Index">
+  <section class="statement">
+    <h1>Every colour on this page was read out of that image.</h1>
     <p>
-      Every component here is plain HTML, CSS and vanilla JavaScript, and none of them
-      contain a single literal colour. Pick a wallpaper above and watch the whole page
-      follow it. That is the point: drop these into any brand and they fit.
-    </p>
-    <p class="hero__count">
-      <strong>{components.length}</strong> of {TOTAL} · two new every week
+      Pick another one and watch the whole site follow it, components included. Nothing here
+      contains a literal colour value — the build rejects a component that does. Hue and chroma
+      come from the pixels; lightness stays on a fixed ladder, which is what keeps any image
+      readable rather than merely colourful.
     </p>
   </section>
 
-  <ul class="grid">
-    {components.map((c) => (
-      <li class="tile">
-        <a href={`/components/${c.slug}`}>
-          <span class="tile__type">{c.type}</span>
-          <h2 class="tile__name">{c.name}</h2>
-          <p class="tile__sum">{c.summary}</p>
-          <span class="tile__week">Week {c.week}</span>
+  <div class="ledger">
+    <span>{components.length} of {TOTAL}</span>
+    <span>two each week</span>
+    <span>plain HTML, CSS, JavaScript</span>
+  </div>
+
+  <ol class="index">
+    {components.map((c, i) => (
+      <li class="entry">
+        <a class="entry__link" href={`/components/${c.slug}`}>
+          <span class="entry__no">{String(i + 1).padStart(2, '0')}</span>
+          <span class="entry__body">
+            <h2 class="entry__name">{c.name}</h2>
+            <p class="entry__sum">{c.summary}</p>
+            <span class="entry__meta">{c.type}, week {c.week}</span>
+          </span>
         </a>
+        <iframe class="entry__view" src={`/preview/${c.slug}`} title={`${c.name}, live`}
+          loading="lazy" sandbox="allow-scripts" tabindex="-1"></iframe>
       </li>
     ))}
-  </ul>
+  </ol>
 </Base>
 
 <style>
-  .hero { max-width: 56ch; margin: 10px 0 44px; }
-  .hero h1 { margin: 0 0 14px; font-size: clamp(27px, 5vw, 41px); line-height: 1.12; }
-  .hero p { margin: 0 0 12px; color: var(--text-dim); font-size: 16px; }
-  .hero__count { font-size: 14px; }
-  .hero__count strong { color: var(--accent); }
+  .statement { max-width: 30ch; margin: 8px 0 0; }
+  .statement h1 {
+    margin: 0 0 14px; font-size: clamp(30px, 4.6vw, 46px);
+    line-height: 1.06; letter-spacing: -0.022em;
+  }
+  .statement p { margin: 0; max-width: 58ch; color: var(--text-dim); }
 
-  .grid {
-    list-style: none; margin: 0; padding: 0;
-    display: grid; gap: 16px;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  .ledger {
+    display: flex; flex-wrap: wrap; gap: 26px;
+    margin: 34px 0 0; padding: 9px 0;
+    border-top: var(--rule); border-bottom: var(--rule);
+    font-family: var(--mono); font-size: 11.5px; color: var(--text-dim);
   }
-  .tile a {
-    display: flex; flex-direction: column; gap: 7px; height: 100%;
-    padding: 20px;
-    background: var(--surface); color: var(--text); text-decoration: none;
-    border: 1px solid var(--border); border-radius: var(--radius);
-    transition: border-color 160ms ease, transform 160ms ease;
+
+  .index { list-style: none; margin: 0; padding: 0; }
+
+  .entry {
+    display: grid; grid-template-columns: 1fr 1.25fr; gap: 30px; align-items: start;
+    padding: 26px 0; border-bottom: var(--rule);
   }
-  .tile a:hover { border-color: var(--accent); transform: translateY(-2px); }
-  .tile a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-  .tile__type {
-    align-self: flex-start;
-    font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
-    padding: 3px 7px; border-radius: 5px;
-    background: var(--accent-dim); color: var(--accent);
+  .entry__link { display: flex; gap: 16px; text-decoration: none; color: inherit; }
+  .entry__no {
+    font-family: var(--mono); font-size: 11.5px; color: var(--text-dim);
+    padding-top: 6px; min-width: 2.2em;
   }
-  .tile__name { margin: 2px 0 0; font-size: 18px; }
-  .tile__sum { margin: 0; font-size: 14px; color: var(--text-dim); flex: 1; }
-  .tile__week { font-size: 12px; color: var(--text-dim); }
+  .entry__name { margin: 0 0 5px; font-size: 22px; }
+  .entry__link:hover .entry__name { color: var(--accent); }
+  .entry__sum { margin: 0 0 8px; color: var(--text-dim); font-size: 14px; max-width: 42ch; }
+  .entry__meta { font-family: var(--mono); font-size: 11px; color: var(--text-dim); }
+
+  .entry__view {
+    width: 100%; height: 190px; border: var(--rule); border-radius: var(--radius);
+    background: var(--surface); display: block;
+  }
+
+  @media (max-width: 720px) {
+    .entry { grid-template-columns: 1fr; gap: 16px; }
+    .entry__view { height: 165px; order: -1; }
+  }
 </style>

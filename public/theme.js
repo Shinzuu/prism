@@ -144,6 +144,21 @@
     return next;
   }
 
+  /* Preview frames announce themselves when ready; answer with the live palette,
+     and push every later change to all of them. */
+  const frames = new Set();
+  addEventListener('message', (e) => {
+    if (!e.data || e.data.prism !== 'ready' || !e.source) return;
+    frames.add(e.source);
+    e.source.postMessage({ prism: 'tokens', tokens: tokens() }, '*');
+  });
+  addEventListener('prism:theme', (e) => {
+    for (const f of frames) {
+      try { f.postMessage({ prism: 'tokens', tokens: e.detail }, '*'); }
+      catch { frames.delete(f); }
+    }
+  });
+
   restore();
   window.prism = { fromImage, toggleMode, extract, apply, tokens, announce };
   addEventListener('DOMContentLoaded', announce);

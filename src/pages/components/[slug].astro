@@ -6,7 +6,7 @@ export async function getStaticPaths() {
   return allComponents().map((c) => ({ params: { slug: c.slug }, props: { c } }));
 }
 const { c } = Astro.props;
-const repoBase = 'https://github.com/Shinzuu/prism/blob/main';
+const repo = `https://github.com/Shinzuu/prism/blob/main/${c.repoPath}`;
 const files = [
   { label: 'index.html', lang: 'html', body: c.html },
   { label: 'style.css', lang: 'css', body: c.css },
@@ -14,153 +14,126 @@ const files = [
 ];
 ---
 <Base title={c.name} description={c.summary}>
-  <nav class="crumb"><a href="/">Components</a> <span>/</span> {c.name}</nav>
-
-  <header class="head">
-    <div>
-      <span class="head__type">{c.type}</span>
+  <article class="specimen" data-wb>
+    <header class="specimen__head">
       <h1>{c.name}</h1>
-      <p class="head__sum">{c.summary}</p>
-    </div>
-    <a class="head__src" href={`${repoBase}/${c.repoPath}`}>Source on GitHub</a>
-  </header>
+      <p class="specimen__sum">{c.summary}</p>
+      <p class="specimen__meta">
+        <span>{c.type}</span><span>week {c.week}</span><a href={repo}>source</a>
+      </p>
+    </header>
 
-  <section class="wb" data-wb aria-label="Live component workbench">
-    <div class="wb__previewwrap">
-      <iframe class="wb__frame" data-wb-frame title={`${c.name} preview`} sandbox="allow-scripts"></iframe>
-    </div>
-
-    <div class="wb__editor">
-      <div class="wb__bar" role="tablist" aria-label="Source files">
-        {files.map((f, i) => (
-          <button class="wb__tab" type="button" role="tab"
-            data-wb-tab={f.lang} aria-selected={i === 0 ? 'true' : 'false'}>{f.label}</button>
-        ))}
-        <span class="wb__status" data-wb-status data-state="edit">loading</span>
-        <button class="wb__act" type="button" data-wb-copy>copy</button>
-        <button class="wb__act" type="button" data-wb-reset>reset</button>
+    <div class="stage">
+      <iframe class="stage__frame" data-wb-frame title={`${c.name}, running`} sandbox="allow-scripts"></iframe>
+      <div class="stage__foot">
+        <span class="stage__state" data-wb-status data-state="edit">loading</span>
+        <button class="txt" type="button" data-wb-reset>restore original</button>
       </div>
-
-      {files.map((f, i) => (
-        <textarea class="wb__pane" data-wb-pane={f.lang} hidden={i !== 0}
-          spellcheck="false" aria-label={f.label} rows="16">{f.body}</textarea>
-      ))}
     </div>
 
-    <p class="wb__hint">Edit any file and the preview re-renders. Change the wallpaper above and the preview follows the new palette — the component reads tokens, not colours.</p>
-  </section>
-
-  <section class="block">
-    <h2>Final prompt</h2>
-    <p class="block__note">This is the prompt that produced the component above.</p>
-    <pre class="prompt">{c.finalPrompt}</pre>
-  </section>
-
-  {c.attempts.length > 0 && (
-    <section class="block">
-      <h2>What it took to get there</h2>
-      <ol class="attempts">
-        {c.attempts.map((a, i) => (
-          <li>
-            <span class="attempts__n">Attempt {i + 1}</span>
-            <pre class="prompt prompt--small">{a.prompt}</pre>
-            <p class="attempts__problem"><strong>What went wrong.</strong> {a.problem}</p>
-          </li>
+    <section class="source">
+      <div class="source__tabs" role="tablist" aria-label="Files">
+        {files.map((f, i) => (
+          <button class="source__tab" type="button" role="tab" data-wb-tab={f.lang}
+            aria-selected={i === 0 ? 'true' : 'false'}>{f.label}</button>
         ))}
-      </ol>
+        <button class="txt txt--right" type="button" data-wb-copy>copy</button>
+      </div>
+      {files.map((f, i) => (
+        <textarea class="source__text" data-wb-pane={f.lang} hidden={i !== 0}
+          spellcheck="false" aria-label={f.label} rows="18">{f.body}</textarea>
+      ))}
+      <p class="source__note">Editable. The frame above re-renders as you type.</p>
     </section>
-  )}
 
-  {c.why && (
-    <section class="block">
-      <h2>Why the final prompt works</h2>
-      {c.why.split('\n\n').map((p) => <p class="block__body">{p}</p>)}
+    <section class="prompt">
+      <h2>The prompt</h2>
+      <pre class="prompt__text">{c.finalPrompt}</pre>
     </section>
-  )}
 
+    {c.attempts.length > 0 && (
+      <section class="prior">
+        <h2>What came before it</h2>
+        {c.attempts.map((a, i) => (
+          <div class="prior__item">
+            <p class="prior__n">Attempt {i + 1}</p>
+            <pre class="prior__text">{a.prompt}</pre>
+            <p class="prior__why">{a.problem}</p>
+          </div>
+        ))}
+      </section>
+    )}
+
+    {c.why && (
+      <section class="lesson">
+        <h2>Why the last one worked</h2>
+        {c.why.split('\n\n').map((p) => <p>{p}</p>)}
+      </section>
+    )}
+  </article>
 </Base>
 
 <script is:inline src="/workbench.js"></script>
 
 <style>
-  .crumb { font-size: 13px; color: var(--text-dim); margin-bottom: 18px; }
-  .crumb a { color: var(--text-dim); text-decoration: none; }
-  .crumb a:hover { color: var(--text); }
-  .crumb span { margin: 0 6px; }
+  .specimen { padding-top: 6px; }
 
-  .head { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 26px; }
-  .head h1 { margin: 8px 0 6px; font-size: clamp(25px, 4vw, 34px); }
-  .head__type {
-    font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
-    padding: 3px 7px; border-radius: 5px; background: var(--accent-dim); color: var(--accent);
+  .specimen__head { max-width: var(--measure); margin-bottom: 26px; }
+  .specimen__head h1 { margin: 0 0 8px; font-size: clamp(28px, 4vw, 40px); line-height: 1.1; }
+  .specimen__sum { margin: 0 0 10px; color: var(--text-dim); max-width: 54ch; }
+  .specimen__meta { display: flex; gap: 20px; margin: 0; font-family: var(--mono); font-size: 11.5px; color: var(--text-dim); }
+  .specimen__meta a { color: var(--text-dim); }
+  .specimen__meta a:hover { color: var(--accent); }
+
+  .stage { border: var(--rule); border-radius: var(--radius); overflow: hidden; }
+  .stage__frame { display: block; width: 100%; height: 280px; border: 0; background: var(--bg); }
+  .stage__foot {
+    display: flex; align-items: center; gap: 14px;
+    padding: 7px 12px; border-top: var(--rule); background: var(--surface);
   }
-  .head__sum { margin: 0; color: var(--text-dim); max-width: 58ch; }
-  .head__src { margin-left: auto; font-size: 13px; white-space: nowrap; }
+  .stage__state { font-family: var(--mono); font-size: 11px; color: var(--text-dim); }
+  .stage__state[data-state="ok"] { color: var(--accent); }
+  .stage__state[data-state="err"] { color: oklch(56% 0.2 25); }
 
-  .demo {
-    margin-bottom: 34px; padding: 30px;
-    background: var(--bg);
-    border: 1px solid var(--border); border-radius: 14px;
+  .txt {
+    background: none; border: 0; padding: 0; cursor: pointer;
+    font-family: var(--mono); font-size: 11px; color: var(--text-dim);
+    text-decoration: underline; text-underline-offset: 3px;
   }
-  .demo__stage { display: grid; gap: 16px; }
+  .txt:hover { color: var(--accent); }
+  .txt--right { margin-left: auto; }
 
-  .block { margin-bottom: 34px; }
-  .block h2 { font-size: 18px; margin: 0 0 6px; }
-  .block__note { margin: 0 0 12px; font-size: 13px; color: var(--text-dim); }
-  .block__body { color: var(--text-dim); margin: 0 0 12px; max-width: 66ch; }
-
-  .prompt {
-    margin: 0; padding: 16px 18px;
-    background: var(--surface); border: 1px solid var(--border);
-    border-left: 3px solid var(--accent); border-radius: var(--radius);
-    font-family: var(--mono); font-size: 12.5px; line-height: 1.65;
-    white-space: pre-wrap; overflow-wrap: anywhere;
+  .source { margin-top: 26px; }
+  .source__tabs { display: flex; align-items: center; gap: 4px; border-bottom: var(--rule); }
+  .source__tab {
+    padding: 7px 11px; background: none; border: 0; border-bottom: 2px solid transparent;
+    margin-bottom: -1px; cursor: pointer;
+    font-family: var(--mono); font-size: 12px; color: var(--text-dim);
   }
-  .prompt--small { font-size: 12px; border-left-color: var(--border); }
+  .source__tab[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
 
-  .attempts { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; }
-  .attempts__n {
-    display: inline-block; margin-bottom: 7px;
-    font-family: var(--mono); font-size: 11px; letter-spacing: .05em;
-    text-transform: uppercase; color: var(--text-dim);
+  .source__text {
+    display: block; width: 100%; padding: 16px 0 16px 2px;
+    border: 0; resize: vertical; background: transparent; color: var(--text);
+    font-family: var(--mono); font-size: 12.5px; line-height: 1.65; tab-size: 2;
   }
-  .attempts__problem { margin: 9px 0 0; color: var(--text-dim); font-size: 14px; max-width: 66ch; }
-  .attempts__problem strong { color: var(--text); font-weight: 600; }
+  .source__text:focus { outline: none; }
+  .source__note { margin: 0; padding-top: 8px; border-top: var(--rule); font-size: 12px; color: var(--text-dim); }
 
+  .prompt, .prior, .lesson { margin-top: 44px; }
+  .prompt h2, .prior h2, .lesson h2 { margin: 0 0 12px; font-size: 20px; }
 
-  .wb { margin-bottom: 34px; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
-  .wb__previewwrap { background: var(--bg); border-bottom: 1px solid var(--border); }
-  .wb__frame { display: block; width: 100%; height: 260px; border: 0; background: var(--bg); transition: height 160ms ease; }
-
-  .wb__bar { display: flex; align-items: center; gap: 4px; padding: 6px 8px; background: var(--surface); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
-  .wb__tab { padding: 5px 11px; border: 0; border-radius: 6px; background: transparent; color: var(--text-dim); font-family: var(--mono); font-size: 12.5px; cursor: pointer; }
-  .wb__tab[aria-selected="true"] { background: var(--accent-dim); color: var(--accent); }
-  .wb__tab:focus-visible, .wb__act:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-
-  .wb__status { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--text-dim); padding: 0 6px; }
-  .wb__status[data-state="ok"] { color: var(--accent); }
-  .wb__status[data-state="err"] { color: oklch(58% 0.19 25); }
-
-  .wb__act { padding: 4px 9px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text-dim); font-family: var(--mono); font-size: 11px; cursor: pointer; }
-  .wb__act:hover { color: var(--text); border-color: var(--accent); }
-
-  .wb__pane { display: block; width: 100%; padding: 14px 16px; border: 0; resize: vertical; background: var(--raised); color: var(--text); font-family: var(--mono); font-size: 12.5px; line-height: 1.6; tab-size: 2; }
-  .wb__pane:focus { outline: none; box-shadow: inset 2px 0 0 var(--accent); }
-
-  .wb__hint { margin: 0; padding: 10px 14px; background: var(--surface); border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text-dim); }
-
-  @media (max-width: 560px) { .wb__pane { font-size: 12px; } }
-
-  .file { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
-  .file summary {
-    padding: 10px 14px; cursor: pointer;
-    font-family: var(--mono); font-size: 13px;
-    background: var(--surface); color: var(--text);
+  .prompt__text, .prior__text {
+    margin: 0; padding: 0 0 0 18px; border-left: 2px solid var(--accent);
+    font-family: var(--mono); font-size: 12.5px; line-height: 1.7;
+    white-space: pre-wrap; overflow-wrap: anywhere; max-width: 78ch;
   }
-  .file summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-  .code {
-    margin: 0; padding: 16px; overflow-x: auto;
-    background: var(--raised); border-top: 1px solid var(--border);
-    font-family: var(--mono); font-size: 12.5px; line-height: 1.6;
-  }
+  .prior__text { border-left-color: var(--border); font-size: 12px; }
+
+  .prior__item { margin-bottom: 26px; }
+  .prior__n { margin: 0 0 7px; font-family: var(--mono); font-size: 11px; color: var(--text-dim); }
+  .prior__why { margin: 10px 0 0 18px; color: var(--text-dim); font-size: 14px; max-width: 64ch; }
+
+  .lesson p { color: var(--text-dim); max-width: var(--measure); margin: 0 0 12px; }
+  .lesson p:first-of-type { font-family: var(--serif); font-size: 17px; color: var(--text); }
 </style>

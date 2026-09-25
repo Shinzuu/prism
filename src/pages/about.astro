@@ -1,33 +1,50 @@
 ---
 import Base from '../layouts/Base.astro';
 ---
-<Base title="About">
-  <article class="prose">
-    <h1>About prism</h1>
-    <p>
-      A gallery of thirty components, built two a week over ninety days. Every one is plain
-      HTML, CSS and vanilla JavaScript, so it drops into any page regardless of framework.
+<Base title="Method">
+  <article class="method">
+    <h1>Method</h1>
+
+    <p class="method__lead">
+      A component library is only reusable if it survives contact with someone else's brand.
+      That is the constraint the whole thing is built around.
     </p>
-    <h2>Why no literal colours</h2>
+
+    <h2>Colour is read, not chosen</h2>
     <p>
-      Components reference design tokens and nothing else. The palette is generated from an
-      image: hue and chroma are read from the pixels, while lightness stays on a fixed ladder
-      that the image never touches. That is what keeps contrast readable no matter which
-      wallpaper you choose, and it is why the components survive being dropped into someone
-      else's brand.
+      Every pixel of a chosen image is converted to OKLab, greys are discarded, and the
+      remaining hues are collected into thirty-six bins weighted by chroma. The heaviest bin
+      becomes the page hue; the heaviest bin at least sixty degrees away becomes the accent.
     </p>
-    <h2>Why the prompts are here</h2>
     <p>
-      Each component records the prompt that produced it, along with the earlier attempts that
-      failed and the reason they failed. The code is the easy half. Knowing which constraints
-      to state up front is the part worth keeping.
+      Lightness is never taken from the image. It sits on a fixed ladder — 98.5 for the page,
+      18 for ink, and so on down — which means contrast is a property of the system rather than
+      something to measure afterwards. A photograph of a night sky and a photograph of a lemon
+      both produce something you can read.
+    </p>
+
+    <h2>A literal colour fails the build</h2>
+    <p>
+      Components reference tokens and nothing else. The registry scans every stylesheet at build
+      time, and a hex value, an <code>rgb()</code> or an <code>hsl()</code> stops the build with
+      the offending value named. Not a lint warning to be ignored: the site will not compile.
+    </p>
+
+    <h2>A missing prompt also fails the build</h2>
+    <p>
+      Each component carries the prompt that produced it, the attempts that failed first, and
+      the reason each failed. A component whose metadata has no final prompt cannot be published
+      at all. The code is the easy half — the constraints worth stating up front are the part
+      that transfers to the next thing you build.
     </p>
   </article>
 </Base>
 
 <style>
-  .prose { max-width: 62ch; }
-  .prose h1 { font-size: clamp(26px, 4vw, 34px); margin: 0 0 16px; }
-  .prose h2 { font-size: 19px; margin: 30px 0 8px; }
-  .prose p { color: var(--text-dim); margin: 0 0 14px; }
+  .method { max-width: var(--measure); padding-top: 6px; }
+  .method h1 { margin: 0 0 16px; font-size: clamp(28px, 4vw, 40px); }
+  .method__lead { font-family: var(--serif); font-size: 19px; line-height: 1.5; margin: 0 0 30px; }
+  .method h2 { margin: 32px 0 8px; font-size: 19px; }
+  .method p { margin: 0 0 13px; color: var(--text-dim); }
+  .method code { font-family: var(--mono); font-size: 0.88em; color: var(--text); }
 </style>

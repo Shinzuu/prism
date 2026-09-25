@@ -9,7 +9,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "prebuild": "node -e \"require('node:fs').copyFileSync('src/styles/tokens.css','public/tokens-preview.css')\"",
+    "predev": "node -e \"require('node:fs').copyFileSync('src/styles/tokens.css','public/tokens-preview.css')\""
   },
   "dependencies": {
     "astro": "^7.3.5"
