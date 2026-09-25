@@ -26,3 +26,9 @@ pnpm-debug.log*
 # local agent config, never publish
 .claude/
 .vercel
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example

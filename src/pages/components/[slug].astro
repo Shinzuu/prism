@@ -28,6 +28,7 @@ const files = [
   <section class="demo" aria-label="Live demo">
     <div class="demo__stage" set:html={c.html} />
     {c.css && <style set:html={c.css} />}
+    {c.js && <script is:inline set:html={c.js} />}
   </section>
 
   <section class="block">
