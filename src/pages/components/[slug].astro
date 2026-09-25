@@ -25,10 +25,29 @@ const files = [
     <a class="head__src" href={`${repoBase}/${c.repoPath}`}>Source on GitHub</a>
   </header>
 
-  <section class="demo" aria-label="Live demo">
-    <div class="demo__stage" set:html={c.html} />
-    {c.css && <style set:html={c.css} />}
-    {c.js && <script is:inline set:html={c.js} />}
+  <section class="wb" data-wb aria-label="Live component workbench">
+    <div class="wb__previewwrap">
+      <iframe class="wb__frame" data-wb-frame title={`${c.name} preview`} sandbox="allow-scripts"></iframe>
+    </div>
+
+    <div class="wb__editor">
+      <div class="wb__bar" role="tablist" aria-label="Source files">
+        {files.map((f, i) => (
+          <button class="wb__tab" type="button" role="tab"
+            data-wb-tab={f.lang} aria-selected={i === 0 ? 'true' : 'false'}>{f.label}</button>
+        ))}
+        <span class="wb__status" data-wb-status data-state="edit">loading</span>
+        <button class="wb__act" type="button" data-wb-copy>copy</button>
+        <button class="wb__act" type="button" data-wb-reset>reset</button>
+      </div>
+
+      {files.map((f, i) => (
+        <textarea class="wb__pane" data-wb-pane={f.lang} hidden={i !== 0}
+          spellcheck="false" aria-label={f.label} rows="16">{f.body}</textarea>
+      ))}
+    </div>
+
+    <p class="wb__hint">Edit any file and the preview re-renders. Change the wallpaper above and the preview follows the new palette — the component reads tokens, not colours.</p>
   </section>
 
   <section class="block">
@@ -59,16 +78,9 @@ const files = [
     </section>
   )}
 
-  <section class="block">
-    <h2>Code</h2>
-    {files.map((f) => (
-      <details class="file" open={f.label === 'index.html'}>
-        <summary>{f.label}</summary>
-        <pre class={`code code--${f.lang}`}><code>{f.body}</code></pre>
-      </details>
-    ))}
-  </section>
 </Base>
+
+<script is:inline src="/workbench.js"></script>
 
 <style>
   .crumb { font-size: 13px; color: var(--text-dim); margin-bottom: 18px; }
@@ -114,6 +126,30 @@ const files = [
   }
   .attempts__problem { margin: 9px 0 0; color: var(--text-dim); font-size: 14px; max-width: 66ch; }
   .attempts__problem strong { color: var(--text); font-weight: 600; }
+
+
+  .wb { margin-bottom: 34px; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .wb__previewwrap { background: var(--bg); border-bottom: 1px solid var(--border); }
+  .wb__frame { display: block; width: 100%; height: 260px; border: 0; background: var(--bg); transition: height 160ms ease; }
+
+  .wb__bar { display: flex; align-items: center; gap: 4px; padding: 6px 8px; background: var(--surface); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .wb__tab { padding: 5px 11px; border: 0; border-radius: 6px; background: transparent; color: var(--text-dim); font-family: var(--mono); font-size: 12.5px; cursor: pointer; }
+  .wb__tab[aria-selected="true"] { background: var(--accent-dim); color: var(--accent); }
+  .wb__tab:focus-visible, .wb__act:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .wb__status { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--text-dim); padding: 0 6px; }
+  .wb__status[data-state="ok"] { color: var(--accent); }
+  .wb__status[data-state="err"] { color: oklch(58% 0.19 25); }
+
+  .wb__act { padding: 4px 9px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text-dim); font-family: var(--mono); font-size: 11px; cursor: pointer; }
+  .wb__act:hover { color: var(--text); border-color: var(--accent); }
+
+  .wb__pane { display: block; width: 100%; padding: 14px 16px; border: 0; resize: vertical; background: var(--raised); color: var(--text); font-family: var(--mono); font-size: 12.5px; line-height: 1.6; tab-size: 2; }
+  .wb__pane:focus { outline: none; box-shadow: inset 2px 0 0 var(--accent); }
+
+  .wb__hint { margin: 0; padding: 10px 14px; background: var(--surface); border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text-dim); }
+
+  @media (max-width: 560px) { .wb__pane { font-size: 12px; } }
 
   .file { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
   .file summary {

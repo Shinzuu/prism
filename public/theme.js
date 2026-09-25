@@ -80,6 +80,25 @@
     root.style.setProperty('--c', p.c.toFixed(4));
     root.style.setProperty('--ha', p.ha.toFixed(1));
     root.style.setProperty('--ca', p.ca.toFixed(4));
+    announce();
+  }
+
+  /* Previews render in iframes, which do not inherit the page's custom properties.
+     Anything that needs the current palette listens for this. */
+  function announce() {
+    window.dispatchEvent(new CustomEvent('prism:theme', { detail: tokens() }));
+  }
+
+  const TOKEN_NAMES = ['--h','--c','--ha','--ca','--bg','--surface','--raised','--border',
+    '--text-dim','--text','--accent','--accent-fg','--accent-dim','--radius','--shadow',
+    '--mono','--sans'];
+
+  function tokens() {
+    const cs = getComputedStyle(root);
+    const out = {};
+    for (const n of TOKEN_NAMES) out[n] = cs.getPropertyValue(n).trim();
+    out['color-scheme'] = cs.getPropertyValue('color-scheme').trim() || 'light';
+    return out;
   }
 
   function save(p, mode) {
@@ -116,6 +135,7 @@
       || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     const next = now === 'dark' ? 'light' : 'dark';
     root.setAttribute('data-theme', next);
+    announce();
     try {
       const raw = localStorage.getItem(KEY);
       const prev = raw ? JSON.parse(raw).p : null;
@@ -125,5 +145,6 @@
   }
 
   restore();
-  window.prism = { fromImage, toggleMode, extract, apply };
+  window.prism = { fromImage, toggleMode, extract, apply, tokens, announce };
+  addEventListener('DOMContentLoaded', announce);
 })();
