@@ -2,7 +2,6 @@
 import '../styles/tokens.css';
 import '../styles/scale.css';
 const { title, description = 'Thirty components that read their palette out of an image.' } = Astro.props;
-const wallpapers = ['dusk', 'forest', 'ember', 'ice', 'sand'];
 ---
 <!doctype html>
 <html lang="en">
@@ -28,36 +27,18 @@ const wallpapers = ['dusk', 'forest', 'ember', 'ice', 'sand'];
     </nav>
   </header>
 
-  <div class="rig">
-    <div class="rig__chips">
-      {wallpapers.map((w) => (
-        <button class="chip" type="button" data-wall={`/wallpapers/${w}.svg`}>
-          <img src={`/wallpapers/${w}.svg`} alt="" width="40" height="26" loading="lazy" />
-          {w}
-        </button>
-      ))}
-      <label class="chip">
-        <input type="file" accept="image/*" hidden id="wall-upload" />
-        <span class="chip__box" aria-hidden="true">＋</span>your image
-      </label>
-      <button class="chip" type="button" id="mode-toggle">
-        <span class="chip__box" aria-hidden="true">◐</span><span id="mode-name">invert</span>
-      </button>
-    </div>
-    <dl class="rig__read" id="readout" aria-label="Computed palette"></dl>
-  </div>
-
   {Astro.props.scope && (
     <section class="scope" aria-label="How this palette was derived">
       <div class="scope__panel">
-        <h2 class="scope__h">Hue, as measured</h2>
-        <p class="scope__p">Every pixel converted to OKLab, greys discarded, the rest collected into thirty-six bins weighted by chroma. Tallest bin sets the page. The tallest at least sixty degrees away sets the accent.</p>
+        <h2 class="scope__h">Where this palette came from</h2>
+        <p class="scope__p">Every pixel of the reference image converted to OKLab, greys discarded, the rest collected into thirty-six bins weighted by chroma. Tallest bin sets the page. The tallest at least sixty degrees away sets the accent. Nobody typed these values.</p>
         <div class="scope__hist" id="scope-hist" role="img" aria-label="Hue distribution of the current image"></div>
       </div>
       <div class="scope__panel">
         <h2 class="scope__h">Contrast, as measured</h2>
         <p class="scope__p">Recomputed from the live palette on every change. Lightness is fixed, so these hold for any image — which is the whole reason lightness never comes from the picture.</p>
         <div class="scope__grid" id="scope-contrast"></div>
+        <dl class="rig__read" id="readout" aria-label="Computed palette"></dl>
       </div>
     </section>
   )}
@@ -70,16 +51,6 @@ const wallpapers = ['dusk', 'forest', 'ember', 'ice', 'sand'];
   </footer>
 
   <script is:inline>
-    document.querySelectorAll('[data-wall]').forEach((b) =>
-      b.addEventListener('click', () => window.prism.fromImage(b.dataset.wall)));
-    document.getElementById('mode-toggle')?.addEventListener('click', () => window.prism.toggleMode());
-    document.getElementById('wall-upload')?.addEventListener('change', (e) => {
-      const f = e.target.files?.[0];
-      if (!f) return;
-      const url = URL.createObjectURL(f);
-      window.prism.fromImage(url).finally(() => URL.revokeObjectURL(url));
-    });
-
     const SHOWN = [['--bg','page'],['--surface','field'],['--border','rule'],['--text','ink'],['--accent','accent']];
     function paintReadout() {
       const cs = getComputedStyle(document.documentElement);
@@ -112,23 +83,12 @@ const wallpapers = ['dusk', 'forest', 'ember', 'ice', 'sand'];
     .mast__nav a { color: var(--text-dim); text-decoration: none; }
     .mast__nav a:hover { color: var(--accent); }
 
-    .rig {
-      max-width: var(--well); margin: 0 auto var(--s-xl);
-      padding: var(--s-xs) var(--gutter);
-      border-top: var(--rule); border-bottom: var(--rule);
-      display: grid; gap: var(--s-2xs);
-    }
-    .rig__chips { display: flex; flex-wrap: wrap; gap: var(--s-3xs); }
-    .chip {
-      display: inline-flex; align-items: center; gap: var(--s-3xs);
-      padding: var(--s-3xs) var(--s-2xs) var(--s-3xs) var(--s-3xs); cursor: pointer;
-      background: transparent; color: var(--text-dim);
-      border: var(--rule); border-radius: var(--radius);
-      font-family: var(--mono); font-size: var(--f-n2); letter-spacing: var(--tr-mono);
-    }
-    .chip:hover { color: var(--text); border-color: var(--accent); }
-    .chip img, .chip__box { display: block; width: 40px; height: 26px; border-radius: 1px; object-fit: cover; }
-    .chip__box { display: grid; place-items: center; background: var(--surface); }
+    
+    
+    
+    
+    
+    
 
     .rig__read { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--s-m); margin: 0; }
     .rig__read dt { width: 11px; height: 11px; border: var(--rule); border-radius: 2px; }

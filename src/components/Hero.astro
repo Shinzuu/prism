@@ -1,0 +1,130 @@
+---
+const { count, total } = Astro.props;
+---
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero__grid" aria-hidden="true"></div>
+
+  <svg class="hero__plate" viewBox="0 0 900 460" role="img" aria-label="Orthographic plan view of a fighter airframe with callouts">
+    <g class="plate__rules" aria-hidden="true">
+      <line x1="450" y1="14" x2="450" y2="446" />
+      <line x1="60" y1="230" x2="840" y2="230" />
+      <circle cx="450" cy="230" r="150" />
+      <circle cx="450" cy="230" r="92" />
+    </g>
+
+    <!-- plan view, drawn as one continuous outline so it can be stroked on -->
+    <g class="plate__craft">
+      <path class="craft__body" d="M450 34 L462 96 L470 176 L474 214
+        L640 262 L706 286 L712 306 L474 296 L472 344
+        L520 380 L522 396 L452 386 L450 426 L448 386 L378 396 L380 380
+        L428 344 L426 296 L188 306 L194 286 L260 262 L426 214
+        L430 176 L438 96 Z" />
+      <path class="craft__spine" d="M450 60 L450 420" />
+      <path class="craft__intake" d="M424 224 L424 268 M476 224 L476 268" />
+      <circle class="craft__cockpit" cx="450" cy="128" r="13" />
+    </g>
+
+    <g class="plate__leads">
+      <path d="M474 214 L760 176" /><path d="M426 296 L150 336" />
+      <path d="M450 128 L716 96" /><path d="M450 426 L268 436" />
+    </g>
+
+    <g class="plate__tags">
+      <text x="766" y="172">01 · wing root</text>
+      <text x="146" y="332" text-anchor="end">03 · ventral fin</text>
+      <text x="722" y="92">02 · canopy</text>
+      <text x="262" y="440" text-anchor="end">04 · nozzle</text>
+    </g>
+
+    <g class="plate__marks" aria-hidden="true">
+      <path d="M22 22 h20 M22 22 v20 M878 22 h-20 M878 22 v20
+               M22 438 h20 M22 438 v-20 M878 438 h-20 M878 438 v-20" />
+    </g>
+  </svg>
+
+  <div class="hero__say">
+    <p class="hero__plateno">plate 01 — airframe</p>
+    <h1 id="hero-title">Components built<br />to a tolerance.</h1>
+    <p class="hero__lead">
+      Thirty pieces over ninety days. Each one plain HTML, CSS and JavaScript, each one
+      recorded with the prompt that produced it, and none of them containing a colour
+      value a machine did not derive.
+    </p>
+    <dl class="hero__spec">
+      <div><dt>airframes</dt><dd>{count} / {total}</dd></div>
+      <div><dt>payload</dt><dd>0 dependencies</dd></div>
+      <div><dt>tolerance</dt><dd>build fails on literal colour</dd></div>
+    </dl>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative; isolation: isolate;
+    display: grid; grid-template-columns: 1.05fr 1fr; gap: var(--s-l);
+    align-items: center; min-height: 66vh;
+    padding: var(--s-l) 0 var(--s-xl);
+    border-bottom: var(--rule);
+  }
+
+  .hero__grid {
+    position: absolute; inset: 0; z-index: -1; opacity: .5;
+    background:
+      repeating-linear-gradient(to right, var(--border) 0 1px, transparent 1px 64px),
+      repeating-linear-gradient(to bottom, var(--border) 0 1px, transparent 1px 64px);
+    mask-image: radial-gradient(120% 90% at 30% 45%, #000 30%, transparent 78%);
+  }
+
+  .hero__plate { width: 100%; height: auto; overflow: visible; }
+
+  .plate__rules line, .plate__rules circle { stroke: var(--border); stroke-width: 1; fill: none; }
+  .plate__rules circle { stroke-dasharray: 3 7; }
+
+  .plate__craft path, .plate__craft circle {
+    fill: none; stroke: var(--text); stroke-width: 1.6;
+    stroke-linejoin: round; stroke-linecap: round;
+  }
+  .craft__body { fill: var(--surface); }
+  .craft__cockpit { fill: var(--accent); stroke: var(--accent); }
+
+  .plate__leads path { stroke: var(--accent); stroke-width: 1; fill: none; stroke-dasharray: 2 4; }
+  .plate__tags text { fill: var(--text-dim); font-family: var(--mono); font-size: 11px; }
+  .plate__marks path { stroke: var(--accent); stroke-width: 1.4; fill: none; }
+
+  .hero__plateno { font-family: var(--mono); font-size: var(--f-n2); color: var(--accent); }
+  .hero__say h1 { margin-top: var(--s-2xs); font-size: var(--f-5); line-height: var(--lh-display); letter-spacing: var(--tr-display); }
+  .hero__lead { margin-top: var(--s-s); font-size: var(--f-1); line-height: var(--lh-lead); color: var(--text-dim); max-width: 42ch; }
+
+  .hero__spec { display: flex; flex-wrap: wrap; gap: var(--s-m); margin-top: var(--s-m); padding-top: var(--s-s); border-top: var(--rule); }
+  .hero__spec dt { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
+  .hero__spec dd { margin: 2px 0 0; font-size: var(--f-n1); }
+
+  /* One orchestrated load sequence: rules settle, the airframe draws itself,
+     leaders extend, tags fade up. Nothing loops, nothing repeats on scroll. */
+  @media (prefers-reduced-motion: no-preference) {
+    .plate__rules line, .plate__rules circle { opacity: 0; animation: fade .6s ease forwards .1s; }
+    .plate__craft path, .plate__craft circle {
+      stroke-dasharray: 2400; stroke-dashoffset: 2400;
+      animation: draw 1.9s cubic-bezier(.65,0,.35,1) forwards .35s;
+    }
+    .craft__body { fill-opacity: 0; animation: draw 1.9s cubic-bezier(.65,0,.35,1) forwards .35s, fill .8s ease forwards 1.7s; }
+    .plate__leads path { stroke-dasharray: 340; stroke-dashoffset: 340; animation: draw .7s ease forwards 1.85s; }
+    .plate__tags text { opacity: 0; animation: rise .5s ease forwards 2.15s; }
+    .plate__marks path { opacity: 0; animation: fade .5s ease forwards 2.4s; }
+    .hero__say > * { opacity: 0; animation: rise .6s cubic-bezier(.2,.7,.3,1) forwards; }
+    .hero__say > :nth-child(1) { animation-delay: .25s }
+    .hero__say > :nth-child(2) { animation-delay: .35s }
+    .hero__say > :nth-child(3) { animation-delay: .5s }
+    .hero__say > :nth-child(4) { animation-delay: .65s }
+  }
+
+  @keyframes draw { to { stroke-dashoffset: 0 } }
+  @keyframes fade { to { opacity: 1 } }
+  @keyframes fill { to { fill-opacity: 1 } }
+  @keyframes rise { from { opacity: 0; translate: 0 10px } to { opacity: 1; translate: 0 0 } }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; min-height: 0; gap: var(--s-m); }
+    .hero__plate { max-width: 460px; margin: 0 auto; }
+  }
+</style>

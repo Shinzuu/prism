@@ -101,19 +101,7 @@
     return out;
   }
 
-  function save(p, mode) {
-    try { localStorage.setItem(KEY, JSON.stringify({ p, mode })); } catch {}
-  }
-
-  function restore() {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (!raw) return;
-      const { p, mode } = JSON.parse(raw);
-      if (p) apply(p);
-      if (mode) root.setAttribute('data-theme', mode);
-    } catch {}
-  }
+  const save = () => {};
 
   function fromImage(src) {
     return new Promise((resolve, reject) => {
@@ -159,7 +147,11 @@
     }
   });
 
-  restore();
+  /* One locked theme. The palette is still extracted rather than typed in, so the
+     scope's histogram is real provenance, but there is nothing for a visitor to change. */
+  const CANONICAL = '/wallpapers/canonical.svg';
+  root.setAttribute('data-theme', 'dark');
+  addEventListener('DOMContentLoaded', () => { fromImage(CANONICAL).catch(() => {}); });
   window.prism = { fromImage, toggleMode, extract, apply, tokens, announce };
   addEventListener('DOMContentLoaded', announce);
 })();

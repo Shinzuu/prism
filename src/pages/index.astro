@@ -1,18 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
 import { allComponents } from '../lib/registry.js';
 const cs = allComponents();
 const TOTAL = 30;
 ---
 <Base title="Index" scope={true}>
-  <section class="open">
-    <h1>Every colour on this page was read out of that image.</h1>
-    <p class="open__lead">
-      Change it and the whole site follows, components included. Hue and chroma come from the
-      pixels; lightness never does. It sits on a fixed ladder, which is why a night sky and a
-      lemon both stay readable instead of merely colourful.
-    </p>
-  </section>
+  <Hero count={cs.length} total={TOTAL} />
 
   <div class="tally">
     <span>{cs.length} of {TOTAL}</span>
@@ -42,14 +36,8 @@ const TOTAL = 30;
 <style>
   /* Ledger. 1120px well on a 1440 screen, 5:7 split so the specimen leads
      while the text column holds 46 characters. */
-  .open { max-width: var(--measure-lead); margin-bottom: var(--s-l); }
-  .open h1 { font-size: var(--f-5); }
-  .open__lead {
-    margin-top: var(--s-s); font-size: var(--f-1); line-height: var(--lh-lead);
-    color: var(--text-dim); max-width: var(--measure);
-  }
-
   .tally {
+    margin-top: var(--s-l);
     display: flex; flex-wrap: wrap; gap: var(--s-3xs) var(--s-m);
     padding: var(--s-2xs) 0; border-top: var(--rule); border-bottom: var(--rule);
     font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim);
