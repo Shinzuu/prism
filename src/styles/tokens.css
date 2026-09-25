@@ -1,0 +1,67 @@
+/* prism design tokens
+   Hue and chroma come from the chosen image. Lightness never does.
+   That keeps contrast structurally guaranteed for any wallpaper. */
+:root {
+  --h: 264;          /* hue, 0-360, set by theme.js */
+  --c: 0.045;        /* neutral chroma */
+  --ca: 0.16;        /* accent chroma */
+  --ha: 264;         /* accent hue */
+
+  --bg:        oklch(98.5% calc(var(--c) * 0.30) var(--h));
+  --surface:   oklch(95.5% calc(var(--c) * 0.45) var(--h));
+  --raised:    oklch(92.0% calc(var(--c) * 0.55) var(--h));
+  --border:    oklch(84.0% calc(var(--c) * 0.70) var(--h));
+  --text-dim:  oklch(48.0% calc(var(--c) * 0.90) var(--h));
+  --text:      oklch(18.0% calc(var(--c) * 1.00) var(--h));
+  --accent:    oklch(52.0% var(--ca) var(--ha));
+  --accent-fg: oklch(99.0% 0.01 var(--ha));
+  --accent-dim:oklch(92.0% calc(var(--ca) * 0.30) var(--ha));
+
+  --radius: 10px;
+  --shadow: 0 1px 2px oklch(20% 0.02 var(--h) / 0.06),
+            0 8px 24px oklch(20% 0.02 var(--h) / 0.08);
+  --mono: ui-monospace, "JetBrains Mono", "Fira Code", SFMono-Regular, Menlo, monospace;
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg:        oklch(14.0% calc(var(--c) * 0.55) var(--h));
+  --surface:   oklch(18.5% calc(var(--c) * 0.70) var(--h));
+  --raised:    oklch(23.0% calc(var(--c) * 0.85) var(--h));
+  --border:    oklch(31.0% calc(var(--c) * 1.00) var(--h));
+  --text-dim:  oklch(70.0% calc(var(--c) * 0.90) var(--h));
+  --text:      oklch(96.0% calc(var(--c) * 0.40) var(--h));
+  --accent:    oklch(72.0% var(--ca) var(--ha));
+  --accent-fg: oklch(16.0% 0.02 var(--ha));
+  --accent-dim:oklch(28.0% calc(var(--ca) * 0.40) var(--ha));
+  --shadow: 0 1px 2px oklch(0% 0 0 / 0.30),
+            0 8px 24px oklch(0% 0 0 / 0.40);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:        oklch(14.0% calc(var(--c) * 0.55) var(--h));
+    --surface:   oklch(18.5% calc(var(--c) * 0.70) var(--h));
+    --raised:    oklch(23.0% calc(var(--c) * 0.85) var(--h));
+    --border:    oklch(31.0% calc(var(--c) * 1.00) var(--h));
+    --text-dim:  oklch(70.0% calc(var(--c) * 0.90) var(--h));
+    --text:      oklch(96.0% calc(var(--c) * 0.40) var(--h));
+    --accent:    oklch(72.0% var(--ca) var(--ha));
+    --accent-fg: oklch(16.0% 0.02 var(--ha));
+    --accent-dim:oklch(28.0% calc(var(--ca) * 0.40) var(--ha));
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+  transition: background 200ms ease, color 200ms ease;
+}

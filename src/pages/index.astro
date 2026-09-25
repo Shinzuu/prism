@@ -1,17 +1,64 @@
 ---
-
+import Base from '../layouts/Base.astro';
+import { allComponents } from '../lib/registry.js';
+const components = allComponents();
+const TOTAL = 30;
 ---
+<Base title="Components">
+  <section class="hero">
+    <h1>Components that take their colour from your wallpaper.</h1>
+    <p>
+      Every component here is plain HTML, CSS and vanilla JavaScript, and none of them
+      contain a single literal colour. Pick a wallpaper above and watch the whole page
+      follow it. That is the point: drop these into any brand and they fit.
+    </p>
+    <p class="hero__count">
+      <strong>{components.length}</strong> of {TOTAL} · two new every week
+    </p>
+  </section>
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+  <ul class="grid">
+    {components.map((c) => (
+      <li class="tile">
+        <a href={`/components/${c.slug}`}>
+          <span class="tile__type">{c.type}</span>
+          <h2 class="tile__name">{c.name}</h2>
+          <p class="tile__sum">{c.summary}</p>
+          <span class="tile__week">Week {c.week}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</Base>
+
+<style>
+  .hero { max-width: 56ch; margin: 10px 0 44px; }
+  .hero h1 { margin: 0 0 14px; font-size: clamp(27px, 5vw, 41px); line-height: 1.12; }
+  .hero p { margin: 0 0 12px; color: var(--text-dim); font-size: 16px; }
+  .hero__count { font-size: 14px; }
+  .hero__count strong { color: var(--accent); }
+
+  .grid {
+    list-style: none; margin: 0; padding: 0;
+    display: grid; gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+  .tile a {
+    display: flex; flex-direction: column; gap: 7px; height: 100%;
+    padding: 20px;
+    background: var(--surface); color: var(--text); text-decoration: none;
+    border: 1px solid var(--border); border-radius: var(--radius);
+    transition: border-color 160ms ease, transform 160ms ease;
+  }
+  .tile a:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .tile a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .tile__type {
+    align-self: flex-start;
+    font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+    padding: 3px 7px; border-radius: 5px;
+    background: var(--accent-dim); color: var(--accent);
+  }
+  .tile__name { margin: 2px 0 0; font-size: 18px; }
+  .tile__sum { margin: 0; font-size: 14px; color: var(--text-dim); flex: 1; }
+  .tile__week { font-size: 12px; color: var(--text-dim); }
+</style>

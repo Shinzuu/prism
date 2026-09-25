@@ -1,0 +1,129 @@
+---
+import Base from '../../layouts/Base.astro';
+import { allComponents } from '../../lib/registry.js';
+
+export async function getStaticPaths() {
+  return allComponents().map((c) => ({ params: { slug: c.slug }, props: { c } }));
+}
+const { c } = Astro.props;
+const repoBase = 'https://github.com/Shinzuu/prism/blob/main';
+const files = [
+  { label: 'index.html', lang: 'html', body: c.html },
+  { label: 'style.css', lang: 'css', body: c.css },
+  ...(c.js ? [{ label: 'script.js', lang: 'js', body: c.js }] : [])
+];
+---
+<Base title={c.name} description={c.summary}>
+  <nav class="crumb"><a href="/">Components</a> <span>/</span> {c.name}</nav>
+
+  <header class="head">
+    <div>
+      <span class="head__type">{c.type}</span>
+      <h1>{c.name}</h1>
+      <p class="head__sum">{c.summary}</p>
+    </div>
+    <a class="head__src" href={`${repoBase}/${c.repoPath}`}>Source on GitHub</a>
+  </header>
+
+  <section class="demo" aria-label="Live demo">
+    <div class="demo__stage" set:html={c.html} />
+    {c.css && <style set:html={c.css} />}
+  </section>
+
+  <section class="block">
+    <h2>Final prompt</h2>
+    <p class="block__note">This is the prompt that produced the component above.</p>
+    <pre class="prompt">{c.finalPrompt}</pre>
+  </section>
+
+  {c.attempts.length > 0 && (
+    <section class="block">
+      <h2>What it took to get there</h2>
+      <ol class="attempts">
+        {c.attempts.map((a, i) => (
+          <li>
+            <span class="attempts__n">Attempt {i + 1}</span>
+            <pre class="prompt prompt--small">{a.prompt}</pre>
+            <p class="attempts__problem"><strong>What went wrong.</strong> {a.problem}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )}
+
+  {c.why && (
+    <section class="block">
+      <h2>Why the final prompt works</h2>
+      {c.why.split('\n\n').map((p) => <p class="block__body">{p}</p>)}
+    </section>
+  )}
+
+  <section class="block">
+    <h2>Code</h2>
+    {files.map((f) => (
+      <details class="file" open={f.label === 'index.html'}>
+        <summary>{f.label}</summary>
+        <pre class={`code code--${f.lang}`}><code>{f.body}</code></pre>
+      </details>
+    ))}
+  </section>
+</Base>
+
+<style>
+  .crumb { font-size: 13px; color: var(--text-dim); margin-bottom: 18px; }
+  .crumb a { color: var(--text-dim); text-decoration: none; }
+  .crumb a:hover { color: var(--text); }
+  .crumb span { margin: 0 6px; }
+
+  .head { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 26px; }
+  .head h1 { margin: 8px 0 6px; font-size: clamp(25px, 4vw, 34px); }
+  .head__type {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+    padding: 3px 7px; border-radius: 5px; background: var(--accent-dim); color: var(--accent);
+  }
+  .head__sum { margin: 0; color: var(--text-dim); max-width: 58ch; }
+  .head__src { margin-left: auto; font-size: 13px; white-space: nowrap; }
+
+  .demo {
+    margin-bottom: 34px; padding: 30px;
+    background: var(--bg);
+    border: 1px solid var(--border); border-radius: 14px;
+  }
+  .demo__stage { display: grid; gap: 16px; }
+
+  .block { margin-bottom: 34px; }
+  .block h2 { font-size: 18px; margin: 0 0 6px; }
+  .block__note { margin: 0 0 12px; font-size: 13px; color: var(--text-dim); }
+  .block__body { color: var(--text-dim); margin: 0 0 12px; max-width: 66ch; }
+
+  .prompt {
+    margin: 0; padding: 16px 18px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: var(--radius);
+    font-family: var(--mono); font-size: 12.5px; line-height: 1.65;
+    white-space: pre-wrap; overflow-wrap: anywhere;
+  }
+  .prompt--small { font-size: 12px; border-left-color: var(--border); }
+
+  .attempts { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; }
+  .attempts__n {
+    display: inline-block; margin-bottom: 7px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: .05em;
+    text-transform: uppercase; color: var(--text-dim);
+  }
+  .attempts__problem { margin: 9px 0 0; color: var(--text-dim); font-size: 14px; max-width: 66ch; }
+  .attempts__problem strong { color: var(--text); font-weight: 600; }
+
+  .file { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+  .file summary {
+    padding: 10px 14px; cursor: pointer;
+    font-family: var(--mono); font-size: 13px;
+    background: var(--surface); color: var(--text);
+  }
+  .file summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .code {
+    margin: 0; padding: 16px; overflow-x: auto;
+    background: var(--raised); border-top: 1px solid var(--border);
+    font-family: var(--mono); font-size: 12.5px; line-height: 1.6;
+  }
+</style>

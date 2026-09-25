@@ -1,43 +1,41 @@
-# Astro Starter Kit: Minimal
+# prism
 
-```sh
-npm create astro@latest -- --template minimal
+A component gallery where every component takes its colour from an image.
+
+Thirty components, two a week, built over ninety days. All of them plain HTML, CSS and
+vanilla JavaScript — no framework, no build step to consume them, no dependencies to rot.
+
+## The palette
+
+The theme is generated from a wallpaper. Hue and chroma are read from the image's pixels in
+OKLab; lightness stays on a fixed ladder the image never touches. Contrast is therefore
+structurally guaranteed rather than checked after the fact, and any image produces a
+readable palette.
+
+Components reference design tokens only. A literal hex value fails the build.
+
+## Every component records its prompt
+
+Each component ships with the prompt that produced it, the earlier attempts that failed, and
+why they failed. The code is the easy half — knowing which constraints to state up front is
+the part worth keeping.
+
+## Layout
+
+```
+components-src/<slug>/     index.html, style.css, script.js, meta.json
+src/lib/registry.js        loads and validates components at build time
+src/pages/                 gallery, component pages, about
+public/theme.js            palette extraction, ~130 lines, no dependencies
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Build
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```bash
+npm install
+npm run dev      # localhost:4321
+npm run build    # dist/
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+The build refuses to publish a component that has no prompt, uses a literal colour, or
+declares a type outside the allowed set.

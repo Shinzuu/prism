@@ -1,0 +1,136 @@
+---
+import '../styles/tokens.css';
+const { title, description = 'A component gallery where every component themes itself from your wallpaper.' } = Astro.props;
+const wallpapers = ['dusk', 'forest', 'ember', 'ice', 'sand'];
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title} · prism</title>
+  <meta name="description" content={description} />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <script is:inline src="/theme.js"></script>
+</head>
+<body>
+  <header class="bar">
+    <a class="bar__brand" href="/">
+      <span class="bar__mark" aria-hidden="true"></span>
+      prism
+    </a>
+
+    <nav class="bar__nav">
+      <a href="/">Components</a>
+      <a href="/about">About</a>
+    </nav>
+
+    <div class="bar__theme">
+      <span class="bar__label">Theme from</span>
+      {wallpapers.map((w) => (
+        <button class="swatch" type="button" data-wall={`/wallpapers/${w}.svg`} title={`Theme from ${w}`}>
+          <img src={`/wallpapers/${w}.svg`} alt="" width="34" height="22" />
+          <span class="sr-only">{w}</span>
+        </button>
+      ))}
+      <label class="swatch swatch--upload" title="Theme from your own image">
+        <input type="file" accept="image/*" hidden id="wall-upload" />
+        <span aria-hidden="true">+</span>
+        <span class="sr-only">Upload an image</span>
+      </label>
+      <button class="mode" type="button" id="mode-toggle" aria-label="Toggle dark mode">
+        <span aria-hidden="true">◐</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <slot />
+  </main>
+
+  <footer class="foot">
+    <span>prism · built for the LofiStack 90 Day Build Challenge</span>
+    <a href="https://github.com/Shinzuu/prism">Source</a>
+  </footer>
+
+  <script is:inline>
+    document.querySelectorAll('[data-wall]').forEach((b) => {
+      b.addEventListener('click', () => window.prism.fromImage(b.dataset.wall));
+    });
+    document.getElementById('mode-toggle')?.addEventListener('click', () => window.prism.toggleMode());
+    document.getElementById('wall-upload')?.addEventListener('change', (e) => {
+      const f = e.target.files?.[0];
+      if (!f) return;
+      const url = URL.createObjectURL(f);
+      window.prism.fromImage(url).finally(() => URL.revokeObjectURL(url));
+    });
+  </script>
+
+  <style is:global>
+    .wrap { max-width: 940px; margin: 0 auto; padding: 40px 20px 80px; }
+
+    .bar {
+      position: sticky; top: 0; z-index: 30;
+      display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+      padding: 12px 20px;
+      background: color-mix(in oklab, var(--bg) 88%, transparent);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .bar__brand {
+      display: inline-flex; align-items: center; gap: 9px;
+      font-weight: 620; letter-spacing: -.01em; font-size: 16px;
+      color: var(--text); text-decoration: none;
+    }
+    .bar__mark {
+      width: 15px; height: 15px; border-radius: 4px;
+      background: linear-gradient(135deg,
+        oklch(62% var(--ca) var(--ha)),
+        oklch(62% var(--ca) calc(var(--ha) + 120)),
+        oklch(62% var(--ca) calc(var(--ha) + 240)));
+    }
+    .bar__nav { display: flex; gap: 16px; }
+    .bar__nav a { color: var(--text-dim); text-decoration: none; font-size: 14px; }
+    .bar__nav a:hover { color: var(--text); }
+
+    .bar__theme { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+    .bar__label { font-size: 12px; color: var(--text-dim); margin-right: 2px; }
+
+    .swatch {
+      width: 36px; height: 24px; padding: 0; cursor: pointer;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--surface); overflow: hidden; line-height: 0;
+      display: inline-grid; place-items: center;
+      transition: border-color 140ms ease, scale 140ms ease;
+    }
+    .swatch:hover { border-color: var(--accent); scale: 1.06; }
+    .swatch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .swatch img { width: 100%; height: 100%; object-fit: cover; }
+    .swatch--upload { font-size: 15px; color: var(--text-dim); line-height: 1; }
+
+    .mode {
+      width: 30px; height: 30px; margin-left: 4px; cursor: pointer;
+      border: 1px solid var(--border); border-radius: 8px;
+      background: var(--surface); color: var(--text);
+    }
+    .mode:hover { border-color: var(--accent); }
+    .mode:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    .foot {
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+      max-width: 940px; margin: 0 auto; padding: 22px 20px 40px;
+      border-top: 1px solid var(--border);
+      font-size: 13px; color: var(--text-dim);
+    }
+    .foot a { color: var(--text-dim); }
+
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+    }
+    a { color: var(--accent); }
+    h1, h2, h3 { letter-spacing: -.018em; }
+    @media (prefers-reduced-motion: reduce) { * { animation-duration: .001ms !important; transition-duration: .001ms !important; } }
+  </style>
+</body>
+</html>

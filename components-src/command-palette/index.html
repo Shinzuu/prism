@@ -1,0 +1,30 @@
+<div class="cp" data-cp>
+  <button class="cp__trigger" type="button" data-cp-open>
+    <span>Search commands</span>
+    <kbd class="cp__kbd">Ctrl K</kbd>
+  </button>
+
+  <div class="cp__scrim" data-cp-scrim hidden></div>
+
+  <div class="cp__panel" role="dialog" aria-modal="true" aria-labelledby="cp-label" data-cp-panel hidden>
+    <label id="cp-label" class="cp__sronly" for="cp-input">Command palette</label>
+    <input
+      id="cp-input"
+      class="cp__input"
+      type="text"
+      role="combobox"
+      autocomplete="off"
+      aria-expanded="true"
+      aria-controls="cp-list"
+      aria-activedescendant=""
+      placeholder="Type a command…"
+      data-cp-input>
+    <ul id="cp-list" class="cp__list" role="listbox" aria-label="Commands" data-cp-list></ul>
+    <p class="cp__empty" data-cp-empty hidden>No matching command</p>
+    <div class="cp__foot">
+      <span><kbd class="cp__kbd">↑</kbd><kbd class="cp__kbd">↓</kbd> navigate</span>
+      <span><kbd class="cp__kbd">Enter</kbd> run</span>
+      <span><kbd class="cp__kbd">Esc</kbd> close</span>
+    </div>
+  </div>
+</div>

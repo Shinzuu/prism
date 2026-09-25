@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="About">
+  <article class="prose">
+    <h1>About prism</h1>
+    <p>
+      A gallery of thirty components, built two a week over ninety days. Every one is plain
+      HTML, CSS and vanilla JavaScript, so it drops into any page regardless of framework.
+    </p>
+    <h2>Why no literal colours</h2>
+    <p>
+      Components reference design tokens and nothing else. The palette is generated from an
+      image: hue and chroma are read from the pixels, while lightness stays on a fixed ladder
+      that the image never touches. That is what keeps contrast readable no matter which
+      wallpaper you choose, and it is why the components survive being dropped into someone
+      else's brand.
+    </p>
+    <h2>Why the prompts are here</h2>
+    <p>
+      Each component records the prompt that produced it, along with the earlier attempts that
+      failed and the reason they failed. The code is the easy half. Knowing which constraints
+      to state up front is the part worth keeping.
+    </p>
+  </article>
+</Base>
+
+<style>
+  .prose { max-width: 62ch; }
+  .prose h1 { font-size: clamp(26px, 4vw, 34px); margin: 0 0 16px; }
+  .prose h2 { font-size: 19px; margin: 30px 0 8px; }
+  .prose p { color: var(--text-dim); margin: 0 0 14px; }
+</style>
