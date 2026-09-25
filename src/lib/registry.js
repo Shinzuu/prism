@@ -73,7 +73,9 @@ export function allComponents() {
   if (!existsSync(SRC)) {
     throw new Error(`\n\n  prism: components-src not found at ${SRC}\n  The build must run from the project root.\n`);
   }
-  const slugs = readdirSync(SRC).filter(d => statSync(join(SRC, d)).isDirectory());
+  const slugs = readdirSync(SRC)
+    .filter(d => !d.startsWith('_'))
+    .filter(d => statSync(join(SRC, d)).isDirectory());
 
   const seen = new Map();
   const out = slugs.map(loadOne);
@@ -89,3 +91,17 @@ export function allComponents() {
 }
 
 export const COMPONENT_TYPES = TYPES;
+
+/* The scheduled remainder of the ninety days. Kept beside the built components
+   so the library shows the whole slate and the types stay balanced. */
+export function plannedComponents() {
+  const f = join(SRC, '_planned.json');
+  if (!existsSync(f)) return [];
+  const { components } = JSON.parse(readFileSync(f, 'utf8'));
+  return components.map((c) => {
+    if (!TYPES.includes(c.type)) {
+      throw new Error(`\n\n  prism: planned component "${c.name}" has type "${c.type}", which is not permitted.\n`);
+    }
+    return { ...c, planned: true, slug: c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') };
+  });
+}
