@@ -3,12 +3,6 @@
   "components": [
     {
       "week": 5,
-      "type": "form",
-      "name": "Cron Builder",
-      "summary": "Builds the expression from plain controls and shows the next five fire times in your timezone as you edit. Nobody writes cron correctly the first time."
-    },
-    {
-      "week": 5,
       "type": "section",
       "name": "Pan-Zoom Canvas",
       "summary": "Trackpad pinch, wheel zoom to cursor, space-drag to pan, and a minimap. The viewport model from design tools, in eighty lines."
@@ -26,46 +20,16 @@
       "summary": "Drag back through undo states and see each one applied live before you let go. Version history as a timeline rather than a list."
     },
     {
-      "week": 9,
-      "type": "loader",
-      "name": "Optimistic Row",
-      "summary": "The row appears before the server confirms it and rolls back visibly, in place, when the write fails. The pattern every app needs and few build."
-    },
-    {
-      "week": 10,
-      "type": "form",
-      "name": "Duration Field",
-      "summary": "Type \"2h30\", \"90m\" or \"1:30\" and it normalises as you go, with arrow keys stepping the unit under the caret."
-    },
-    {
       "week": 10,
       "type": "section",
       "name": "Word Diff",
       "summary": "Two revisions with changes marked at word level, not line level, and a slider that dissolves between them."
     },
     {
-      "week": 11,
-      "type": "navbar",
-      "name": "Reading Rail",
-      "summary": "A table of contents that tracks reading position by which heading is actually in view, with a progress line and no jitter at boundaries."
-    },
-    {
       "week": 13,
       "type": "table",
       "name": "Column Resizer",
       "summary": "Drag a divider or resize with the keyboard, widths persist per user, and the layout never shifts while you drag."
-    },
-    {
-      "week": 13,
-      "type": "form",
-      "name": "Shortcut Recorder",
-      "summary": "Press the combination you want and it captures it, rejects conflicts by naming the binding it would break, and writes a readable label."
-    },
-    {
-      "week": 13,
-      "type": "loader",
-      "name": "Staged Pipeline",
-      "summary": "Stages that resolve independently, each showing its own duration, with a failure surfaced in place rather than replacing the whole component."
     }
   ]
 }

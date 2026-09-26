@@ -1,0 +1,14 @@
+.cb { display: grid; gap: 11px; max-width: 460px; }
+.cb__fields { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+.cb__fields label { display: grid; gap: 4px; font-size: .7rem; color: var(--text-dim); }
+.cb__fields input { width: 100%; padding: 7px 8px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 7px; font-family: var(--mono); font-size: .8rem; text-align: center; }
+.cb__fields input:focus { outline: none; border-color: var(--accent); }
+.cb__fields input[aria-invalid="true"] { border-color: var(--accent); background: color-mix(in oklab, var(--accent) 7%, var(--bg)); }
+.cb__expr { margin: 0; }
+.cb__expr code { font-family: var(--mono); font-size: .9rem; background: var(--raised); padding: 6px 11px; border-radius: 7px; display: inline-block; }
+.cb__says { margin: 0; font-size: .84rem; }
+.cb__says[data-bad="true"] { color: var(--accent); }
+.cb__next { border-top: 1px solid var(--border); padding-top: 9px; }
+.cb__nexth { margin: 0 0 5px; font-size: .74rem; color: var(--text-dim); }
+.cb__next ol { margin: 0; padding-left: 1.1rem; display: grid; gap: 2px; font-family: var(--mono); font-size: .76rem; font-variant-numeric: tabular-nums; }
+@media (max-width: 480px) { .cb__fields { grid-template-columns: repeat(3, 1fr); } }

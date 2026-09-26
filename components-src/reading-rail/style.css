@@ -1,0 +1,15 @@
+.rr { display: grid; grid-template-columns: 172px 1fr; gap: 22px; align-items: start; }
+.rr__nav { position: sticky; top: 8px; }
+.rr__nav ol { list-style: none; margin: 0; padding: 0 0 0 13px; display: grid; gap: 3px; }
+.rr__nav a { display: block; padding: 4px 0; font-size: .78rem; color: var(--text-dim); text-decoration: none; line-height: 1.35; }
+.rr__nav a:hover { color: var(--text); }
+.rr__nav a[aria-current="true"] { color: var(--text); font-weight: 500; }
+.rr__nav { position: sticky; }
+.rr__line { position: absolute; left: 0; top: 0; width: 2px; background: var(--border); height: 100%; border-radius: 2px; }
+.rr__line::after { content: ""; position: absolute; left: 0; width: 2px; border-radius: 2px; background: var(--accent); top: var(--top, 0); height: var(--h, 0); transition: top 220ms ease, height 220ms ease; }
+.rr__doc { max-height: 260px; overflow-y: auto; padding-right: 8px; }
+.rr__doc h3 { margin: 18px 0 5px; font-size: .94rem; scroll-margin-top: 8px; }
+.rr__doc h3:first-child { margin-top: 0; }
+.rr__doc p { margin: 0; font-size: .84rem; color: var(--text-dim); line-height: 1.6; }
+@media (max-width: 520px) { .rr { grid-template-columns: 1fr; } .rr__nav { position: static; } }
+@media (prefers-reduced-motion: reduce) { .rr__line::after { transition: none; } }

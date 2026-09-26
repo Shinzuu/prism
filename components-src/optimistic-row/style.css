@@ -1,0 +1,19 @@
+.or { display: grid; gap: 10px; max-width: 440px; }
+.or__add { display: flex; gap: 6px; }
+.or__add input { flex: 1; padding: 9px 12px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; font: inherit; font-size: .86rem; }
+.or__add input:focus { outline: none; border-color: var(--accent); }
+.or__add button { padding: 9px 16px; background: var(--accent); color: var(--accent-fg); border: 0; border-radius: 8px; font: inherit; font-size: .86rem; cursor: pointer; }
+.or__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+.or__list li { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: .86rem; background: var(--bg); }
+.or__list li span { flex: 1; }
+.or__list li em { font-style: normal; font-family: var(--mono); font-size: .68rem; color: var(--text-dim); }
+.or__list li[data-state="pending"] { opacity: .62; border-style: dashed; }
+.or__list li[data-state="failed"] { border-color: var(--accent); background: color-mix(in oklab, var(--accent) 7%, var(--bg)); }
+.or__list li[data-state="failed"] em { color: var(--accent); }
+.or__retry { background: none; border: 0; padding: 0; cursor: pointer; font-family: var(--mono); font-size: .68rem; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.or__hint { margin: 0; font-size: .74rem; color: var(--text-dim); }
+.or__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); margin: -1px; }
+@media (prefers-reduced-motion: no-preference) {
+  .or__list li[data-state="pending"] { animation: or-in 260ms ease; }
+  @keyframes or-in { from { opacity: 0; transform: translateY(-6px) } }
+}

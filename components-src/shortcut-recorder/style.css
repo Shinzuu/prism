@@ -1,0 +1,8 @@
+.sr { display: grid; gap: 6px; max-width: 360px; }
+.sr__label { font-size: .84rem; font-weight: 500; }
+.sr__field { padding: 11px 14px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 9px; font: inherit; font-family: var(--mono); font-size: .88rem; cursor: pointer; text-align: left; }
+.sr__field:hover { border-color: var(--accent); }
+.sr__field:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.sr[data-listening="true"] .sr__field { border-color: var(--accent); background: color-mix(in oklab, var(--accent) 8%, var(--bg)); color: var(--text-dim); }
+.sr__note { margin: 0; font-size: .74rem; color: var(--text-dim); }
+.sr__taken { margin: 0; font-size: .76rem; color: var(--accent); }
