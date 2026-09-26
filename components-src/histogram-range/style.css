@@ -1,0 +1,13 @@
+.hr { display: grid; gap: 8px; max-width: 440px; }
+.hr__head { display: flex; justify-content: space-between; align-items: baseline; }
+.hr__label { font-size: .84rem; font-weight: 500; }
+.hr__out { font-size: .82rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.hr__chart { position: relative; height: 76px; padding-bottom: 14px; touch-action: none; }
+.hr__bars { position: absolute; inset: 0 0 14px; display: flex; align-items: flex-end; gap: 2px; }
+.hr__bars i { flex: 1; background: var(--raised); border-radius: 2px 2px 0 0; transition: background 160ms ease; }
+.hr__bars i[data-in="true"] { background: color-mix(in oklab, var(--accent) 62%, var(--raised)); }
+.hr__band { position: absolute; top: 0; bottom: 14px; background: color-mix(in oklab, var(--accent) 8%, transparent); border-inline: 1px solid var(--accent); pointer-events: none; }
+.hr__thumb { position: absolute; bottom: 4px; width: 16px; height: 16px; translate: -50% 0; border-radius: 50%; background: var(--bg); border: 2px solid var(--accent); cursor: grab; padding: 0; }
+.hr__thumb:active { cursor: grabbing; }
+.hr__thumb:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+.hr__count { margin: 0; font-size: .78rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }

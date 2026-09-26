@@ -1,0 +1,15 @@
+.rp { margin: 0; display: grid; gap: 10px; }
+.rp__cap { font-size: .8rem; color: var(--text-dim); }
+.rp__plot { display: grid; }
+.rp__row { display: grid; grid-template-columns: 4.4rem 1fr; align-items: end; gap: 10px; margin-top: -16px; }
+.rp__row:first-child { margin-top: 0; }
+.rp__name { font-size: .76rem; color: var(--text-dim); padding-bottom: 4px; font-variant-numeric: tabular-nums; }
+.rp__curve { width: 100%; height: 54px; display: block; overflow: visible; }
+/* Fills are opaque so the ridges occlude each other, which is what makes the
+   overlap readable rather than muddy. */
+.rp__area { fill: var(--bg); stroke: var(--text); stroke-width: 1.3; }
+.rp__row[data-hot="true"] .rp__area { fill: color-mix(in oklab, var(--accent) 16%, var(--bg)); stroke: var(--accent); }
+.rp__med { stroke: var(--text-dim); stroke-width: 1; stroke-dasharray: 2 3; }
+.rp__axis { display: grid; grid-template-columns: 4.4rem 1fr; gap: 10px; font-size: .7rem; color: var(--text-dim); }
+.rp__ticks { display: flex; justify-content: space-between; font-variant-numeric: tabular-nums; }
+.rp__data { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); margin: -1px; }

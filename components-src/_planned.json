@@ -15,27 +15,9 @@
     },
     {
       "week": 6,
-      "type": "card",
-      "name": "Heatmap Calendar",
-      "summary": "A year of daily values in one block, with keyboard navigation by day and week and a real accessible table behind it."
-    },
-    {
-      "week": 6,
       "type": "navbar",
       "name": "Spatial Grid Nav",
       "summary": "Arrow keys move in two dimensions by geometry rather than DOM order, so focus goes where the eye expects. How TV interfaces work and the web forgot."
-    },
-    {
-      "week": 7,
-      "type": "table",
-      "name": "Sparkline Table",
-      "summary": "A trend column drawn per row and heatmap-tinted cells, so a table of numbers becomes scannable without becoming a chart."
-    },
-    {
-      "week": 8,
-      "type": "chart",
-      "name": "Ridgeline Plot",
-      "summary": "Stacked distributions that overlap, for comparing shape across many series. Beautiful, well understood in statistics, essentially unseen in product UI."
     },
     {
       "week": 9,
@@ -66,12 +48,6 @@
       "type": "navbar",
       "name": "Reading Rail",
       "summary": "A table of contents that tracks reading position by which heading is actually in view, with a progress line and no jitter at boundaries."
-    },
-    {
-      "week": 12,
-      "type": "chart",
-      "name": "Histogram Range",
-      "summary": "A two-thumb filter drawn over the distribution it filters, so you can see how many results each end will cost you before you drag."
     },
     {
       "week": 13,

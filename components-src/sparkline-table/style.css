@@ -1,0 +1,20 @@
+.st { border-collapse: collapse; width: 100%; font-size: .86rem; }
+.st__cap { text-align: left; padding-bottom: 8px; font-size: .78rem; color: var(--text-dim); }
+.st th, .st td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: right; }
+.st thead th { font-size: .74rem; font-weight: 500; color: var(--text-dim); border-bottom-width: 1px; }
+.st th[scope="row"], .st thead th:first-child { text-align: left; font-weight: 500; }
+.st td { font-variant-numeric: tabular-nums; position: relative; }
+/* The tint is a wash behind the figure, never a solid fill: the number must
+   stay the thing you read. */
+.st td[data-heat]::before {
+  content: ""; position: absolute; inset: 2px 3px; border-radius: 4px; z-index: 0;
+  background: color-mix(in oklab, var(--accent) calc(var(--h) * 34%), transparent);
+}
+.st td[data-heat] { isolation: isolate; }
+.st td[data-heat] > * , .st td[data-heat]::after { position: relative; z-index: 1; }
+.st td[data-spark] { width: 108px; padding-right: 6px; }
+.st svg { display: block; width: 100px; height: 22px; overflow: visible; }
+.st .sp__line { fill: none; stroke: var(--text); stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round; }
+.st .sp__last { fill: var(--accent); }
+.st .sp__band { fill: color-mix(in oklab, var(--text) 8%, transparent); }
+@media (max-width: 560px) { .st td[data-spark] { display: none; } .st th:last-child { display: none; } }

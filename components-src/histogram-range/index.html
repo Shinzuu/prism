@@ -1,0 +1,17 @@
+<div class="hr" data-hr>
+  <div class="hr__head">
+    <label class="hr__label" id="hr-label">Price</label>
+    <output class="hr__out" data-hr-out for="hr-label"></output>
+  </div>
+  <div class="hr__chart" data-hr-chart>
+    <div class="hr__bars" data-hr-bars aria-hidden="true"></div>
+    <div class="hr__band" data-hr-band></div>
+    <button class="hr__thumb" data-hr-thumb="lo" type="button" role="slider"
+      aria-labelledby="hr-label" aria-valuemin="0" aria-valuemax="500" aria-valuenow="80"
+      aria-valuetext="Minimum £80"></button>
+    <button class="hr__thumb" data-hr-thumb="hi" type="button" role="slider"
+      aria-labelledby="hr-label" aria-valuemin="0" aria-valuemax="500" aria-valuenow="340"
+      aria-valuetext="Maximum £340"></button>
+  </div>
+  <p class="hr__count" data-hr-count role="status" aria-live="polite"></p>
+</div>
