@@ -1,30 +1,155 @@
 {
-  "note": "The full ninety-day slate. Built components live in their own folders; these are the scheduled remainder. Three per type across all ten permitted labels, so no two submissions collide.",
+  "note": "The remaining slate. Chosen against a single test: a working developer should not have seen it before, and should want it within five seconds of seeing it. Three per type across all ten permitted labels.",
   "components": [
-    { "week": 2, "type": "button", "name": "Morph Action Button", "summary": "One control that morphs through idle, working and done without changing size or losing its label." },
-    { "week": 2, "type": "table", "name": "Sortable Data Table", "summary": "Column sorting with correct aria-sort, numeric and date comparators, and a stable sort so equal rows keep their order." },
-    { "week": 3, "type": "form", "name": "Inline Validation Form", "summary": "Validates on blur rather than on keystroke, reports errors through aria-describedby, and never moves focus out from under the user." },
-    { "week": 3, "type": "loader", "name": "Progress Ring", "summary": "A determinate SVG ring driven by stroke-dashoffset, announcing progress to assistive technology without flooding it." },
-    { "week": 4, "type": "chart", "name": "Sparkline Set", "summary": "Inline trend lines sized to the text around them, drawn from a data attribute, with an accessible table fallback." },
-    { "week": 4, "type": "modal", "name": "Bottom Sheet", "summary": "A sheet that drags to dismiss with real momentum, snaps to detents, and traps focus while open." },
-    { "week": 5, "type": "input", "name": "Tag Combobox", "summary": "Free text plus suggestions, chips that delete backwards, and the full combobox ARIA pattern." },
-    { "week": 5, "type": "navbar", "name": "Breadcrumb Trail", "summary": "Collapses the middle of a deep path into an overflow menu rather than truncating with an ellipsis." },
-    { "week": 6, "type": "card", "name": "Flip Spec Card", "summary": "Two faces in one footprint, flipped by pointer or keyboard, with the hidden face removed from the tab order." },
-    { "week": 6, "type": "section", "name": "Sticky Stack", "summary": "Panels that stack and scale as they pin, driven entirely by scroll timelines on their own container." },
-    { "week": 7, "type": "button", "name": "Hold to Confirm", "summary": "A destructive action that requires a sustained press, with a progress fill and a keyboard equivalent that is not a trap." },
-    { "week": 7, "type": "table", "name": "Sticky Header Table", "summary": "Header and first column both pinned, with correct shadowing at the intersection and no layout shift on scroll." },
-    { "week": 8, "type": "form", "name": "Multi-step Form", "summary": "Progress that survives a reload, back navigation that does not lose entered values, and one error summary per step." },
-    { "week": 8, "type": "chart", "name": "Radial Gauge", "summary": "A single value on an arc with tick marks, a threshold band, and a readable value at every size." },
-    { "week": 9, "type": "loader", "name": "Staged Pipeline", "summary": "Sequential stages that resolve independently, with failures shown in place rather than replacing the whole component." },
-    { "week": 9, "type": "input", "name": "Range Scrubber", "summary": "A two-handle range with keyboard steps, collision handling between thumbs, and a live value readout." },
-    { "week": 10, "type": "modal", "name": "Confirm Dialog", "summary": "The destructive-action dialog done properly: focus on the safe option, escape to cancel, and the reason stated before the buttons." },
-    { "week": 10, "type": "navbar", "name": "Sidebar Rail", "summary": "Collapses to icons with accessible names retained, remembers its state, and never hides the current page." },
-    { "week": 11, "type": "card", "name": "Stacked Deck", "summary": "A deck that fans on hover and deals on click, with the depth built from transforms rather than stacked shadows." },
-    { "week": 11, "type": "section", "name": "Comparison Slider", "summary": "A before-and-after wipe driven by pointer and arrow keys, with both images described independently." },
-    { "week": 12, "type": "button", "name": "Split Menu Button", "summary": "A primary action beside its own menu, with roving focus and the menu closing on outside pointer and Escape alike." },
-    { "week": 12, "type": "table", "name": "Expandable Rows", "summary": "Detail rows that expand without breaking column alignment, with correct aria-expanded and aria-controls." },
-    { "week": 13, "type": "form", "name": "Filter Panel", "summary": "Faceted filters that write to the URL, restore from it, and report how many results each facet would leave." },
-    { "week": 13, "type": "chart", "name": "Stacked Bars", "summary": "Series stacked with readable labels at small sizes, a legend that doubles as a series toggle, and a data table behind it." },
-    { "week": 13, "type": "loader", "name": "Optimistic Row", "summary": "A row that appears before the server confirms it and rolls back visibly when the write fails." }
+    {
+      "week": 2,
+      "type": "chart",
+      "name": "Bullet Chart",
+      "summary": "Tufte's replacement for the gauge: one measure, a target line, and qualitative bands, in the footprint of a line of text. Reads at a glance and almost nobody ships it."
+    },
+    {
+      "week": 2,
+      "type": "table",
+      "name": "Spreadsheet Grid",
+      "summary": "Arrow keys move the selection, Enter commits and drops down, Tab commits and moves right, typing replaces. The cell semantics people know from Excel and almost never get on the web."
+    },
+    {
+      "week": 3,
+      "type": "input",
+      "name": "OKLCH Colour Picker",
+      "summary": "Picks in perceptual space, so dragging lightness does not change apparent hue. Shows the sRGB gamut boundary as you pass it."
+    },
+    {
+      "week": 3,
+      "type": "button",
+      "name": "Radial Press Menu",
+      "summary": "Press and hold opens a wheel of actions under the cursor; release on one to fire it. Fewer pixels travelled than any dropdown, and keyboard-reachable."
+    },
+    {
+      "week": 4,
+      "type": "loader",
+      "name": "Queue Position",
+      "summary": "Not a spinner: your place in line, the rate it is moving, and a revised estimate as the rate changes. Honest about not knowing."
+    },
+    {
+      "week": 4,
+      "type": "modal",
+      "name": "Shortcut Sheet",
+      "summary": "Question mark opens a live map of every shortcut on the page, read from the handlers themselves rather than a hand-kept list that drifts."
+    },
+    {
+      "week": 5,
+      "type": "form",
+      "name": "Cron Builder",
+      "summary": "Builds the expression from plain controls and shows the next five fire times in your timezone as you edit. Nobody writes cron correctly the first time."
+    },
+    {
+      "week": 5,
+      "type": "section",
+      "name": "Pan-Zoom Canvas",
+      "summary": "Trackpad pinch, wheel zoom to cursor, space-drag to pan, and a minimap. The viewport model from design tools, in eighty lines."
+    },
+    {
+      "week": 6,
+      "type": "card",
+      "name": "Heatmap Calendar",
+      "summary": "A year of daily values in one block, with keyboard navigation by day and week and a real accessible table behind it."
+    },
+    {
+      "week": 6,
+      "type": "navbar",
+      "name": "Spatial Grid Nav",
+      "summary": "Arrow keys move in two dimensions by geometry rather than DOM order, so focus goes where the eye expects. How TV interfaces work and the web forgot."
+    },
+    {
+      "week": 7,
+      "type": "table",
+      "name": "Sparkline Table",
+      "summary": "A trend column drawn per row and heatmap-tinted cells, so a table of numbers becomes scannable without becoming a chart."
+    },
+    {
+      "week": 7,
+      "type": "input",
+      "name": "Unit Field",
+      "summary": "Accepts 12px, 1.5rem, 50%, or 2cqi, keeps the unit while arrow keys step the number, and converts on demand."
+    },
+    {
+      "week": 8,
+      "type": "chart",
+      "name": "Ridgeline Plot",
+      "summary": "Stacked distributions that overlap, for comparing shape across many series. Beautiful, well understood in statistics, essentially unseen in product UI."
+    },
+    {
+      "week": 8,
+      "type": "button",
+      "name": "Slide to Confirm",
+      "summary": "A destructive action that needs a deliberate drag, with a keyboard path that is not a trap and a release point that cannot be fumbled."
+    },
+    {
+      "week": 9,
+      "type": "modal",
+      "name": "History Scrubber",
+      "summary": "Drag back through undo states and see each one applied live before you let go. Version history as a timeline rather than a list."
+    },
+    {
+      "week": 9,
+      "type": "loader",
+      "name": "Optimistic Row",
+      "summary": "The row appears before the server confirms it and rolls back visibly, in place, when the write fails. The pattern every app needs and few build."
+    },
+    {
+      "week": 10,
+      "type": "form",
+      "name": "Duration Field",
+      "summary": "Type \"2h30\", \"90m\" or \"1:30\" and it normalises as you go, with arrow keys stepping the unit under the caret."
+    },
+    {
+      "week": 10,
+      "type": "section",
+      "name": "Word Diff",
+      "summary": "Two revisions with changes marked at word level, not line level, and a slider that dissolves between them."
+    },
+    {
+      "week": 11,
+      "type": "card",
+      "name": "Odometer Stat",
+      "summary": "Figures roll digit by digit to their new value, each digit a strip that only moves if it changed. Reads as a mechanism rather than a number swap."
+    },
+    {
+      "week": 11,
+      "type": "navbar",
+      "name": "Reading Rail",
+      "summary": "A table of contents that tracks reading position by which heading is actually in view, with a progress line and no jitter at boundaries."
+    },
+    {
+      "week": 12,
+      "type": "button",
+      "name": "Copy With Receipt",
+      "summary": "Copies, then shows exactly what landed on the clipboard and where it came from, with a window to undo. Removes the guess of whether the click worked."
+    },
+    {
+      "week": 12,
+      "type": "chart",
+      "name": "Histogram Range",
+      "summary": "A two-thumb filter drawn over the distribution it filters, so you can see how many results each end will cost you before you drag."
+    },
+    {
+      "week": 13,
+      "type": "table",
+      "name": "Column Resizer",
+      "summary": "Drag a divider or resize with the keyboard, widths persist per user, and the layout never shifts while you drag."
+    },
+    {
+      "week": 13,
+      "type": "form",
+      "name": "Shortcut Recorder",
+      "summary": "Press the combination you want and it captures it, rejects conflicts by naming the binding it would break, and writes a readable label."
+    },
+    {
+      "week": 13,
+      "type": "loader",
+      "name": "Staged Pipeline",
+      "summary": "Stages that resolve independently, each showing its own duration, with a failure surfaced in place rather than replacing the whole component."
+    }
   ]
 }

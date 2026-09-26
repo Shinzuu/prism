@@ -37,9 +37,13 @@ ck('search: slash focuses', await pg.evaluate(() => document.activeElement?.id =
 
 const hero = await pg.evaluate(() => {
   const parts = [...document.querySelectorAll('.craft .ln')];
-  // sweep uses the independent rotate property, which never appears in `transform`
-  const stbd = getComputedStyle(document.querySelector('.wing--stbd')).rotate;
-  const port = getComputedStyle(document.querySelector('.wing--port')).rotate;
+  // GSAP writes the sweep into the transform matrix; read the angle out of it
+  const ang = (el) => {
+    const m = getComputedStyle(el).transform.match(/matrix\(([^,]+),([^,]+)/);
+    return m ? Math.round(Math.atan2(+m[2], +m[1]) * 180 / Math.PI) : 0;
+  };
+  const stbd = ang(document.querySelector('.wing--stbd')) + 'deg';
+  const port = ang(document.querySelector('.wing--port')) + 'deg';
   const h1 = [...document.querySelectorAll('h1 i')].map(i => getComputedStyle(i).translate);
   return { parts: parts.length,
            drawn: parts.filter(p => parseFloat(getComputedStyle(p).strokeDashoffset) < 1).length,

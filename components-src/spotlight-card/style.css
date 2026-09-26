@@ -13,6 +13,8 @@
   overflow: hidden;
   transform-style: preserve-3d;
   transition: transform 260ms cubic-bezier(.2,.7,.3,1), box-shadow 260ms ease;
+  /* Elevation declared once. The body below carries the border, so the
+     container carries the shadow and nothing doubles up. */
   box-shadow: var(--shadow);
 }
 .sc__card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
@@ -53,7 +55,6 @@
   padding: 20px;
   border-radius: 15px;
   background: var(--surface);
-  border: 1px solid var(--border);
 }
 
 .sc__kicker { margin: 0; font-family: var(--mono); font-size: .68rem; letter-spacing: .08em; color: var(--accent); }

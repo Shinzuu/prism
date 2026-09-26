@@ -77,14 +77,16 @@ const counts = COMPONENT_TYPES.map((t) => ({
 
     function apply() {
       const term = q.value.trim().toLowerCase();
-      let shown = 0;
-      for (const cell of cells) {
-        const okType = type === 'all' || cell.dataset.type === type;
-        const okTerm = !term || cell.dataset.search.includes(term);
-        const on = okType && okTerm;
-        cell.hidden = !on;
-        if (on) shown++;
-      }
+      const match = (cell) =>
+        (type === 'all' || cell.dataset.type === type) &&
+        (!term || cell.dataset.search.includes(term));
+
+      // window.prismFilter is installed by the motion layer and animates the
+      // reflow with Flip. Until it loads, fall back to a plain toggle.
+      if (window.prismFilter) window.prismFilter(match);
+      else cells.forEach((c) => { c.hidden = !match(c); });
+
+      const shown = cells.filter((c) => !c.hidden).length;
       count.textContent = `${shown} shown`;
       empty.hidden = shown > 0;
     }
@@ -129,7 +131,8 @@ const counts = COMPONENT_TYPES.map((t) => ({
 
   .grid {
     list-style: none; margin: 0; padding: 0;
-    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-s);
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-s); align-items: start;
   }
   .cell__inner {
     display: grid; gap: 8px; height: 100%; padding: var(--s-s);
@@ -145,15 +148,19 @@ const counts = COMPONENT_TYPES.map((t) => ({
 
   .cell__head { display: flex; align-items: center; gap: var(--s-2xs); }
   .tag {
-    padding: 3px 9px; border-radius: 999px;
-    background: color-mix(in oklab, var(--accent) 16%, transparent); color: var(--accent);
-    font-family: var(--mono); font-size: var(--f-n2);
+    padding: 3px 10px; border-radius: 999px;
+    background: color-mix(in oklab, var(--accent) 15%, transparent); color: var(--accent);
+    font-size: var(--f-n2); font-weight: 500;
   }
-  .cell__wk { margin-left: auto; font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
+  .cell__wk { margin-left: auto; font-size: var(--f-n2); color: var(--text-dim); font-variant-numeric: tabular-nums; }
   .cell h2 { font-size: var(--f-1); }
   .cell p { color: var(--text-dim); font-size: var(--f-n1); }
 
-  .cell--soon .cell__inner { border-style: dashed; background: transparent; }
+  /* Scheduled entries are denser and quieter: the grid reads as progress
+     rather than as one repeated card. */
+  .cell--soon .cell__inner { background: transparent; padding: var(--s-2xs) var(--s-s); gap: 4px; }
+  .cell--soon h2 { font-size: var(--f-0); }
+  .cell--soon p { font-size: var(--f-n2); }
   .cell--soon h2 { color: var(--text-dim); }
   .cell__soon {
     justify-self: start; margin-top: auto; padding-top: 4px;
