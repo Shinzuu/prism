@@ -16,7 +16,7 @@ const { c } = Astro.props;
   <style>
     @import '/tokens-preview.css';
     html, body { margin: 0; }
-    body { background: var(--bg); color: var(--text); font-family: var(--sans); padding: 22px; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); padding: 18px; display: grid; align-content: center; min-block-size: 100vh; }
   </style>
   <style set:html={c.css}></style>
 </head>

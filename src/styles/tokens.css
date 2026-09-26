@@ -7,15 +7,17 @@
   --ca: 0.16;        /* accent chroma */
   --ha: 264;         /* accent hue */
 
-  --bg:        oklch(98.5% calc(var(--c) * 0.30) var(--h));
-  --surface:   oklch(95.5% calc(var(--c) * 0.45) var(--h));
-  --raised:    oklch(92.0% calc(var(--c) * 0.55) var(--h));
-  --border:    oklch(84.0% calc(var(--c) * 0.70) var(--h));
-  --text-dim:  oklch(48.0% calc(var(--c) * 0.90) var(--h));
-  --text:      oklch(18.0% calc(var(--c) * 1.00) var(--h));
-  --accent:    oklch(52.0% var(--ca) var(--ha));
-  --accent-fg: oklch(99.0% 0.01 var(--ha));
-  --accent-dim:oklch(92.0% calc(var(--ca) * 0.30) var(--ha));
+  /* Paper barely takes the hue. A ground that reads as a colour is a tint, not
+     a stock; the accent is where the colour goes. */
+  --bg:        oklch(97.2% calc(var(--c) * 0.09) var(--h));
+  --surface:   oklch(94.6% calc(var(--c) * 0.13) var(--h));
+  --raised:    oklch(91.2% calc(var(--c) * 0.18) var(--h));
+  --border:    oklch(82.0% calc(var(--c) * 0.30) var(--h));
+  --text-dim:  oklch(42.0% calc(var(--c) * 0.34) var(--h));
+  --text:      oklch(14.0% calc(var(--c) * 0.24) var(--h));
+  --accent:    oklch(54.0% var(--ca) var(--ha));
+  --accent-fg: oklch(98.5% 0.012 var(--ha));
+  --accent-dim:oklch(90.0% calc(var(--ca) * 0.26) var(--ha));
 
   /* Structure comes from rules and spacing, not from cards and shadows. */
   --radius: 14px;
@@ -23,7 +25,8 @@
   --rule: 1px solid color-mix(in oklab, var(--border) 62%, transparent);
   /* One elevation, for overlays only. Nothing else on the site casts a shadow. */
   --shadow: 0 2px 4px oklch(20% 0.02 var(--h) / 0.08), 0 18px 44px oklch(20% 0.02 var(--h) / 0.16);
-  --serif: "IBM Plex Serif", Georgia, serif;
+  --display: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif;
+  --serif: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif;
   --sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --measure: 66ch;
@@ -40,7 +43,7 @@
   --accent:    oklch(78.0% var(--ca) var(--ha));
   --accent-fg: oklch(13.0% 0.03 var(--ha));
   --accent-dim:oklch(26.0% calc(var(--ca) * 0.45) var(--ha));
-  --shadow: 0 1px 2px oklch(0% 0 0 / 0.35), 0 24px 60px -12px oklch(0% 0 0 / 0.6);
+  --shadow: 0 1px 2px oklch(20% 0.03 var(--h) / .10), 0 22px 50px -16px oklch(20% 0.05 var(--h) / .24);
   --glow: radial-gradient(90% 70% at 50% 0%, oklch(from var(--accent) l c h / 0.10), transparent 70%);
   color-scheme: dark;
 }
@@ -64,8 +67,7 @@
 body {
   margin: 0;
   background: var(--bg);
-  background-image: radial-gradient(120% 80% at 50% -10%, color-mix(in oklab, var(--accent) 7%, transparent), transparent 60%);
-  background-attachment: fixed;
+  background-image: none;
   color: var(--text);
   font-family: var(--sans);
   font-size: var(--f-0);
@@ -74,7 +76,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; margin: 0; font-optical-sizing: auto; }
 h1 { font-size: var(--f-4); line-height: var(--lh-display); letter-spacing: var(--tr-display); }
 h2 { font-size: var(--f-2); line-height: var(--lh-head); letter-spacing: var(--tr-head); }
 h3 { font-size: var(--f-1); line-height: var(--lh-head); letter-spacing: var(--tr-head); }

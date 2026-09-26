@@ -57,12 +57,15 @@
     let peak = 0;
     for (let i = 1; i < BINS; i++) if (weight[i] > weight[peak]) peak = i;
 
-    // accent = strongest hue at least 60 degrees away, else the dominant hue itself
+    /* A second hue is only worth using if the image really contains one. Requiring
+       distance alone invents an accent out of a handful of stray pixels — a warm
+       plate came back with a magenta accent that was nowhere in the picture. */
     let accent = peak, best = -1;
     for (let i = 0; i < BINS; i++) {
       const d = Math.min(Math.abs(i - peak), BINS - Math.abs(i - peak)) * (360 / BINS);
       if (d >= 60 && weight[i] > best) { best = weight[i]; accent = i; }
     }
+    if (best < weight[peak] * 0.35) accent = peak;   // not a real second hue
 
     const step = 360 / BINS;
     const meanC = (bin) => Math.min(chroma[bin] / Math.max(weight[bin] / 0.1, 1), 0.2);
@@ -71,7 +74,7 @@
       h: peak * step + step / 2,
       c: Math.max(0.025, Math.min(meanC(peak) || 0.055, 0.085)),
       ha: accent * step + step / 2,
-      ca: Math.max(0.15, Math.min(meanC(accent) * 2.4 || 0.21, 0.27))
+      ca: Math.max(0.17, Math.min(meanC(accent) * 2.6 || 0.22, 0.29))
     };
   }
 
@@ -150,7 +153,7 @@
   /* One locked theme. The palette is still extracted rather than typed in, so the
      scope's histogram is real provenance, but there is nothing for a visitor to change. */
   const CANONICAL = '/wallpapers/canonical.svg';
-  root.setAttribute('data-theme', 'dark');
+  root.setAttribute('data-theme', 'light');
   addEventListener('DOMContentLoaded', () => { fromImage(CANONICAL).catch(() => {}); });
   window.prism = { fromImage, toggleMode, extract, apply, tokens, announce };
   addEventListener('DOMContentLoaded', announce);

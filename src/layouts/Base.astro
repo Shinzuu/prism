@@ -13,7 +13,7 @@ const { title, description = 'Thirty components that read their palette out of a
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;500;600&display=swap" />
   <script is:inline src="/theme.js"></script>
 </head>
 <body>
@@ -42,6 +42,7 @@ const { title, description = 'Thirty components that read their palette out of a
 
   <style is:global>
     :root { --well: 1180px; --gutter: var(--s-l); }
+    html { scroll-padding-block-start: calc(var(--s-2xl) + var(--s-s)); }
 
     .mast {
       position: sticky; top: 0; z-index: 40;
