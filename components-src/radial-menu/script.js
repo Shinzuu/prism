@@ -19,6 +19,18 @@
       it.style.setProperty('--a', a + 'deg');
     });
 
+    /* Furled preview: the wheel is shown small and dim until first use, then
+       becomes a normal hidden menu. */
+    function rest() {
+      const box = anchor.getBoundingClientRect();
+      const r = root.getBoundingClientRect();
+      wheel.hidden = false;
+      wheel.dataset.rest = 'true';
+      wheel.style.setProperty('--x', (box.left - r.left + box.width / 2) + 'px');
+      wheel.style.setProperty('--y', (box.top - r.top - 56) + 'px');
+      items.forEach((it) => it.style.setProperty('--r', '46px'));
+    }
+
     function place(x, y) {
       const box = root.getBoundingClientRect();
       wheel.style.setProperty('--x', (x - box.left) + 'px');
@@ -26,6 +38,7 @@
     }
 
     function show(x, y) {
+      delete wheel.dataset.rest;
       place(x, y);
       origin = { x, y };
       wheel.hidden = false;
@@ -106,5 +119,7 @@
     });
 
     items.forEach((it) => it.addEventListener('click', () => { fire(it); hide(); anchor.focus(); }));
+    rest();
+    addEventListener('resize', () => { if (!open) rest(); });
   });
 })();

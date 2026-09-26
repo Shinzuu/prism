@@ -1,0 +1,13 @@
+.wd { display: grid; gap: 9px; }
+.wd__bar { display: flex; align-items: center; gap: 5px; }
+.wd__bar button { padding: 5px 11px; background: transparent; border: 1px solid var(--border); border-radius: 999px; font: inherit; font-size: .76rem; color: var(--text-dim); cursor: pointer; }
+.wd__bar button[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.wd__stat { margin-left: auto; font-family: var(--mono); font-size: .72rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.wd__panes { display: grid; gap: 9px; }
+.wd[data-mode="split"] .wd__panes { grid-template-columns: 1fr 1fr; }
+.wd[data-mode="inline"] [data-wd-b] { display: none; }
+.wd__pane { padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; font-size: .86rem; line-height: 1.65; }
+.wd ins { background: color-mix(in oklab, var(--accent) 20%, transparent); text-decoration: none; border-radius: 2px; padding: 0 2px; box-decoration-break: clone; }
+.wd del { background: color-mix(in oklab, var(--text) 12%, transparent); text-decoration: line-through; text-decoration-thickness: 1px; border-radius: 2px; padding: 0 2px; box-decoration-break: clone; }
+.wd[data-mode="split"] [data-wd-a] ins { display: none; }
+.wd[data-mode="split"] [data-wd-b] del { display: none; }

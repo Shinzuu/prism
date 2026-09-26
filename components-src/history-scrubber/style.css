@@ -1,0 +1,12 @@
+.hs { display: grid; gap: 11px; max-width: 460px; }
+.hs__stage { min-height: 76px; padding: 13px 15px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+.hs__text { margin: 0; font-size: .88rem; line-height: 1.6; }
+.hs[data-past="true"] .hs__stage { border-color: var(--accent); background: color-mix(in oklab, var(--accent) 6%, var(--surface)); }
+.hs__range { width: 100%; }
+.hs__meta { display: flex; align-items: baseline; gap: 10px; font-size: .76rem; color: var(--text-dim); }
+.hs__meta [data-hs-what] { flex: 1; }
+.hs__meta button { background: none; border: 0; padding: 0; cursor: pointer; font-family: var(--mono); font-size: .72rem; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.hs__edit input { width: 100%; padding: 9px 12px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; font: inherit; font-size: .86rem; }
+.hs__edit input:focus { outline: none; border-color: var(--accent); }
+.hs__edit input:disabled { opacity: .5; }
+.hs__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); margin: -1px; }

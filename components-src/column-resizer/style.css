@@ -1,0 +1,13 @@
+.cz { display: grid; gap: 8px; }
+.cz__table { table-layout: fixed; border-collapse: collapse; font-size: .84rem; }
+.cz__cap { text-align: left; padding-bottom: 7px; font-size: .74rem; color: var(--text-dim); }
+.cz__table th, .cz__table td { border-bottom: 1px solid var(--border); padding: 8px 11px; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cz__table thead th { position: relative; width: var(--w); font-weight: 500; font-size: .74rem; color: var(--text-dim); background: var(--raised); }
+.cz__table tbody th { font-weight: 400; }
+.cz__grip { position: absolute; top: 0; right: -4px; width: 9px; height: 100%; cursor: col-resize; z-index: 1; }
+.cz__grip::before { content: ""; position: absolute; left: 4px; top: 4px; bottom: 4px; width: 1px; background: var(--border); }
+.cz__grip:hover::before, .cz__grip:focus-visible::before { background: var(--accent); width: 2px; left: 3.5px; }
+.cz__grip:focus-visible { outline: none; }
+.cz[data-resizing="true"] { cursor: col-resize; user-select: none; }
+.cz__reset { justify-self: start; background: none; border: 0; padding: 0; cursor: pointer; font-family: var(--mono); font-size: .72rem; color: var(--text-dim); text-decoration: underline; text-underline-offset: 3px; }
+.cz__reset:hover { color: var(--accent); }

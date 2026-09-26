@@ -1,0 +1,9 @@
+.sn2 { display: grid; gap: 9px; }
+.sn2__hint { margin: 0; font-size: .76rem; color: var(--text-dim); }
+.sn2__grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 62px; gap: 7px; }
+.sn2__tile { grid-column: span var(--w, 1); grid-row: span var(--h, 1); display: grid; align-content: center; gap: 2px; padding: 9px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; color: var(--text); text-decoration: none; font-size: .86rem; }
+.sn2__tile small { font-family: var(--mono); font-size: .66rem; color: var(--text-dim); }
+.sn2__tile:hover { border-color: var(--accent); }
+.sn2__tile:focus { outline: none; border-color: var(--accent); background: color-mix(in oklab, var(--accent) 10%, var(--surface)); box-shadow: inset 0 0 0 1px var(--accent); }
+.sn2__now { margin: 0; min-height: 1.2em; font-size: .78rem; color: var(--text-dim); }
+@media (max-width: 480px) { .sn2__grid { grid-template-columns: repeat(2, 1fr); } }

@@ -1,0 +1,12 @@
+.pz { position: relative; height: 300px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--bg); touch-action: none; }
+.pz:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.pz__viewport { position: absolute; inset: 0; cursor: grab; background-image: radial-gradient(color-mix(in oklab, var(--border) 70%, transparent) 1px, transparent 1px); background-size: 22px 22px; background-position: var(--bx, 0) var(--by, 0); }
+.pz__viewport[data-grabbing="true"] { cursor: grabbing; }
+.pz__world { position: absolute; left: 0; top: 0; width: 900px; height: 500px; transform-origin: 0 0; transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(var(--k, 1)); }
+.pz__node { position: absolute; left: var(--x); top: var(--y); padding: 7px 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: .8rem; white-space: nowrap; }
+.pz__links { position: absolute; inset: 0; width: 900px; height: 500px; }
+.pz__links path { fill: none; stroke: color-mix(in oklab, var(--text) 30%, transparent); stroke-width: 1.4; }
+.pz__hud { position: absolute; right: 8px; bottom: 8px; display: flex; gap: 8px; align-items: center; padding: 5px 9px; background: color-mix(in oklab, var(--bg) 88%, transparent); backdrop-filter: blur(6px); border: 1px solid var(--border); border-radius: 999px; font-family: var(--mono); font-size: .7rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.pz__hud button { background: none; border: 0; padding: 0; cursor: pointer; font: inherit; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.pz__mini { position: absolute; left: 8px; bottom: 8px; width: 90px; height: 50px; border: 1px solid var(--border); border-radius: 6px; background: color-mix(in oklab, var(--raised) 70%, transparent); }
+.pz__mini span { position: absolute; border: 1.5px solid var(--accent); border-radius: 3px; left: var(--l, 0); top: var(--t, 0); width: var(--w, 100%); height: var(--h, 100%); }

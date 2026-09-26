@@ -1,35 +1,4 @@
 {
-  "note": "The remaining slate. Chosen against a single test: a working developer should not have seen it before, and should want it within five seconds of seeing it. Three per type across all ten permitted labels.",
-  "components": [
-    {
-      "week": 5,
-      "type": "section",
-      "name": "Pan-Zoom Canvas",
-      "summary": "Trackpad pinch, wheel zoom to cursor, space-drag to pan, and a minimap. The viewport model from design tools, in eighty lines."
-    },
-    {
-      "week": 6,
-      "type": "navbar",
-      "name": "Spatial Grid Nav",
-      "summary": "Arrow keys move in two dimensions by geometry rather than DOM order, so focus goes where the eye expects. How TV interfaces work and the web forgot."
-    },
-    {
-      "week": 9,
-      "type": "modal",
-      "name": "History Scrubber",
-      "summary": "Drag back through undo states and see each one applied live before you let go. Version history as a timeline rather than a list."
-    },
-    {
-      "week": 10,
-      "type": "section",
-      "name": "Word Diff",
-      "summary": "Two revisions with changes marked at word level, not line level, and a slider that dissolves between them."
-    },
-    {
-      "week": 13,
-      "type": "table",
-      "name": "Column Resizer",
-      "summary": "Drag a divider or resize with the keyboard, widths persist per user, and the layout never shifts while you drag."
-    }
-  ]
+  "note": "All thirty built. This file is kept so the library can show scheduled work again if the slate is extended.",
+  "components": []
 }
