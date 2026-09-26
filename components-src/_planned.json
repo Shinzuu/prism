@@ -2,36 +2,6 @@
   "note": "The remaining slate. Chosen against a single test: a working developer should not have seen it before, and should want it within five seconds of seeing it. Three per type across all ten permitted labels.",
   "components": [
     {
-      "week": 2,
-      "type": "table",
-      "name": "Spreadsheet Grid",
-      "summary": "Arrow keys move the selection, Enter commits and drops down, Tab commits and moves right, typing replaces. The cell semantics people know from Excel and almost never get on the web."
-    },
-    {
-      "week": 3,
-      "type": "input",
-      "name": "OKLCH Colour Picker",
-      "summary": "Picks in perceptual space, so dragging lightness does not change apparent hue. Shows the sRGB gamut boundary as you pass it."
-    },
-    {
-      "week": 3,
-      "type": "button",
-      "name": "Radial Press Menu",
-      "summary": "Press and hold opens a wheel of actions under the cursor; release on one to fire it. Fewer pixels travelled than any dropdown, and keyboard-reachable."
-    },
-    {
-      "week": 4,
-      "type": "loader",
-      "name": "Queue Position",
-      "summary": "Not a spinner: your place in line, the rate it is moving, and a revised estimate as the rate changes. Honest about not knowing."
-    },
-    {
-      "week": 4,
-      "type": "modal",
-      "name": "Shortcut Sheet",
-      "summary": "Question mark opens a live map of every shortcut on the page, read from the handlers themselves rather than a hand-kept list that drifts."
-    },
-    {
       "week": 5,
       "type": "form",
       "name": "Cron Builder",
@@ -62,22 +32,10 @@
       "summary": "A trend column drawn per row and heatmap-tinted cells, so a table of numbers becomes scannable without becoming a chart."
     },
     {
-      "week": 7,
-      "type": "input",
-      "name": "Unit Field",
-      "summary": "Accepts 12px, 1.5rem, 50%, or 2cqi, keeps the unit while arrow keys step the number, and converts on demand."
-    },
-    {
       "week": 8,
       "type": "chart",
       "name": "Ridgeline Plot",
       "summary": "Stacked distributions that overlap, for comparing shape across many series. Beautiful, well understood in statistics, essentially unseen in product UI."
-    },
-    {
-      "week": 8,
-      "type": "button",
-      "name": "Slide to Confirm",
-      "summary": "A destructive action that needs a deliberate drag, with a keyboard path that is not a trap and a release point that cannot be fumbled."
     },
     {
       "week": 9,
@@ -108,12 +66,6 @@
       "type": "navbar",
       "name": "Reading Rail",
       "summary": "A table of contents that tracks reading position by which heading is actually in view, with a progress line and no jitter at boundaries."
-    },
-    {
-      "week": 12,
-      "type": "button",
-      "name": "Copy With Receipt",
-      "summary": "Copies, then shows exactly what landed on the clipboard and where it came from, with a window to undo. Removes the guess of whether the click worked."
     },
     {
       "week": 12,

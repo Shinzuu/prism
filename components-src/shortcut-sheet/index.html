@@ -1,0 +1,21 @@
+<div class="ks" data-ks>
+  <p class="ks__prompt">Press <kbd>?</kbd> for the shortcut sheet. These are registered, not written down.</p>
+
+  <div class="ks__demo">
+    <button type="button" data-shortcut="g d" data-group="Go">Dashboard</button>
+    <button type="button" data-shortcut="g s" data-group="Go">Settings</button>
+    <button type="button" data-shortcut="n" data-group="Create">New record</button>
+    <button type="button" data-shortcut="d" data-group="Create">Duplicate</button>
+    <button type="button" data-shortcut="/" data-group="Find">Search</button>
+    <button type="button" data-shortcut="shift+?" data-group="Help">This sheet</button>
+  </div>
+
+  <p class="ks__log" data-ks-log role="status" aria-live="polite"></p>
+
+  <div class="ks__scrim" data-ks-scrim hidden></div>
+  <div class="ks__sheet" data-ks-sheet role="dialog" aria-modal="true" aria-labelledby="ks-title" hidden>
+    <h3 id="ks-title">Keyboard</h3>
+    <div class="ks__groups" data-ks-groups></div>
+    <p class="ks__foot">Read from the handlers on this page. <kbd>Esc</kbd> to close.</p>
+  </div>
+</div>

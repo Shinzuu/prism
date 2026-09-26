@@ -1,0 +1,12 @@
+.uf { display: grid; gap: 7px; max-width: 340px; }
+.uf__label { font-size: .84rem; font-weight: 500; }
+.uf__wrap { position: relative; display: flex; align-items: center; }
+.uf__input { flex: 1; padding: 10px 56px 10px 13px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 9px; font-family: var(--mono); font-size: .92rem; font-variant-numeric: tabular-nums; }
+.uf__input:focus { outline: none; border-color: var(--accent); }
+.uf__input[aria-invalid="true"] { border-color: color-mix(in oklab, var(--accent) 60%, var(--text)); }
+.uf__unit { position: absolute; right: 12px; font-family: var(--mono); font-size: .78rem; color: var(--text-dim); pointer-events: none; }
+.uf__help { margin: 0; font-size: .74rem; color: var(--text-dim); }
+.uf__conv { margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .74rem; }
+.uf__conv dt { color: var(--text-dim); font-family: var(--mono); }
+.uf__conv dd { margin: 0 0 0 4px; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.uf__conv > div { display: flex; }

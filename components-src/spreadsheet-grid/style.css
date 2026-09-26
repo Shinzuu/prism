@@ -1,0 +1,52 @@
+.sg { display: grid; gap: 8px; }
+
+.sg__table { border-collapse: collapse; width: 100%; font-size: .88rem; }
+.sg__cap {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%);
+}
+
+.sg__table th, .sg__table td {
+  border: 1px solid var(--border);
+  padding: 7px 10px;
+  text-align: left;
+}
+.sg__table thead th {
+  background: var(--raised);
+  font-weight: 500; font-size: .78rem; color: var(--text-dim);
+}
+.sg__table tbody th {
+  background: var(--raised);
+  font-weight: 400; font-size: .74rem; color: var(--text-dim);
+  text-align: center; width: 2.2rem;
+}
+
+.sg__table td {
+  background: var(--bg);
+  font-variant-numeric: tabular-nums;
+  cursor: cell;
+  outline: none;
+}
+
+/* The selection is drawn by the cell, not by the focus ring: a spreadsheet
+   selection has to read at a glance across a dense grid. */
+.sg__table td:focus {
+  box-shadow: inset 0 0 0 2px var(--accent);
+  background: color-mix(in oklab, var(--accent) 7%, var(--bg));
+}
+.sg__table td[data-editing="true"] {
+  box-shadow: inset 0 0 0 2px var(--accent);
+  background: var(--bg);
+  cursor: text;
+}
+.sg__table td[data-dirty="true"]::after {
+  content: ""; position: absolute;
+  margin-left: 4px; width: 4px; height: 4px; border-radius: 50%;
+  background: var(--accent); translate: 0 -.55em;
+}
+.sg__table td { position: relative; }
+
+.sg__hint { margin: 0; font-size: .74rem; color: var(--text-dim); }
+.sg__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+@media (max-width: 460px) { .sg__table { font-size: .8rem; } .sg__table th, .sg__table td { padding: 6px 7px; } }

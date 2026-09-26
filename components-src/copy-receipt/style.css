@@ -1,0 +1,11 @@
+.cr { display: grid; gap: 10px; max-width: 460px; }
+.cr__source { margin: 0; padding: 12px 14px; background: var(--raised); border: 1px solid var(--border); border-radius: 10px; font-family: var(--mono); font-size: .82rem; overflow-x: auto; }
+.cr__btn { justify-self: start; padding: 8px 16px; cursor: pointer; background: var(--accent); color: var(--accent-fg); border: 0; border-radius: 999px; font: inherit; font-size: .84rem; }
+.cr__btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.cr__receipt { padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); display: grid; gap: 6px; }
+.cr__head { margin: 0; font-size: .8rem; font-weight: 600; }
+.cr__what { margin: 0; padding: 8px 10px; background: var(--bg); border-radius: 7px; font-family: var(--mono); font-size: .76rem; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 5.4em; overflow: auto; }
+.cr__meta { margin: 0; font-size: .74rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.cr__undo { justify-self: start; background: none; border: 0; padding: 0; cursor: pointer; font-family: var(--mono); font-size: .74rem; color: var(--text-dim); text-decoration: underline; text-underline-offset: 3px; }
+.cr__undo:hover { color: var(--accent); }
+.cr__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); margin: -1px; }

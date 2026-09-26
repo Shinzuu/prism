@@ -1,0 +1,12 @@
+.sl { display: grid; gap: 10px; max-width: 420px; }
+.sl__rail { position: relative; height: 52px; border-radius: 999px; background: var(--raised); border: 1px solid var(--border); overflow: hidden; touch-action: none; }
+.sl__fill { position: absolute; inset-block: 0; left: 0; width: 0%; background: color-mix(in oklab, var(--accent) 22%, var(--raised)); }
+.sl[data-armed="true"] .sl__fill { background: var(--accent); }
+.sl__label { position: absolute; inset: 0; display: grid; place-items: center; font-size: .86rem; color: var(--text-dim); pointer-events: none; padding-left: 40px; }
+.sl[data-armed="true"] .sl__label { color: var(--accent-fg); }
+.sl__grip { position: absolute; top: 4px; left: 4px; width: 44px; height: 42px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 1.2rem; line-height: 1; cursor: grab; display: grid; place-items: center; }
+.sl__grip:active { cursor: grabbing; }
+.sl__grip:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.sl[data-settling="true"] .sl__grip, .sl[data-settling="true"] .sl__fill { transition: left 320ms cubic-bezier(.3,1,.4,1), width 320ms cubic-bezier(.3,1,.4,1); }
+.sl__out { margin: 0; min-height: 1.2em; font-size: .84rem; color: var(--text-dim); }
+@media (prefers-reduced-motion: reduce) { .sl[data-settling="true"] .sl__grip, .sl[data-settling="true"] .sl__fill { transition: none; } }
