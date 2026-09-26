@@ -10,8 +10,10 @@ await pg.waitForTimeout(4600);
 
 const n = await pg.locator('.cell').count();
 ck('library: 30 entries', n === 30, `${n}`);
-ck('library: 5 built with previews', await pg.locator('.cell__view iframe').count() === 5);
-ck('library: 25 scheduled', await pg.locator('.cell--soon').count() === 25);
+const builtN = await pg.locator('.cell__view iframe').count();
+const soonN = await pg.locator('.cell--soon').count();
+ck('library: built + scheduled = 30', builtN + soonN === 30, `${builtN} built, ${soonN} scheduled`);
+ck('library: every built entry has a preview', builtN > 0 && builtN === n - soonN);
 
 const cols = await pg.evaluate(() => getComputedStyle(document.getElementById('grid')).gridTemplateColumns.split(' ').length);
 ck('library: two columns', cols === 2, `${cols} columns`);
@@ -37,13 +39,15 @@ ck('search: slash focuses', await pg.evaluate(() => document.activeElement?.id =
 
 const hero = await pg.evaluate(() => {
   const parts = [...document.querySelectorAll('.craft .ln')];
-  // GSAP writes the sweep into the transform matrix; read the angle out of it
-  const ang = (el) => {
-    const m = getComputedStyle(el).transform.match(/matrix\(([^,]+),([^,]+)/);
-    return m ? Math.round(Math.atan2(+m[2], +m[1]) * 180 / Math.PI) : 0;
-  };
-  const stbd = ang(document.querySelector('.wing--stbd')) + 'deg';
-  const port = ang(document.querySelector('.wing--port')) + 'deg';
+  const notes = [...document.querySelectorAll('.note')];
+  const annotated = notes.filter((nt) => {
+    const t = nt.querySelector('.note__t');
+    const lead = nt.querySelector('.note__lead');
+    const dash = getComputedStyle(lead).strokeDasharray;
+    const drawn = dash === 'none' || (parseFloat(dash) || 0) >= (lead.getTotalLength() - 2);
+    return +getComputedStyle(t).opacity > .9 && drawn;
+  }).length;
+  const stbd = notes.length, port = annotated;
   const h1 = [...document.querySelectorAll('h1 i')].map(i => getComputedStyle(i).translate);
   return { parts: parts.length,
            drawn: parts.filter(p => parseFloat(getComputedStyle(p).strokeDashoffset) < 1).length,
@@ -52,9 +56,7 @@ const hero = await pg.evaluate(() => {
 });
 ck('hero: airframe parts drawn', hero.parts >= 18 && hero.drawn === hero.parts, `${hero.drawn}/${hero.parts}`);
 ck('hero: surfaces filled', hero.filled >= 10, `${hero.filled} filled`);
-const deg = (v) => parseFloat(v) || 0;
-ck('hero: wings swept aft', Math.abs(deg(hero.stbd)) > 15 && Math.sign(deg(hero.stbd)) !== Math.sign(deg(hero.port)),
-   `stbd=${hero.stbd} port=${hero.port}`);
+ck('hero: every subsystem annotated', hero.stbd === 5 && hero.port === 5, `${hero.port}/${hero.stbd} callouts drawn`);
 ck('hero: headline lines settled', hero.h1.every(t => /^(none|0px 0%?|0px 0px)$/.test(t)), JSON.stringify(hero.h1));
 ck('no runtime errors', errs.length === 0, errs.slice(0,2).join(' | '));
 

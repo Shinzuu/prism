@@ -1,0 +1,61 @@
+.bc { display: grid; gap: 14px; }
+
+.bc__row {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.bc__label { font-size: .84rem; color: var(--text-dim); }
+
+/* Bands are percentages of the track, so the whole chart is data-driven
+   from four custom properties and needs no script. */
+.bc__track {
+  position: relative;
+  height: 22px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.bc__band { position: absolute; inset-block: 0; left: 0; border-radius: 2px; }
+.bc__band--poor { width: calc(var(--poor) * 1%); background: color-mix(in oklab, var(--text) 16%, var(--bg)); }
+.bc__band--ok   { width: calc(var(--ok) * 1%);   background: color-mix(in oklab, var(--text) 10%, var(--bg)); }
+.bc__band--good { width: calc(var(--good) * 1%); background: color-mix(in oklab, var(--text) 5%, var(--bg)); }
+.bc__band--poor { z-index: 3 } .bc__band--ok { z-index: 2 } .bc__band--good { z-index: 1 }
+
+/* The measure is a thin bar centred in the bands, never as tall as them:
+   that ratio is what separates a bullet chart from a stacked bar. */
+.bc__measure {
+  position: absolute; z-index: 4;
+  left: 0; top: 50%; translate: 0 -50%;
+  height: 8px; width: calc(var(--value) * 1%);
+  background: var(--text); border-radius: 1px;
+}
+.bc__measure[data-over="true"] { background: var(--accent); }
+
+/* The target is a tick across the track, not a dot on it. */
+.bc__target {
+  position: absolute; z-index: 5;
+  left: calc(var(--target) * 1%); top: 1px; bottom: 1px;
+  width: 2px; background: var(--text);
+  translate: -1px 0;
+}
+
+.bc__value {
+  font-variant-numeric: tabular-nums;
+  font-size: .94rem; font-weight: 600;
+  min-width: 4.2rem; text-align: right;
+}
+.bc__value small { font-size: .74em; font-weight: 400; color: var(--text-dim); margin-left: 1px; }
+
+/* The chart is a picture of a table. Ship the table. */
+.bc__data {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+
+@media (max-width: 420px) {
+  .bc__row { grid-template-columns: 4.2rem 1fr auto; gap: 8px; }
+}

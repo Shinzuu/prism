@@ -3,12 +3,6 @@
   "components": [
     {
       "week": 2,
-      "type": "chart",
-      "name": "Bullet Chart",
-      "summary": "Tufte's replacement for the gauge: one measure, a target line, and qualitative bands, in the footprint of a line of text. Reads at a glance and almost nobody ships it."
-    },
-    {
-      "week": 2,
       "type": "table",
       "name": "Spreadsheet Grid",
       "summary": "Arrow keys move the selection, Enter commits and drops down, Tab commits and moves right, typing replaces. The cell semantics people know from Excel and almost never get on the web."
@@ -108,12 +102,6 @@
       "type": "section",
       "name": "Word Diff",
       "summary": "Two revisions with changes marked at word level, not line level, and a slider that dissolves between them."
-    },
-    {
-      "week": 11,
-      "type": "card",
-      "name": "Odometer Stat",
-      "summary": "Figures roll digit by digit to their new value, each digit a strip that only moves if it changed. Reads as a mechanism rather than a number swap."
     },
     {
       "week": 11,

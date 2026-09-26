@@ -25,10 +25,13 @@ function hero() {
   if (!svg) return;
 
   const lines = document.querySelectorAll('.hero__say h1 i');
-  const order = ['.hull', '.glove', '.nacelle', '.wing .ln', '.fin', '.stab', '.nozzle', '.canopy', '.detail'];
+  /* Every painted class must appear here or it never draws. */
+  const order = ['.hull', '.radome', '.glove', '.nacelle', '.wing .ln', '.fin',
+                 '.stab', '.pylon', '.nozzle', '.canopy', '.detail'];
 
   if (REDUCED) {
-    gsap.set('.craft .ln, .rules line, .rules circle, .marks path, .sweepline__t', { opacity: 1, drawSVG: '100%' });
+    gsap.set('.craft .ln, .rules line, .rules circle, .marks path, .note__lead', { opacity: 1, drawSVG: '100%' });
+    gsap.set('.note__dot, .note__n, .note__t', { opacity: 1, scale: 1 });
     gsap.set('.craft .ln', { fillOpacity: 1 });
     gsap.set(lines, { yPercent: 0 });
     gsap.set('.hero__lead, .hero__meta', { opacity: 1, y: 0 });
@@ -36,7 +39,8 @@ function hero() {
   }
 
   gsap.set('.craft .ln', { drawSVG: '0%', fillOpacity: 0 });
-  gsap.set('.rules line, .rules circle, .marks path, .sweepline__t', { opacity: 0 });
+  gsap.set('.rules line, .rules circle, .marks path', { opacity: 0 });
+  gsap.set('.note__dot, .note__n, .note__t', { opacity: 0 });
   gsap.set(lines, { yPercent: 115 });
   gsap.set('.hero__lead, .hero__meta', { opacity: 0, y: 14 });
 
@@ -53,24 +57,24 @@ function hero() {
   tl.to('.hero__lead', { opacity: 1, y: 0, duration: .6 }, .75)
     .to('.hero__meta', { opacity: 1, y: 0, duration: .5 }, .88)
     .to('.marks path', { opacity: 1, duration: .4 }, 1.5)
-    .to('.sweepline__t', { opacity: 1, duration: .4 }, 1.7);
 
-  /* Variable geometry: forward, overshoot, then sweep aft and settle. */
-  tl.to('.wing--stbd', { rotation: -9, duration: .7, ease: 'power2.out' }, 1.55)
-    .to('.wing--port', { rotation: 9, duration: .7, ease: 'power2.out' }, 1.55)
-    .to('.wing--stbd', { rotation: 26, duration: 1.7, ease: 'elastic.out(1, 0.62)' }, 2.25)
-    .to('.wing--port', { rotation: -26, duration: 1.7, ease: 'elastic.out(1, 0.62)' }, 2.25);
 
-  gsap.set('.wing--stbd', { svgOrigin: '560 252' });
-  gsap.set('.wing--port', { svgOrigin: '340 252' });
+  /* Once the airframe exists, annotate it: each leader draws out from its point
+     on the drawing and the label arrives behind it, one subsystem at a time. */
+  gsap.utils.toArray('.note').forEach((note, i) => {
+    const at = 1.45 + i * 0.26;
+    tl.fromTo(note.querySelector('.note__dot'),
+      { scale: 0, transformOrigin: '50% 50%' },
+      { scale: 1, duration: .28, ease: 'back.out(2.4)' }, at)
+      .fromTo(note.querySelector('.note__lead'),
+        { drawSVG: '0%' }, { drawSVG: '100%', duration: .42, ease: 'power2.inOut' }, at + .06)
+      .fromTo(note.querySelectorAll('.note__n, .note__t'),
+        { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: .36, stagger: .04 }, at + .3);
+  });
 
-  /* Scrubbing the hero out on scroll: the wings sweep forward again as you leave. */
   gsap.timeline({
     scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: .8 }
-  })
-    .to('.wing--stbd', { rotation: 4, ease: 'none' }, 0)
-    .to('.wing--port', { rotation: -4, ease: 'none' }, 0)
-    .to('.hero__field', { opacity: .25, ease: 'none' }, 0);
+  }).to('.hero__field', { opacity: .3, ease: 'none' }, 0);
 }
 
 /* ---------- library: Flip on filter ---------- */

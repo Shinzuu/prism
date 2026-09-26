@@ -1,0 +1,51 @@
+.od { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); align-items: start; }
+
+.od__label { margin: 0 0 6px; font-size: .8rem; color: var(--text-dim); }
+.od__delta { margin: 8px 0 0; font-size: .78rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+
+.od__figure {
+  margin: 0;
+  display: flex; align-items: baseline;
+  font-size: 2.6rem; font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/* Each digit is a window onto a strip of 0-9. Only the strips whose digit
+   changed are moved, so the figure reads as a mechanism rather than a swap. */
+.od__digit {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  width: 0.62ch;
+}
+.od__strip {
+  display: block;
+  transition: translate 720ms cubic-bezier(.22, 1, .3, 1);
+  will-change: translate;
+}
+.od__strip span { display: block; height: 1em; text-align: center; }
+
+.od__sep { display: inline-block; width: .34ch; }
+.od__suffix { font-size: .44em; font-weight: 500; color: var(--text-dim); margin-left: .14em; }
+
+.od__roll {
+  grid-column: 1 / -1; justify-self: start;
+  padding: 8px 15px; cursor: pointer;
+  background: transparent; color: var(--text);
+  border: 1px solid var(--border); border-radius: 999px;
+  font: inherit; font-size: .82rem;
+}
+.od__roll:hover { border-color: var(--accent); color: var(--accent); }
+.od__roll:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.od__sr {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .od__strip { transition: none; }
+}

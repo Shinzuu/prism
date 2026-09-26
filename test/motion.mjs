@@ -38,17 +38,15 @@ const done = await pg.evaluate(() => {
     drawn: paintedN,
     total: parts.length,
     filled: parts.filter(p => parseFloat(getComputedStyle(p).fillOpacity) > .5).length,
-    stbd: getComputedStyle(document.querySelector('.wing--stbd')).transform,
-    port: getComputedStyle(document.querySelector('.wing--port')).transform,
+    notes: document.querySelectorAll('.note').length,
+    notesDone: [...document.querySelectorAll('.note .note__t')].filter(t => +getComputedStyle(t).opacity > .9).length,
     gsap: typeof window.gsap,
     lenis: !!document.documentElement.className.match(/lenis/)
   };
 });
 ck('hero: fully drawn', done.drawn === done.total, `${done.drawn}/${done.total}`);
 ck('hero: surfaces filled', done.filled >= 10, `${done.filled}`);
-const ang = (m) => { const v = m.match(/matrix\(([^,]+),([^,]+)/); return v ? Math.round(Math.atan2(+v[2], +v[1]) * 180 / Math.PI) : 0; };
-ck('hero: wings swept by GSAP', Math.abs(ang(done.stbd)) > 15 && Math.sign(ang(done.stbd)) !== Math.sign(ang(done.port)),
-   `stbd=${ang(done.stbd)}° port=${ang(done.port)}°`);
+ck('hero: callouts annotate by GSAP', done.notes === 5 && done.notesDone === 5, `${done.notesDone}/${done.notes}`);
 ck('lenis: smooth scroll active', done.lenis, `html class`);
 
 // Flip filtering

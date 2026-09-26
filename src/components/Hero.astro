@@ -4,21 +4,29 @@ const { count, total } = Astro.props;
 <section class="hero" aria-labelledby="hero-title">
   <div class="hero__field" aria-hidden="true"></div>
 
+  <div class="hero__say">
+    <h1 id="hero-title">
+      <span class="ln1"><i>Components</i></span>
+      <span class="ln2"><i>built to a</i></span>
+      <span class="ln3"><i>tolerance.</i></span>
+    </h1>
+    <p class="hero__lead">
+      Thirty pieces over ninety days. Plain HTML, CSS and JavaScript, every one recorded
+      with the prompt that produced it, and not a single colour a machine did not derive.
+    </p>
+    <p class="hero__meta"><b>{count}</b> of {total} built · no dependencies · a literal colour fails the build</p>
+  </div>
+
   <figure class="hero__plate">
-    <svg viewBox="0 0 900 470" role="img" aria-label="Plan view of a variable-geometry fighter, wings sweeping from forward to aft">
+    <svg viewBox="0 0 640 560" role="img" aria-label="Annotated plan view of a variable-geometry fighter with its major subsystems called out">
       <g class="rules" aria-hidden="true">
-        <line x1="450" y1="8" x2="450" y2="462" />
-        <line x1="30" y1="252" x2="870" y2="252" />
-        <circle cx="450" cy="252" r="204" />
-        <circle cx="450" cy="252" r="126" />
+        <line x1="320" y1="14" x2="320" y2="548" />
+        <circle cx="320" cy="286" r="212" />
       </g>
 
-      <!-- wing gloves: the fixed root the sweeping panels pivot inside -->
-      <g class="craft">
+      <g class="craft" transform="translate(-130, 28) scale(1.0)">
         <path class="ln glove" d="M472 206 L560 236 L566 262 L472 272 Z" />
         <path class="ln glove" d="M428 206 L340 236 L334 262 L428 272 Z" />
-
-        <!-- sweeping panels, pivoting at the glove -->
         <g class="wing wing--stbd">
           <path class="ln" d="M556 234 L806 262 L826 276 L810 284 L560 276 Z" />
           <path class="ln slat" d="M566 240 L792 264" />
@@ -27,8 +35,6 @@ const { count, total } = Astro.props;
           <path class="ln" d="M344 234 L94 262 L74 276 L90 284 L340 276 Z" />
           <path class="ln slat" d="M334 240 L108 264" />
         </g>
-
-        <!-- fuselage: long nose, flat pancake between the nacelles -->
         <path class="ln hull" d="M450 22
           C459 46 464 78 466 112 L469 160 L471 200
           L472 236 L474 286 L476 330
@@ -36,65 +42,68 @@ const { count, total } = Astro.props;
           L448 438 L442 414 L434 392 L430 356 L424 330
           L426 286 L428 236 L429 200 L431 160 L434 112
           C436 78 441 46 450 22 Z" />
-
-        <!-- engine nacelles, set wide -->
+        <path class="ln radome" d="M450 22 C456 44 460 70 462 96 L438 96 C440 70 444 44 450 22 Z" />
         <path class="ln nacelle" d="M478 240 L512 250 L516 330 L508 392 L490 400 L476 330 Z" />
         <path class="ln nacelle" d="M422 240 L388 250 L384 330 L392 392 L410 400 L424 330 Z" />
-
-        <!-- twin canted stabilisers -->
         <path class="ln fin" d="M486 300 L534 232 L548 238 L512 318 Z" />
         <path class="ln fin" d="M414 300 L366 232 L352 238 L388 318 Z" />
-
-        <!-- stabilators -->
         <path class="ln stab" d="M492 356 L590 388 L600 400 L574 402 L490 378 Z" />
         <path class="ln stab" d="M408 356 L310 388 L300 400 L326 402 L410 378 Z" />
-
-        <!-- nozzles -->
         <path class="ln nozzle" d="M482 392 L506 392 L500 416 L484 414 Z" />
         <path class="ln nozzle" d="M418 392 L394 392 L400 416 L416 414 Z" />
-
-        <!-- tandem canopy -->
         <path class="ln canopy" d="M450 50 C461 62 465 88 464 120 L450 128 L436 120 C435 88 439 62 450 50 Z" />
-        <path class="ln detail" d="M450 88 L450 128 M450 128 L450 200 M450 286 L450 392" />
+        <path class="ln pylon" d="M520 256 L528 254 L530 300 L522 300 Z" />
+        <path class="ln pylon" d="M380 256 L372 254 L370 300 L378 300 Z" />
+        <path class="ln detail" d="M450 128 L450 200 M450 286 L450 392" />
         <path class="ln detail" d="M472 236 L560 250 M428 236 L340 250" />
-        <path class="ln detail" d="M466 112 L472 206 M434 112 L428 206" />
+      </g>
+
+      <g class="notes">
+        <g class="note" data-note="1">
+          <path class="note__lead" d="M322 86 L470 58" />
+          <circle class="note__dot" cx="322" cy="86" r="3.2" />
+          <text class="note__n" x="478" y="54">01</text>
+          <text class="note__t" x="478" y="70">radar · pulse-doppler</text>
+        </g>
+        <g class="note" data-note="2">
+          <path class="note__lead" d="M322 156 L488 140" />
+          <circle class="note__dot" cx="322" cy="156" r="3.2" />
+          <text class="note__n" x="496" y="136">02</text>
+          <text class="note__t" x="496" y="152">cockpit · tandem</text>
+        </g>
+        <g class="note" data-note="3">
+          <path class="note__lead" d="M252 300 L118 330" />
+          <circle class="note__dot" cx="252" cy="300" r="3.2" />
+          <text class="note__n" x="110" y="326" text-anchor="end">03</text>
+          <text class="note__t" x="110" y="342" text-anchor="end">hardpoint · 4 stations</text>
+        </g>
+        <g class="note" data-note="4">
+          <path class="note__lead" d="M390 380 L508 404" />
+          <circle class="note__dot" cx="390" cy="380" r="3.2" />
+          <text class="note__n" x="516" y="400">04</text>
+          <text class="note__t" x="516" y="416">engine · 2 × afterburning</text>
+        </g>
+        <g class="note" data-note="5">
+          <path class="note__lead" d="M268 262 L128 226" />
+          <circle class="note__dot" cx="268" cy="262" r="3.2" />
+          <text class="note__n" x="120" y="222" text-anchor="end">05</text>
+          <text class="note__t" x="120" y="238" text-anchor="end">wing · 20°–68° sweep</text>
+        </g>
       </g>
 
       <g class="marks" aria-hidden="true">
-        <path d="M18 18 h22 M18 18 v22 M882 18 h-22 M882 18 v22
-                 M18 452 h22 M18 452 v-22 M882 452 h-22 M882 452 v-22" />
-      </g>
-
-      <g class="sweepline" aria-hidden="true">
-        <text x="450" y="466" text-anchor="middle" class="sweepline__t">sweep 20° — 68°</text>
+        <path d="M14 14 h20 M14 14 v20 M626 14 h-20 M626 14 v20
+                 M14 546 h20 M14 546 v-20 M626 546 h-20 M626 546 v-20" />
       </g>
     </svg>
   </figure>
-
-  <div class="hero__say">
-    <h1 id="hero-title">
-      <span class="ln1"><i>Components</i></span>
-      <span class="ln2"><i>built to a</i></span>
-      <span class="ln3"><i>tolerance.</i></span>
-    </h1>
-    <div class="hero__foot">
-    <p class="hero__lead">
-      Thirty pieces over ninety days. Plain HTML, CSS and JavaScript, every one recorded
-      with the prompt that produced it, and not a single colour a machine did not derive.
-    </p>
-    <p class="hero__meta">
-      <b>{count}</b> of {total} built · no dependencies · a literal colour fails the build
-    </p>
-    </div>
-  </div>
 </section>
 
 <style>
   .hero {
     position: relative; isolation: isolate;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto auto;
+    display: grid; grid-template-columns: 1fr 1.08fr;
+    gap: var(--s-l); align-items: center;
     padding: var(--s-s) 0 var(--s-l);
   }
 
@@ -107,15 +116,22 @@ const { count, total } = Astro.props;
       repeating-linear-gradient(to bottom, color-mix(in oklab, var(--border) 34%, transparent) 0 1px, transparent 1px 28px),
       repeating-linear-gradient(to right, color-mix(in oklab, var(--border) 72%, transparent) 0 1px, transparent 1px 140px),
       repeating-linear-gradient(to bottom, color-mix(in oklab, var(--border) 72%, transparent) 0 1px, transparent 1px 140px);
-    mask-image: linear-gradient(to bottom, #000 52%, transparent 94%);
+    mask-image: radial-gradient(74% 82% at 72% 50%, #000 24%, transparent 88%);
   }
 
   /* The drawing is the hero. It spans the full well and the headline overlaps it,
      so the type sits on the plate rather than beside it. */
-  .hero__plate { grid-area: 1 / 1; margin: 0; justify-self: center; width: min(100%, 640px); }
+  .hero__plate { margin: 0; justify-self: end; width: 100%; max-width: 620px; }
   .hero__plate svg { width: 100%; height: auto; overflow: visible; display: block; }
 
-  .rules line, .rules circle { stroke: color-mix(in oklab, var(--accent) 45%, transparent); stroke-width: 1; fill: none; }
+  .rules line, .rules circle { stroke: color-mix(in oklab, var(--accent) 38%, transparent); stroke-width: 1; fill: none; }
+  .radome { fill: color-mix(in oklab, var(--accent) 30%, var(--bg)); }
+  .pylon  { fill: var(--raised); }
+
+  .note__lead { stroke: var(--text); stroke-width: 1; fill: none; }
+  .note__dot  { fill: var(--accent); stroke: none; }
+  .note__n    { fill: var(--accent); font-family: var(--mono); font-size: 11px; font-weight: 500; }
+  .note__t    { fill: var(--text); font-size: 12.5px; font-weight: 500; }
   .rules circle { stroke-dasharray: 2 9; }
 
   .ln { fill: none; stroke: var(--text); stroke-width: 2.1; stroke-linejoin: round; stroke-linecap: round; }
@@ -137,13 +153,12 @@ const { count, total } = Astro.props;
   .wing--stbd { transform-origin: 560px 252px; }
   .wing--port { transform-origin: 340px 252px; }
 
-  .hero__say { grid-area: 2 / 1; display: grid; gap: var(--s-2xs); margin-top: calc(var(--s-2xl) * -1); }
+  .hero__say { display: grid; gap: var(--s-2xs); }
 
   .hero__say h1 {
-    font-size: clamp(3rem, 9.4vw, 7.4rem);
-    line-height: .84; letter-spacing: -0.045em;
+    font-size: clamp(2.7rem, 5.6vw, 5.2rem);
+    line-height: .88; letter-spacing: -0.042em;
     font-weight: 800; font-stretch: 96%;
-    text-wrap: balance; mix-blend-mode: multiply;
   }
   .hero__say h1 span { display: block; overflow: hidden; }
   .hero__say h1 i { display: block; font-style: normal; }
@@ -153,7 +168,7 @@ const { count, total } = Astro.props;
     margin-top: var(--s-s); font-size: var(--f-1); line-height: var(--lh-lead);
     color: var(--text-dim); max-width: 46ch;
   }
-  .hero__foot { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s-m); }
+  .hero__foot { display: grid; gap: var(--s-2xs); }
 
   .hero__meta {
     margin-top: var(--s-s); max-width: 30ch;
@@ -165,8 +180,8 @@ const { count, total } = Astro.props;
      These are only the resting states it animates from and to. */
   .hero__say h1 span { overflow: hidden; }
 
-  @media (max-width: 880px) {
-    .hero__say { margin-top: calc(var(--s-l) * -1); }
-    .hero__foot { display: grid; gap: var(--s-2xs); }
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero__plate { justify-self: center; max-width: 480px; }
   }
 </style>

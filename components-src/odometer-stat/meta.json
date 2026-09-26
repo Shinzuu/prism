@@ -1,0 +1,20 @@
+{
+  "slug": "odometer-stat",
+  "name": "Odometer Stat",
+  "type": "card",
+  "week": 11,
+  "date": "2026-09-26",
+  "summary": "Figures roll digit by digit to their new value, and only the wheels whose digit actually changed move. Reads as a mechanism rather than a number being swapped out.",
+  "attempts": [
+    {
+      "prompt": "Make a statistic that animates when its value changes, like an odometer.",
+      "problem": "Counted from the old number to the new one with requestAnimationFrame and rewrote textContent every frame. That is a counter, not an odometer: nothing rolls, the digits flicker through unrelated values, and the whole figure jitters horizontally because proportional numerals change width as they cycle. It also fired a screen reader announcement on every frame, which is hundreds of interruptions for one value change."
+    },
+    {
+      "prompt": "Build it as actual rolling digit strips instead.",
+      "problem": "Each digit became a strip of 0-9 translated into place, which looked right, but every strip animated on every update. Going from 1,284,697 to 1,284,712 spun all seven wheels when only three digits had changed, which is precisely what a real odometer does not do. Thousands separators were rendered as digit cells too, so the commas rolled along with the numbers."
+    }
+  ],
+  "finalPrompt": "Build an odometer statistic in plain HTML, CSS and vanilla JavaScript, no dependencies.\n\nEach digit is a fixed-height window with overflow hidden, containing a strip of the numerals 0 through 9 stacked vertically. Showing a digit means translating that strip by a whole number of ems. The transition lives in CSS, not in JavaScript: no requestAnimationFrame loop, no tweening of the number itself.\n\nThe defining behaviour: when the value changes, compare digit by digit and move only the strips whose digit actually changed. Going from 1,284,697 to 1,284,712 must move three wheels and leave the other four completely still. A component that spins every wheel on every update is a counter wearing an odometer costume.\n\nThousands separators are their own inert cells, never wheels. They must not roll.\n\nIf the new value has a different number of digits from the old one, the wheel count itself has changed, so rebuild rather than trying to animate into a different shape.\n\nUse font-variant-numeric: tabular-nums and a fixed ch width per cell so the figure does not change width as digits cycle. Horizontal jitter is the giveaway that a number is being rewritten rather than rolled.\n\nAccessibility: the rolling strips are decoration. Put the formatted figure in a visually hidden element and update it once per value change, not per digit and not per frame. Set aria-live off on the figure itself so the motion is never announced.\n\nUnder prefers-reduced-motion: reduce, remove the transition so values change instantly while everything else stays identical.\n\nColour comes only from CSS custom properties: var(--text), var(--text-dim), var(--border), var(--accent). No literal hex, rgb or hsl values.",
+  "why": "The first attempt is the one almost everyone ships, and it is worth understanding why it feels wrong. Tweening the number means the intermediate frames show values that never existed, and proportional numerals make the whole figure breathe horizontally. Two small constraints — strips translated in whole ems, tabular numerals at a fixed ch width — remove both problems without any animation code at all.\n\nThe instruction that actually produced the component, though, was the one about which wheels move. It is a behaviour nobody thinks to ask for and everybody recognises instantly when it is missing, because it is how the physical object works. Stating it with a worked example — 1,284,697 to 1,284,712 moves three wheels and leaves four still — left no room to interpret it loosely.\n\nThe accessibility rule follows the same pattern as the chart: say which part is decoration. Once the strips are declared decoration and the hidden text is declared the real value, the announcement problem solves itself."
+}
