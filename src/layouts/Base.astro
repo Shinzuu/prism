@@ -11,9 +11,11 @@ const { title, description = 'Thirty components that read their palette out of a
   <title>{title} · prism</title>
   <meta name="description" content={description} />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;500;600&display=swap" />
+  <!-- Self-hosted, latin subset only. Google Fonts cost 1.8MB across this page
+       because each preview frame re-requested the stylesheet and the faces. -->
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/BricolageGrotesque-700_800.woff2" crossorigin />
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/IBMPlexSans-400.woff2" crossorigin />
+  <link rel="stylesheet" href="/fonts/fonts.css" />
   <script is:inline src="/theme.js"></script>
 </head>
 <body>
@@ -43,19 +45,22 @@ const { title, description = 'Thirty components that read their palette out of a
   <style is:global>
     :root { --well: 1180px; --gutter: var(--s-l); }
     html { scroll-padding-block-start: calc(var(--s-2xl) + var(--s-s)); }
+    /* Nothing may widen the document. A single overflowing decoration makes a
+       phone zoom the whole page out, which reads as a broken layout. */
+    body { overflow-x: clip; }
 
     .mast {
       position: sticky; top: 0; z-index: 40;
-      display: flex; align-items: center; gap: var(--s-m);
+      display: flex; align-items: center; gap: var(--s-s); flex-wrap: wrap;
       max-width: var(--well); margin: 0 auto; padding: var(--s-s) var(--gutter);
       backdrop-filter: blur(14px) saturate(130%);
       background: color-mix(in oklab, var(--bg) 72%, transparent);
     }
     .mast__id { font-family: var(--serif); font-size: var(--f-1); font-weight: 600; letter-spacing: var(--tr-head); text-decoration: none; }
-    .mast__nav { display: flex; gap: var(--s-s); margin-left: auto; font-size: var(--f-n1); }
+    .mast__nav { display: flex; gap: 2px; margin-left: auto; font-size: var(--f-n1); min-width: 0; }
     .mast__nav a {
-      color: var(--text-dim); text-decoration: none;
-      padding: 6px 12px; border-radius: 999px;
+      color: var(--text-dim); text-decoration: none; white-space: nowrap;
+      padding: 6px 10px; border-radius: 999px;
       transition: color 160ms ease, background 160ms ease;
     }
     .mast__nav a:hover { color: var(--text); background: color-mix(in oklab, var(--text) 8%, transparent); }
@@ -74,6 +79,15 @@ const { title, description = 'Thirty components that read their palette out of a
     .rig__read span { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
 
     main { max-width: var(--well); margin: 0 auto; padding: 0 var(--gutter) var(--s-3xl); }
+
+    /* A narrow phone is a real device, not an edge case. Tighten the gutter and
+       let the masthead give up its padding before the document widens. */
+    @media (max-width: 400px) {
+      :root { --gutter: var(--s-s); }
+      .mast { gap: var(--s-2xs); padding-inline: var(--s-s); }
+      .mast__nav a { padding: 5px 7px; }
+      .mast__id { font-size: var(--f-0); }
+    }
 
     .colo {
       max-width: var(--well); margin: var(--s-2xl) auto 0; padding: var(--s-l) var(--gutter) var(--s-2xl);

@@ -18,7 +18,7 @@ const { count, total } = Astro.props;
   </div>
 
   <figure class="hero__plate">
-    <svg viewBox="0 0 640 560" role="img" aria-label="Annotated plan view of a variable-geometry fighter with its major subsystems called out">
+    <svg viewBox="-56 0 776 566" role="img" aria-label="Annotated plan view of a variable-geometry fighter with its major subsystems called out">
       <g class="rules" aria-hidden="true">
         <line x1="320" y1="14" x2="320" y2="548" />
         <circle cx="320" cy="286" r="212" />
@@ -105,12 +105,18 @@ const { count, total } = Astro.props;
     display: grid; grid-template-columns: 1fr 1.08fr;
     gap: var(--s-l); align-items: center;
     padding: var(--s-s) 0 var(--s-l);
+    /* The grid below bleeds past the well on purpose. Clip rather than hidden:
+       clip does not create a scroll container, so sticky positioning survives.
+       Without this the bleed widens the document and a phone zooms out. */
+    overflow-x: clip;
   }
 
   /* Drafting paper: a real measuring grid under a real drawing, which is the
      only thing that earns a two-axis overlay. */
   .hero__field {
-    position: absolute; inset: 0 -50vw; z-index: -1;
+    /* Contained, not bleeding. A repeating grid fills whatever box it is given,
+       so the -50vw bleed bought nothing and widened the document on a phone. */
+    position: absolute; inset: 0; z-index: -1;
     background:
       repeating-linear-gradient(to right, color-mix(in oklab, var(--border) 34%, transparent) 0 1px, transparent 1px 28px),
       repeating-linear-gradient(to bottom, color-mix(in oklab, var(--border) 34%, transparent) 0 1px, transparent 1px 28px),
@@ -122,7 +128,9 @@ const { count, total } = Astro.props;
   /* The drawing is the hero. It spans the full well and the headline overlaps it,
      so the type sits on the plate rather than beside it. */
   .hero__plate { margin: 0; justify-self: end; width: 100%; max-width: 620px; }
-  .hero__plate svg { width: 100%; height: auto; overflow: visible; display: block; }
+  /* The viewBox contains the callout labels, so nothing needs to overflow.
+     overflow: visible here let SVG text push the document wider on a phone. */
+  .hero__plate svg { width: 100%; height: auto; overflow: hidden; display: block; }
 
   .rules line, .rules circle { stroke: color-mix(in oklab, var(--accent) 38%, transparent); stroke-width: 1; fill: none; }
   .radome { fill: color-mix(in oklab, var(--accent) 30%, var(--bg)); }
@@ -158,7 +166,7 @@ const { count, total } = Astro.props;
   .hero__say h1 {
     font-size: clamp(2.7rem, 5.6vw, 5.2rem);
     line-height: .88; letter-spacing: -0.042em;
-    font-weight: 800; font-stretch: 96%;
+    font-weight: 800;
   }
   .hero__say h1 span { display: block; overflow: hidden; }
   .hero__say h1 i { display: block; font-style: normal; }

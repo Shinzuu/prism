@@ -1,23 +1,14 @@
 import gsap from 'gsap';
 import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin';
-import { SplitText } from 'gsap/SplitText';
 import { Flip } from 'gsap/Flip';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Lenis from 'lenis';
 
-gsap.registerPlugin(DrawSVGPlugin, SplitText, Flip, ScrollTrigger);
+gsap.registerPlugin(DrawSVGPlugin, Flip);
 
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ---------- smooth scroll ---------- */
-function scroll() {
-  if (REDUCED) return null;
-  const lenis = new Lenis({ duration: 1.05, smoothWheel: true, touchMultiplier: 1.6 });
-  lenis.on('scroll', ScrollTrigger.update);
-  gsap.ticker.add((t) => lenis.raf(t * 1000));
-  gsap.ticker.lagSmoothing(0);
-  return lenis;
-}
+/* Smooth scroll was removed deliberately. Lenis hijacks the scroll thread to
+   reproduce something the browser already does, and on a low-end device the
+   cost lands exactly where the user notices it. */
 
 /* ---------- hero ---------- */
 function hero() {
@@ -72,9 +63,7 @@ function hero() {
         { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: .36, stagger: .04 }, at + .3);
   });
 
-  gsap.timeline({
-    scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: .8 }
-  }).to('.hero__field', { opacity: .3, ease: 'none' }, 0);
+
 }
 
 /* ---------- library: Flip on filter ---------- */
@@ -100,55 +89,9 @@ function library() {
     });
   };
 
-  if (REDUCED) return;
-  gsap.utils.toArray('.cell').forEach((cell, i) => {
-    reveal(cell, { from: { y: 26 }, to: { y: 0, duration: .6 }, delay: Math.min(i, 6) * 0.04 });
-  });
+
 }
 
-/* Reveal helper. Never leaves content hidden: if the element is already in view
-   when we set up, it animates at once rather than waiting for a scroll that may
-   never come, and every trigger is refreshed once fonts and Lenis have settled. */
-function reveal(el, vars) {
-  const inView = el.getBoundingClientRect().top < innerHeight * 0.95;
-  const from = { opacity: 0, ...vars.from };
-  const to = { opacity: 1, ...vars.to, ease: 'power2.out' };
-  if (inView) {
-    gsap.fromTo(el, from, { ...to, delay: vars.delay || 0 });
-    return;
-  }
-  gsap.fromTo(el, from, {
-    ...to,
-    immediateRender: false,
-    scrollTrigger: { trigger: el, start: 'top 92%', once: true }
-  });
-}
-
-/* ---------- section headings on the component page ---------- */
-function doc() {
-  if (REDUCED) return;
-  gsap.utils.toArray('.say h2').forEach((h) => {
-    const split = new SplitText(h, { type: 'words' });
-    const inView = h.getBoundingClientRect().top < innerHeight * 0.95;
-    const to = { opacity: 1, yPercent: 0, duration: .6, stagger: .04, ease: 'power3.out' };
-    if (inView) gsap.fromTo(split.words, { opacity: 0, yPercent: 60 }, to);
-    else gsap.fromTo(split.words, { opacity: 0, yPercent: 60 },
-      { ...to, immediateRender: false, scrollTrigger: { trigger: h, start: 'top 90%', once: true } });
-  });
-  gsap.utils.toArray('.stage, .src, .quote, .try, .jump').forEach((el) => {
-    reveal(el, { from: { y: 20 }, to: { y: 0, duration: .55 } });
-  });
-}
-
-scroll();
 hero();
 library();
-doc();
 
-/* Triggers measured before the webfont lands are measured against the wrong
-   layout. Refresh once fonts settle and once more after first paint. */
-if (!REDUCED) {
-  requestAnimationFrame(() => ScrollTrigger.refresh());
-  document.fonts?.ready.then(() => ScrollTrigger.refresh());
-  addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
-}

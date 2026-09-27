@@ -1,0 +1,24 @@
+/* Minimal preview shell. The live palette arrives from the parent by
+   postMessage; these are only the fallbacks used before it does. */
+:root{--h:35;--c:.085;--ha:35;--ca:.26;
+--bg:oklch(97.2% calc(var(--c)*.09) var(--h));
+--surface:oklch(94.6% calc(var(--c)*.13) var(--h));
+--raised:oklch(91.2% calc(var(--c)*.18) var(--h));
+--border:oklch(82% calc(var(--c)*.3) var(--h));
+--text-dim:oklch(42% calc(var(--c)*.34) var(--h));
+--text:oklch(14% calc(var(--c)*.24) var(--h));
+--accent:oklch(54% var(--ca) var(--ha));
+--accent-fg:oklch(98.5% .012 var(--ha));
+--accent-dim:oklch(90% calc(var(--ca)*.26) var(--ha));
+--radius:14px;--radius-sm:8px;
+--rule:1px solid color-mix(in oklab,var(--border) 62%,transparent);
+--shadow:0 1px 2px oklch(20% .03 var(--h)/.1),0 22px 50px -16px oklch(20% .05 var(--h)/.24);
+--sans:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+--mono:"IBM Plex Mono",ui-monospace,monospace;
+--display:"Bricolage Grotesque",var(--sans);
+color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55;
+padding:18px;display:grid;align-content:center;min-block-size:100vh}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}

@@ -1,0 +1,11 @@
+# Sandboxed preview frames have a null origin, so font files they request are
+# subject to CORS. Without this the previews silently fall back to system fonts.
+/fonts/*
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=31536000, immutable
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/wallpapers/*
+  Cache-Control: public, max-age=604800

@@ -47,7 +47,7 @@ const counts = COMPONENT_TYPES.map((t) => ({
         ) : (
           <a class="cell__inner" href={`/components/${c.slug}`}>
             <div class="cell__view">
-              <iframe src={`/preview/${c.slug}`} loading="lazy" sandbox="allow-scripts"
+              <iframe data-src={`/preview/${c.slug}`} loading="lazy" sandbox="allow-scripts"
                 title={c.name} tabindex="-1"></iframe>
             </div>
             <div class="cell__head">
@@ -67,6 +67,19 @@ const counts = COMPONENT_TYPES.map((t) => ({
 
 <script is:inline>
   (() => {
+    /* loading="lazy" still lets a browser fetch well ahead of the viewport, and
+       thirty preview documents is most of this page's weight. Attach the src
+       only when a card is genuinely close. */
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        const f = e.target.querySelector('iframe[data-src]');
+        if (f) { f.src = f.dataset.src; f.removeAttribute('data-src'); }
+        io.unobserve(e.target);
+      }
+    }, { rootMargin: '400px 0px' });
+    document.querySelectorAll('.cell__view').forEach((v) => io.observe(v));
+
     const grid = document.getElementById('grid');
     const cells = [...grid.querySelectorAll('.cell')];
     const q = document.getElementById('q');
@@ -137,6 +150,19 @@ const counts = COMPONENT_TYPES.map((t) => ({
     display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--s-s); align-items: start;
   }
+  /* Entrance driven by the browser's own scroll timeline. No observer, no
+     per-frame JavaScript, and it degrades to simply being visible. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .cell {
+        animation: cell-in linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 22%;
+      }
+      @keyframes cell-in { from { opacity: 0; transform: translateY(20px) } }
+    }
+  }
+
   .cell__inner {
     display: grid; gap: 8px; height: 100%; padding: var(--s-s);
     background: color-mix(in oklab, var(--surface) 55%, transparent);

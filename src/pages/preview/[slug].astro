@@ -4,6 +4,8 @@ export async function getStaticPaths() {
   return allComponents().map((c) => ({ params: { slug: c.slug }, props: { c } }));
 }
 const { c } = Astro.props;
+// Inlined: a 1KB shell beats 30 frames each fetching an 8KB stylesheet.
+import shell from '../../styles/preview.css?raw';
 ---
 <!doctype html>
 <html lang="en">
@@ -11,13 +13,8 @@ const { c } = Astro.props;
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{c.name}</title>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;500;600&display=swap" />
-  <style>
-    @import '/tokens-preview.css';
-    html, body { margin: 0; }
-    body { background: var(--bg); color: var(--text); font-family: var(--sans); padding: 18px; display: grid; align-content: center; min-block-size: 100vh; }
-  </style>
+  <link rel="stylesheet" href="/fonts/fonts.css" />
+  <style set:html={shell}></style>
   <style set:html={c.css}></style>
 </head>
 <body>

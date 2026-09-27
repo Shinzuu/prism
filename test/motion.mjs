@@ -9,7 +9,7 @@ pg.on('console', m => { if (m.type()==='error') errs.push(m.text()); });
 await pg.goto(BASE, { waitUntil: 'networkidle' });
 
 // mid-timeline: the airframe should be partially drawn, not all or nothing
-await pg.waitForTimeout(900);
+await pg.waitForTimeout(520);
 // DrawSVG drives stroke-dasharray, so dashoffset alone says nothing about
 // how much of a path is painted. Compare the dash length to the path length.
 const painted = () => pg.evaluate(() => {
@@ -23,7 +23,7 @@ const painted = () => pg.evaluate(() => {
   return { total: parts.length, drawn: done.length };
 });
 const mid = await painted();
-ck('hero: draws progressively', mid.drawn > 0 && mid.drawn < mid.total, `${mid.drawn}/${mid.total} at 900ms`);
+ck('hero: draws progressively', mid.drawn > 0 && mid.drawn < mid.total, `${mid.drawn}/${mid.total} at 520ms`);
 
 await pg.waitForTimeout(4200);
 const done = await pg.evaluate(() => {
@@ -47,12 +47,12 @@ const done = await pg.evaluate(() => {
 ck('hero: fully drawn', done.drawn === done.total, `${done.drawn}/${done.total}`);
 ck('hero: surfaces filled', done.filled >= 10, `${done.filled}`);
 ck('hero: callouts annotate by GSAP', done.notes === 5 && done.notesDone === 5, `${done.notesDone}/${done.notes}`);
-ck('lenis: smooth scroll active', done.lenis, `html class`);
+ck('no smooth-scroll library loaded', !done.lenis, 'native scrolling');
 
 // Flip filtering
 const before = await pg.evaluate(() => [...document.querySelectorAll('.cell:not([hidden])')].length);
 await pg.locator('.chipf[data-type="table"]').click();
-await pg.waitForTimeout(900);
+await pg.waitForTimeout(520);
 const after = await pg.evaluate(() => [...document.querySelectorAll('.cell:not([hidden])')].length);
 ck('filter: Flip narrows to type', before === 30 && after === 3, `${before} -> ${after}`);
 ck('filter: prismFilter installed', await pg.evaluate(() => typeof window.prismFilter === 'function'));

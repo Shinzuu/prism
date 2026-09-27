@@ -152,6 +152,17 @@ const files = [
   .src__text:focus { outline: none; }
   .src__note { padding-top: var(--s-3xs); border-top: var(--rule); font-size: var(--f-n2); color: var(--text-dim); }
 
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .say, .stage, .src {
+        animation: doc-in linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 18%;
+      }
+      @keyframes doc-in { from { opacity: 0; transform: translateY(16px) } }
+    }
+  }
+
   .say { margin-top: var(--s-l); }
   .say h2 { margin-bottom: var(--s-2xs); }
   .say__p { margin-top: var(--s-2xs); color: var(--text-dim); }
