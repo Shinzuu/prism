@@ -40,6 +40,8 @@ import C_priority_overflow_toolbar from '../../components-src/priority-overflow-
 import C_progressive_blur_sheet from '../../components-src/progressive-blur-sheet/Component.tsx';
 import C_quantile_dots from '../../components-src/quantile-dots/Component.tsx';
 import C_queue_position from '../../components-src/queue-position/Component.tsx';
+import C_reading_rail from '../../components-src/reading-rail/Component.tsx';
+import C_ridgeline_plot from '../../components-src/ridgeline-plot/Component.tsx';
 import C_safe_triangle_hover from '../../components-src/safe-triangle-hover/Component.tsx';
 import C_scroll_condense_wordmark from '../../components-src/scroll-condense-wordmark/Component.tsx';
 import C_scroll_filmstrip from '../../components-src/scroll-filmstrip/Component.tsx';
@@ -99,6 +101,8 @@ export const components: Record<string, ComponentType> = {
   "progressive-blur-sheet": C_progressive_blur_sheet,
   "quantile-dots": C_quantile_dots,
   "queue-position": C_queue_position,
+  "reading-rail": C_reading_rail,
+  "ridgeline-plot": C_ridgeline_plot,
   "safe-triangle-hover": C_safe_triangle_hover,
   "scroll-condense-wordmark": C_scroll_condense_wordmark,
   "scroll-filmstrip": C_scroll_filmstrip,
