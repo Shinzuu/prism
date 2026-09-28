@@ -1,6 +1,10 @@
-/* Live component workbench: edit the source, the preview re-renders.
-   The preview runs in a sandboxed iframe so a component's script cannot
-   reach the gallery around it. */
+/* Component workbench: tabs, viewport rig, copy.
+   It used to assemble the preview from html/css/js panes into a srcdoc. That
+   stopped being possible when components became .tsx — TSX cannot be compiled
+   in the browser — and the assembled document was empty, so every detail page
+   showed a blank stage. The frame now carries its own src pointing at the
+   built /preview/<slug>, and this script must not touch it: srcdoc takes
+   precedence over src, so writing one would blank the frame again. */
 (() => {
   document.querySelectorAll('[data-wb]').forEach((wb) => {
     const frame  = wb.querySelector('[data-wb-frame]');
@@ -42,7 +46,11 @@ window.onerror=(m,s,l)=>{parent.postMessage({wb:'error',msg:m+' (line '+l+')'},'
 </body></html>`;
     }
 
+    // True when the frame already has a built preview to show.
+    const prebuilt = Boolean(frame && frame.getAttribute('src'));
+
     function render() {
+      if (prebuilt) return;              // never overwrite a built preview
       status.textContent = 'rendering…';
       frame.srcdoc = document_();
     }
@@ -53,6 +61,7 @@ window.onerror=(m,s,l)=>{parent.postMessage({wb:'error',msg:m+' (line '+l+')'},'
     }
 
     addEventListener('message', (e) => {
+      if (prebuilt) return;
       if (e.source !== frame.contentWindow || !e.data || !e.data.wb) return;
       if (e.data.wb === 'ok') {
         frame.style.height = Math.max(180, Math.min(e.data.h + 24, 620)) + 'px';
@@ -87,6 +96,8 @@ window.onerror=(m,s,l)=>{parent.postMessage({wb:'error',msg:m+' (line '+l+')'},'
       wrap.style.maxWidth = w === 'full' ? '100%' : w + 'px';
       wrap.dataset.narrow = String(w !== 'full');
     });
+
+    if (prebuilt && status) { status.textContent = 'live'; status.dataset.state = 'ok'; }
 
     reset?.addEventListener('click', () => {
       panes.forEach(p => { p.value = original[p.dataset.wbPane]; });
