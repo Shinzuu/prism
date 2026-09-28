@@ -4,6 +4,7 @@
 import type { ComponentType } from 'react';
 
 import C_bullet_chart from '../../components-src/bullet-chart/Component.tsx';
+import C_code_input from '../../components-src/code-input/Component.tsx';
 import C_command_button from '../../components-src/command-button/Component.tsx';
 import C_copy_receipt from '../../components-src/copy-receipt/Component.tsx';
 import C_difference_header from '../../components-src/difference-header/Component.tsx';
@@ -12,6 +13,7 @@ import C_fold_reveal_section from '../../components-src/fold-reveal-section/Comp
 import C_grapheme_budget_field from '../../components-src/grapheme-budget-field/Component.tsx';
 import C_marching_ants from '../../components-src/marching-ants/Component.tsx';
 import C_odometer_stat from '../../components-src/odometer-stat/Component.tsx';
+import C_optimistic_row from '../../components-src/optimistic-row/Component.tsx';
 import C_progressive_blur_sheet from '../../components-src/progressive-blur-sheet/Component.tsx';
 import C_queue_position from '../../components-src/queue-position/Component.tsx';
 import C_scroll_filmstrip from '../../components-src/scroll-filmstrip/Component.tsx';
@@ -25,6 +27,7 @@ import C_weight_shift_button from '../../components-src/weight-shift-button/Comp
 
 export const components: Record<string, ComponentType> = {
   "bullet-chart": C_bullet_chart,
+  "code-input": C_code_input,
   "command-button": C_command_button,
   "copy-receipt": C_copy_receipt,
   "difference-header": C_difference_header,
@@ -33,6 +36,7 @@ export const components: Record<string, ComponentType> = {
   "grapheme-budget-field": C_grapheme_budget_field,
   "marching-ants": C_marching_ants,
   "odometer-stat": C_odometer_stat,
+  "optimistic-row": C_optimistic_row,
   "progressive-blur-sheet": C_progressive_blur_sheet,
   "queue-position": C_queue_position,
   "scroll-filmstrip": C_scroll_filmstrip,
