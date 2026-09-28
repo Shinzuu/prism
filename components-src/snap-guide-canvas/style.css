@@ -1,29 +1,4 @@
-.sgc { display: grid; gap: 8px; }
-.sgc__stage {
-  position: relative; height: 210px; overflow: hidden;
-  border: 1px solid var(--border); border-radius: 10px; background: var(--bg);
-  touch-action: none;
-}
-.sgc__block {
-  position: absolute; left: 0; top: 0;
-  width: var(--sgc-w); height: var(--sgc-h);
-  translate: var(--sgc-x) var(--sgc-y);
-  display: grid; place-items: center;
-  font-size: .7rem; color: var(--text-dim);
-  border: 1px solid var(--border); border-radius: 7px; background: var(--raised);
-}
-.sgc__block--drag {
-  cursor: grab; color: var(--text);
-  border-color: color-mix(in oklab, var(--accent) 55%, var(--border));
-  background: color-mix(in oklab, var(--accent) 9%, var(--raised));
-}
-.sgc__block--drag:active { cursor: grabbing; }
-.sgc__block--drag:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-.sgc__guides { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.sgc__guides line { stroke: var(--accent); stroke-width: 1; vector-effect: non-scaling-stroke; }
-.sgc__guides line.sgc__g--gap { stroke-dasharray: 3 3; }
-.sgc__guides text { fill: var(--accent); font-size: 9px; font-family: var(--mono); }
-.sgc__guides rect { fill: color-mix(in oklab, var(--accent) 16%, transparent); }
-
-.sgc__read { margin: 0; font-size: .72rem; color: var(--text-dim); font-family: var(--mono); }
+.sgc-line { stroke: var(--accent); stroke-width: 1; vector-effect: non-scaling-stroke; }
+/* Spacing guides are dashed, so they are distinguishable from alignment ones. */
+.sgc-gap { stroke-dasharray: 3 3; }
+.sgc-label { fill: var(--accent); font-size: 9px; font-family: var(--mono); }

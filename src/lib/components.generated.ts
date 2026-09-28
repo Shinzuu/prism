@@ -31,6 +31,7 @@ import C_odometer_stat from '../../components-src/odometer-stat/Component.tsx';
 import C_optimistic_row from '../../components-src/optimistic-row/Component.tsx';
 import C_origin_morph_dialog from '../../components-src/origin-morph-dialog/Component.tsx';
 import C_outlier_heatmap from '../../components-src/outlier-heatmap/Component.tsx';
+import C_paste_drop_inspector from '../../components-src/paste-drop-inspector/Component.tsx';
 import C_peel_corner_card from '../../components-src/peel-corner-card/Component.tsx';
 import C_pressure_signature_pad from '../../components-src/pressure-signature-pad/Component.tsx';
 import C_priority_overflow_toolbar from '../../components-src/priority-overflow-toolbar/Component.tsx';
@@ -46,6 +47,7 @@ import C_shared_field_steps from '../../components-src/shared-field-steps/Compon
 import C_shortcut_recorder from '../../components-src/shortcut-recorder/Component.tsx';
 import C_slide_confirm from '../../components-src/slide-confirm/Component.tsx';
 import C_sliding_pane_stack from '../../components-src/sliding-pane-stack/Component.tsx';
+import C_snap_guide_canvas from '../../components-src/snap-guide-canvas/Component.tsx';
 import C_sort_morph_table from '../../components-src/sort-morph-table/Component.tsx';
 import C_spotlight_card from '../../components-src/spotlight-card/Component.tsx';
 import C_staged_pipeline from '../../components-src/staged-pipeline/Component.tsx';
@@ -84,6 +86,7 @@ export const components: Record<string, ComponentType> = {
   "optimistic-row": C_optimistic_row,
   "origin-morph-dialog": C_origin_morph_dialog,
   "outlier-heatmap": C_outlier_heatmap,
+  "paste-drop-inspector": C_paste_drop_inspector,
   "peel-corner-card": C_peel_corner_card,
   "pressure-signature-pad": C_pressure_signature_pad,
   "priority-overflow-toolbar": C_priority_overflow_toolbar,
@@ -99,6 +102,7 @@ export const components: Record<string, ComponentType> = {
   "shortcut-recorder": C_shortcut_recorder,
   "slide-confirm": C_slide_confirm,
   "sliding-pane-stack": C_sliding_pane_stack,
+  "snap-guide-canvas": C_snap_guide_canvas,
   "sort-morph-table": C_sort_morph_table,
   "spotlight-card": C_spotlight_card,
   "staged-pipeline": C_staged_pipeline,
