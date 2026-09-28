@@ -3,6 +3,7 @@
    imports are static rather than globbed. */
 import type { ComponentType } from 'react';
 
+import C_adjust_last_action from '../../components-src/adjust-last-action/Component.tsx';
 import C_bidi_comment_card from '../../components-src/bidi-comment-card/Component.tsx';
 import C_bullet_chart from '../../components-src/bullet-chart/Component.tsx';
 import C_challenge_response_checklist from '../../components-src/challenge-response-checklist/Component.tsx';
@@ -15,6 +16,7 @@ import C_duration_field from '../../components-src/duration-field/Component.tsx'
 import C_fold_reveal_section from '../../components-src/fold-reveal-section/Component.tsx';
 import C_grapheme_budget_field from '../../components-src/grapheme-budget-field/Component.tsx';
 import C_ime_search_field from '../../components-src/ime-search-field/Component.tsx';
+import C_infinite_drag_field from '../../components-src/infinite-drag-field/Component.tsx';
 import C_localized_progress_loader from '../../components-src/localized-progress-loader/Component.tsx';
 import C_marching_ants from '../../components-src/marching-ants/Component.tsx';
 import C_multiscript_text_column from '../../components-src/multiscript-text-column/Component.tsx';
@@ -25,14 +27,17 @@ import C_queue_position from '../../components-src/queue-position/Component.tsx'
 import C_scroll_filmstrip from '../../components-src/scroll-filmstrip/Component.tsx';
 import C_segment_nav from '../../components-src/segment-nav/Component.tsx';
 import C_segmented_cache_bar from '../../components-src/segmented-cache-bar/Component.tsx';
+import C_shared_field_steps from '../../components-src/shared-field-steps/Component.tsx';
 import C_shortcut_recorder from '../../components-src/shortcut-recorder/Component.tsx';
 import C_slide_confirm from '../../components-src/slide-confirm/Component.tsx';
+import C_sort_morph_table from '../../components-src/sort-morph-table/Component.tsx';
 import C_spotlight_card from '../../components-src/spotlight-card/Component.tsx';
 import C_staged_pipeline from '../../components-src/staged-pipeline/Component.tsx';
 import C_unit_field from '../../components-src/unit-field/Component.tsx';
 import C_weight_shift_button from '../../components-src/weight-shift-button/Component.tsx';
 
 export const components: Record<string, ComponentType> = {
+  "adjust-last-action": C_adjust_last_action,
   "bidi-comment-card": C_bidi_comment_card,
   "bullet-chart": C_bullet_chart,
   "challenge-response-checklist": C_challenge_response_checklist,
@@ -45,6 +50,7 @@ export const components: Record<string, ComponentType> = {
   "fold-reveal-section": C_fold_reveal_section,
   "grapheme-budget-field": C_grapheme_budget_field,
   "ime-search-field": C_ime_search_field,
+  "infinite-drag-field": C_infinite_drag_field,
   "localized-progress-loader": C_localized_progress_loader,
   "marching-ants": C_marching_ants,
   "multiscript-text-column": C_multiscript_text_column,
@@ -55,8 +61,10 @@ export const components: Record<string, ComponentType> = {
   "scroll-filmstrip": C_scroll_filmstrip,
   "segment-nav": C_segment_nav,
   "segmented-cache-bar": C_segmented_cache_bar,
+  "shared-field-steps": C_shared_field_steps,
   "shortcut-recorder": C_shortcut_recorder,
   "slide-confirm": C_slide_confirm,
+  "sort-morph-table": C_sort_morph_table,
   "spotlight-card": C_spotlight_card,
   "staged-pipeline": C_staged_pipeline,
   "unit-field": C_unit_field,
