@@ -1,27 +1,2 @@
-.lpl { display: grid; gap: 8px; }
-.lpl__head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-.lpl__sentence { margin: 0; font-size: .82rem; }
-.lpl__loc {
-  font: inherit; font-size: .68rem; cursor: pointer;
-  padding: 4px 7px; border-radius: 6px;
-  border: 1px solid var(--border); background: var(--raised); color: var(--text);
-}
-.lpl__loc:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-.lpl__track {
-  height: 10px; border-radius: 999px; overflow: hidden;
-  background: color-mix(in oklab, var(--border) 55%, transparent);
-}
-/* The fill grows from the inline start, so it follows the text direction
-   instead of always growing left-to-right. */
-.lpl__fill {
-  height: 100%; width: 0%;
-  margin-inline-start: 0;
-  background: var(--accent);
-  border-radius: 999px;
-  transition: width .3s linear;
-}
-
-.lpl__meta { margin: 0; font-family: var(--mono); font-size: .66rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
-
-@media (prefers-reduced-motion: reduce) { .lpl__fill { transition: none; } }
+.lpl-fill { transition: width .3s linear; }
+@media (prefers-reduced-motion: reduce) { .lpl-fill { transition: none; } }

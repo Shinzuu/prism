@@ -3,14 +3,17 @@
    imports are static rather than globbed. */
 import type { ComponentType } from 'react';
 
+import C_bidi_comment_card from '../../components-src/bidi-comment-card/Component.tsx';
 import C_bullet_chart from '../../components-src/bullet-chart/Component.tsx';
 import C_code_input from '../../components-src/code-input/Component.tsx';
+import C_collation_sort_table from '../../components-src/collation-sort-table/Component.tsx';
 import C_command_button from '../../components-src/command-button/Component.tsx';
 import C_copy_receipt from '../../components-src/copy-receipt/Component.tsx';
 import C_difference_header from '../../components-src/difference-header/Component.tsx';
 import C_duration_field from '../../components-src/duration-field/Component.tsx';
 import C_fold_reveal_section from '../../components-src/fold-reveal-section/Component.tsx';
 import C_grapheme_budget_field from '../../components-src/grapheme-budget-field/Component.tsx';
+import C_localized_progress_loader from '../../components-src/localized-progress-loader/Component.tsx';
 import C_marching_ants from '../../components-src/marching-ants/Component.tsx';
 import C_odometer_stat from '../../components-src/odometer-stat/Component.tsx';
 import C_optimistic_row from '../../components-src/optimistic-row/Component.tsx';
@@ -26,14 +29,17 @@ import C_unit_field from '../../components-src/unit-field/Component.tsx';
 import C_weight_shift_button from '../../components-src/weight-shift-button/Component.tsx';
 
 export const components: Record<string, ComponentType> = {
+  "bidi-comment-card": C_bidi_comment_card,
   "bullet-chart": C_bullet_chart,
   "code-input": C_code_input,
+  "collation-sort-table": C_collation_sort_table,
   "command-button": C_command_button,
   "copy-receipt": C_copy_receipt,
   "difference-header": C_difference_header,
   "duration-field": C_duration_field,
   "fold-reveal-section": C_fold_reveal_section,
   "grapheme-budget-field": C_grapheme_budget_field,
+  "localized-progress-loader": C_localized_progress_loader,
   "marching-ants": C_marching_ants,
   "odometer-stat": C_odometer_stat,
   "optimistic-row": C_optimistic_row,
