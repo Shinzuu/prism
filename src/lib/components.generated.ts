@@ -10,6 +10,7 @@ import C_bullet_chart from '../../components-src/bullet-chart/Component.tsx';
 import C_challenge_response_checklist from '../../components-src/challenge-response-checklist/Component.tsx';
 import C_code_input from '../../components-src/code-input/Component.tsx';
 import C_collation_sort_table from '../../components-src/collation-sort-table/Component.tsx';
+import C_column_resizer from '../../components-src/column-resizer/Component.tsx';
 import C_command_button from '../../components-src/command-button/Component.tsx';
 import C_constraint_solver_form from '../../components-src/constraint-solver-form/Component.tsx';
 import C_convergence_trace from '../../components-src/convergence-trace/Component.tsx';
@@ -23,6 +24,7 @@ import C_forced_colors_chart from '../../components-src/forced-colors-chart/Comp
 import C_grapheme_budget_field from '../../components-src/grapheme-budget-field/Component.tsx';
 import C_heatmap_calendar from '../../components-src/heatmap-calendar/Component.tsx';
 import C_highlight_search from '../../components-src/highlight-search/Component.tsx';
+import C_histogram_range from '../../components-src/histogram-range/Component.tsx';
 import C_ime_search_field from '../../components-src/ime-search-field/Component.tsx';
 import C_infinite_drag_field from '../../components-src/infinite-drag-field/Component.tsx';
 import C_localized_progress_loader from '../../components-src/localized-progress-loader/Component.tsx';
@@ -73,6 +75,7 @@ export const components: Record<string, ComponentType> = {
   "challenge-response-checklist": C_challenge_response_checklist,
   "code-input": C_code_input,
   "collation-sort-table": C_collation_sort_table,
+  "column-resizer": C_column_resizer,
   "command-button": C_command_button,
   "constraint-solver-form": C_constraint_solver_form,
   "convergence-trace": C_convergence_trace,
@@ -86,6 +89,7 @@ export const components: Record<string, ComponentType> = {
   "grapheme-budget-field": C_grapheme_budget_field,
   "heatmap-calendar": C_heatmap_calendar,
   "highlight-search": C_highlight_search,
+  "histogram-range": C_histogram_range,
   "ime-search-field": C_ime_search_field,
   "infinite-drag-field": C_infinite_drag_field,
   "localized-progress-loader": C_localized_progress_loader,
