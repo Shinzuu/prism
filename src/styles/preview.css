@@ -20,5 +20,10 @@ color-scheme:light}
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55;
-padding:18px;display:grid;align-content:center;min-block-size:100vh}
+margin:0;min-block-size:100vh;overflow:hidden;position:relative}
+/* Centred by position, scaled by transform. The inner box is never transformed,
+   so its scrollWidth/scrollHeight stay the component's true size. */
+#fit{position:absolute;left:50%;top:50%;width:calc(100% - 28px);
+translate:-50% -50%;scale:var(--k,1);transform-origin:center center}
+#fit-inner{width:100%}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px}

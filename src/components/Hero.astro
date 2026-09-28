@@ -104,7 +104,7 @@ const { count, total } = Astro.props;
     position: relative; isolation: isolate;
     display: grid; grid-template-columns: 1fr 1.08fr;
     gap: var(--s-l); align-items: center;
-    padding: var(--s-s) 0 var(--s-l);
+    padding: var(--s-2xs) 0 var(--s-m);
     /* The grid below bleeds past the well on purpose. Clip rather than hidden:
        clip does not create a scroll container, so sticky positioning survives.
        Without this the bleed widens the document and a phone zooms out. */
@@ -122,7 +122,11 @@ const { count, total } = Astro.props;
       repeating-linear-gradient(to bottom, color-mix(in oklab, var(--border) 34%, transparent) 0 1px, transparent 1px 28px),
       repeating-linear-gradient(to right, color-mix(in oklab, var(--border) 72%, transparent) 0 1px, transparent 1px 140px),
       repeating-linear-gradient(to bottom, color-mix(in oklab, var(--border) 72%, transparent) 0 1px, transparent 1px 140px);
-    mask-image: radial-gradient(74% 82% at 72% 50%, #000 24%, transparent 88%);
+    mask-image:
+      linear-gradient(to right, transparent, #000 18% 82%, transparent),
+      linear-gradient(to bottom, transparent, #000 14% 78%, transparent);
+    mask-composite: intersect;
+    -webkit-mask-composite: source-in;
   }
 
   /* The drawing is the hero. It spans the full well and the headline overlaps it,
@@ -168,18 +172,24 @@ const { count, total } = Astro.props;
     line-height: .88; letter-spacing: -0.042em;
     font-weight: 800;
   }
-  .hero__say h1 span { display: block; overflow: hidden; }
+  /* The mask exists to hide the line before it slides up. Pad it and pull the
+     padding back, so it clips vertical travel without clipping descenders —
+     a tight line-height makes the line box shorter than the glyphs. */
+  .hero__say h1 span {
+    display: block; overflow: hidden;
+    padding-block: 0.14em; margin-block: -0.14em;
+  }
   .hero__say h1 i { display: block; font-style: normal; }
   .ln3 i { color: var(--accent); }
 
   .hero__lead {
     margin-top: var(--s-s); font-size: var(--f-1); line-height: var(--lh-lead);
-    color: var(--text-dim); max-width: 46ch;
+    color: var(--text-dim); max-width: 44ch; text-wrap: pretty;
   }
   .hero__foot { display: grid; gap: var(--s-2xs); }
 
   .hero__meta {
-    margin-top: var(--s-s); max-width: 30ch;
+    margin-top: var(--s-s); max-width: 52ch; text-wrap: balance;
     font-size: var(--f-n1); color: var(--text-dim); font-variant-numeric: tabular-nums;
   }
   .hero__meta b { color: var(--text); font-weight: 600; }

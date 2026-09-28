@@ -6,7 +6,7 @@
 
   document.querySelectorAll('[data-st]').forEach((table) => {
     table.querySelectorAll('td[data-heat]').forEach((td) => {
-      td.style.setProperty('--h', td.dataset.heat);
+      td.style.setProperty('--st-heat', td.dataset.heat);
       // Keep the figure above the wash without wrapping it by hand.
       if (td.firstChild?.nodeType === 3) {
         const s = document.createElement('span');

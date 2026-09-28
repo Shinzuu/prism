@@ -2,7 +2,7 @@
 .cz__table { table-layout: fixed; border-collapse: collapse; font-size: .84rem; }
 .cz__cap { text-align: left; padding-bottom: 7px; font-size: .74rem; color: var(--text-dim); }
 .cz__table th, .cz__table td { border-bottom: 1px solid var(--border); padding: 8px 11px; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cz__table thead th { position: relative; width: var(--w); font-weight: 500; font-size: .74rem; color: var(--text-dim); background: var(--raised); }
+.cz__table thead th { position: relative; width: var(--cz-w); font-weight: 500; font-size: .74rem; color: var(--text-dim); background: var(--raised); }
 .cz__table tbody th { font-weight: 400; }
 .cz__grip { position: absolute; top: 0; right: -4px; width: 9px; height: 100%; cursor: col-resize; z-index: 1; }
 .cz__grip::before { content: ""; position: absolute; left: 4px; top: 4px; bottom: 4px; width: 1px; background: var(--border); }

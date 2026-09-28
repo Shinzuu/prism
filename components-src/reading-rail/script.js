@@ -28,8 +28,8 @@
       current = i;
       links.forEach((a, n) => a.setAttribute('aria-current', String(n === i)));
       const a = links[i];
-      line.style.setProperty('--top', a.offsetTop + 'px');
-      line.style.setProperty('--h', a.offsetHeight + 'px');
+      line.style.setProperty('--rr-top', a.offsetTop + 'px');
+      line.style.setProperty('--rr-h', a.offsetHeight + 'px');
     }
 
     /* The last heading whose top has passed the reading line is current.

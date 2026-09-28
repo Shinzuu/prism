@@ -4,30 +4,40 @@
 .od__delta { margin: 8px 0 0; font-size: .78rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
 
 .od__figure {
+  /* One explicit cell height drives the window, the strip and the travel.
+     Translating by 1em instead leaves every wheel half a digit out of
+     register, because an em box and a glyph's line box are not the same. */
+  --cell: 1.12em;
   margin: 0;
   display: flex; align-items: baseline;
   font-size: 2.6rem; font-weight: 700;
-  letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
-  line-height: 1;
+  line-height: var(--cell);
 }
 
 /* Each digit is a window onto a strip of 0-9. Only the strips whose digit
    changed are moved, so the figure reads as a mechanism rather than a swap. */
 .od__digit {
   display: inline-block;
-  height: 1em;
+  block-size: var(--cell);
   overflow: hidden;
-  width: 0.62ch;
+  /* With tabular figures every digit advances exactly 1ch. Anything narrower
+     clips each numeral and the next one overlaps it. */
+  inline-size: 1ch;
 }
 .od__strip {
   display: block;
   transition: translate 720ms cubic-bezier(.22, 1, .3, 1);
   will-change: translate;
 }
-.od__strip span { display: block; height: 1em; text-align: center; }
+.od__strip span {
+  display: block;
+  block-size: var(--cell);
+  line-height: var(--cell);
+  text-align: center;
+}
 
-.od__sep { display: inline-block; width: .34ch; }
+.od__sep { display: inline-block; inline-size: .42ch; text-align: center; }
 .od__suffix { font-size: .44em; font-weight: 500; color: var(--text-dim); margin-left: .14em; }
 
 .od__roll {

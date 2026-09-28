@@ -11,7 +11,9 @@
     "preview": "astro preview",
     "astro": "astro",
     "prebuild": "node -e \"const f=require('node:fs');f.writeFileSync('public/tokens-preview.css',f.readFileSync('src/styles/tokens.css','utf8')+f.readFileSync('src/styles/scale.css','utf8'))\"",
-    "predev": "node -e \"const f=require('node:fs');f.writeFileSync('public/tokens-preview.css',f.readFileSync('src/styles/tokens.css','utf8')+f.readFileSync('src/styles/scale.css','utf8'))\""
+    "predev": "node -e \"const f=require('node:fs');f.writeFileSync('public/tokens-preview.css',f.readFileSync('src/styles/tokens.css','utf8')+f.readFileSync('src/styles/scale.css','utf8'))\"",
+    "qa": "node test/qa.mjs",
+    "verify": "npm run build && node test/run.mjs && node test/library.mjs && node test/motion.mjs && node test/all.mjs && node test/contrast.mjs && node test/qa.mjs"
   },
   "dependencies": {
     "@formkit/auto-animate": "^0.10.0",

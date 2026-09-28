@@ -36,7 +36,7 @@
         cell.append(strip);
         fig.append(cell);
         fig._cells.push({ strip, digit: +d });
-        strip.style.translate = `0 ${-d}em`;
+        strip.style.translate = `0 calc(var(--cell) * ${-d})`;
       });
 
       if (suffix) {
@@ -59,7 +59,7 @@
           const cell = fig._cells[i];
           if (!cell || cell.digit === +d) return;      // unchanged wheels stay still
           cell.digit = +d;
-          cell.strip.style.translate = `0 ${-d}em`;
+          cell.strip.style.translate = `0 calc(var(--cell) * ${-d})`;
         });
         fig.dataset.odValue = target;
       }

@@ -6,10 +6,10 @@
   document.querySelectorAll('[data-cz]').forEach((root) => {
     const table = root.querySelector('[data-cz-table]');
     const heads = [...table.querySelectorAll('thead th')];
-    const defaults = heads.map((h) => parseInt(h.style.getPropertyValue('--w')) || 120);
+    const defaults = heads.map((h) => parseInt(h.style.getPropertyValue('--cz-w')) || 120);
 
     function save() {
-      try { localStorage.setItem(KEY, JSON.stringify(heads.map((h) => parseInt(h.style.getPropertyValue('--w'))))); }
+      try { localStorage.setItem(KEY, JSON.stringify(heads.map((h) => parseInt(h.style.getPropertyValue('--cz-w'))))); }
       catch { /* private mode: widths simply do not persist */ }
     }
     function load() {
@@ -23,7 +23,7 @@
 
     function setWidth(i, px, persist = true) {
       const w = Math.max(MIN, Math.round(px));
-      heads[i].style.setProperty('--w', w + 'px');
+      heads[i].style.setProperty('--cz-w', w + 'px');
       const grip = heads[i].querySelector('[data-cz-grip]');
       if (grip) grip.setAttribute('aria-valuenow', w);
       if (persist) save();
@@ -50,7 +50,7 @@
       grip.addEventListener('pointercancel', end);
 
       grip.addEventListener('keydown', (e) => {
-        const cur = parseInt(th.style.getPropertyValue('--w'));
+        const cur = parseInt(th.style.getPropertyValue('--cz-w'));
         const step = e.shiftKey ? 40 : 8;
         if (e.key === 'ArrowRight') { e.preventDefault(); setWidth(i, cur + step); }
         else if (e.key === 'ArrowLeft') { e.preventDefault(); setWidth(i, cur - step); }

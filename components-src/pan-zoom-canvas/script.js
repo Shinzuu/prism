@@ -23,10 +23,10 @@
       zoomOut.textContent = Math.round(k * 100) + '%';
 
       const r = root.getBoundingClientRect();
-      eye.style.setProperty('--l', Math.max(0, Math.min(100, (-tx / k) / W * 100)) + '%');
-      eye.style.setProperty('--t', Math.max(0, Math.min(100, (-ty / k) / H * 100)) + '%');
-      eye.style.setProperty('--w', Math.min(100, (r.width / k) / W * 100) + '%');
-      eye.style.setProperty('--h', Math.min(100, (r.height / k) / H * 100) + '%');
+      eye.style.setProperty('--pz-l', Math.max(0, Math.min(100, (-tx / k) / W * 100)) + '%');
+      eye.style.setProperty('--pz-t', Math.max(0, Math.min(100, (-ty / k) / H * 100)) + '%');
+      eye.style.setProperty('--pz-w', Math.min(100, (r.width / k) / W * 100) + '%');
+      eye.style.setProperty('--pz-h', Math.min(100, (r.height / k) / H * 100) + '%');
     }
 
     /* Zoom toward a point: convert it to world space, change the scale, then

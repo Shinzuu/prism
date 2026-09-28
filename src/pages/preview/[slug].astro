@@ -18,9 +18,37 @@ import shell from '../../styles/preview.css?raw';
   <style set:html={c.css}></style>
 </head>
 <body>
-  <Fragment set:html={c.html} />
+  <div id="fit"><div id="fit-inner"><Fragment set:html={c.html} /></div></div>
   {c.js && <script is:inline set:html={c.js} />}
   <script is:inline>
+    /* Fit the component to the frame. Previews are a fixed aspect and components
+       are not, so without this some are cropped mid-sentence and others float in
+       an empty box. Scale down only — never up, which would blur small pieces. */
+    /* Scale the component to fit the frame.
+       Measure only scrollWidth/scrollHeight: getBoundingClientRect reflects the
+       transform, so using it feeds each measurement back into the next and the
+       scale runs away. */
+    let raf = 0;
+    function fit() {
+      const box = document.getElementById('fit');
+      const inner = document.getElementById('fit-inner');
+      if (!box || !inner) return;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const w = inner.scrollWidth, h = inner.scrollHeight;
+        if (!w || !h) return;
+        const pad = 14;
+        const k = Math.min(1, (innerWidth - pad * 2) / w, (innerHeight - pad * 2) / h);
+        box.style.setProperty('--k', k.toFixed(3));
+      });
+    }
+    addEventListener('load', fit);
+    addEventListener('resize', fit);
+    document.fonts?.ready.then(fit);
+    new ResizeObserver(fit).observe(document.getElementById('fit-inner'));
+    setTimeout(fit, 300);
+    setTimeout(fit, 1200);
+
     // Inherit the parent's palette: an iframe does not get custom properties for free.
     addEventListener('message', (e) => {
       if (!e.data || e.data.prism !== 'tokens') return;

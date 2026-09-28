@@ -8,7 +8,7 @@
    stay the thing you read. */
 .st td[data-heat]::before {
   content: ""; position: absolute; inset: 2px 3px; border-radius: 4px; z-index: 0;
-  background: color-mix(in oklab, var(--accent) calc(var(--h) * 34%), transparent);
+  background: color-mix(in oklab, var(--accent) calc(var(--st-heat) * 34%), transparent);
 }
 .st td[data-heat] { isolation: isolate; }
 .st td[data-heat] > * , .st td[data-heat]::after { position: relative; z-index: 1; }
