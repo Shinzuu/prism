@@ -1,68 +1,17 @@
-.sps { display: grid; gap: 8px; }
-
-.sps__rail {
-  display: flex; gap: 0; align-items: stretch;
-  height: 210px; overflow-x: auto; overscroll-behavior-x: contain;
+.sps-rail {
   scroll-snap-type: x proximity;
-  border: 1px solid var(--border); border-radius: 10px; background: var(--bg);
+  /* A horizontal flick must not trigger the browser's back gesture. */
+  overscroll-behavior-x: contain;
 }
-.sps__rail::-webkit-scrollbar { height: 6px; }
-.sps__rail::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.sps-rail::-webkit-scrollbar { height: 6px; }
+.sps-rail::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-.sps__pane {
-  flex: 0 0 auto; width: 15rem; scroll-snap-align: end;
-  border-right: 1px solid var(--border);
-  display: grid; position: relative;
-  transition: width .32s cubic-bezier(.2, .8, .2, 1);
-}
-.sps__pane:last-child {
-  border-right: 0;
-  /* The deepest pane takes whatever width is left, so a shallow stack fills
-     the rail instead of leaving a dead gap beside it. It still cannot shrink
-     below its basis, so a deep stack scrolls exactly as before. */
-  flex-grow: 1;
-}
+.sps-pane { transition: width .32s cubic-bezier(.2, .8, .2, 1); }
+.sps-body, .sps-spine { transition: opacity .2s ease; }
 
-/* A collapsed pane is not hidden — it becomes a spine you can click to return.
-   Hiding it would lose the trail, which is the only reason to stack panes. */
-.sps__pane[data-collapsed] { width: 2.1rem; cursor: pointer; }
-.sps__pane[data-collapsed] .sps__body { opacity: 0; pointer-events: none; }
-.sps__pane[data-collapsed] .sps__spine { opacity: 1; }
-
-.sps__body {
-  padding: 11px 12px; overflow-y: auto;
-  transition: opacity .2s ease;
-}
-.sps__h { margin: 0 0 8px; font-size: .68rem; color: var(--text-dim); font-family: var(--mono); }
-.sps__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
-.sps__link {
-  width: 100%; text-align: left; font: inherit; font-size: .76rem; cursor: pointer;
-  padding: 6px 8px; border: 0; border-radius: 6px;
-  background: none; color: var(--text);
-  display: flex; justify-content: space-between; gap: 8px;
-}
-.sps__link::after { content: '›'; color: var(--text-dim); }
-.sps__link:hover { background: var(--raised); }
-.sps__link[aria-expanded="true"] { background: var(--raised); color: var(--accent); }
-.sps__link:focus-visible { outline: 2px solid var(--accent); outline-offset: -1px; }
-.sps__leaf { margin: 0; font-size: .74rem; color: var(--text-dim); padding: 6px 8px; line-height: 1.5; }
-
-.sps__spine {
-  position: absolute; inset: 0; margin: 0;
-  display: grid; place-items: center;
-  writing-mode: vertical-rl; rotate: 180deg;
-  font-size: .68rem; color: var(--text-dim);
-  opacity: 0; transition: opacity .2s ease;
-  white-space: nowrap; overflow: hidden;
-  /* The spine covers the whole pane so its label can centre when collapsed.
-     At opacity 0 it is still there and still hit-testable, which silently
-     swallows every click on the open pane beneath it. The pane itself is the
-     reopen target, so the spine never needs pointer events of its own. */
-  pointer-events: none;
-}
-
-.sps__note { margin: 0; font-size: .72rem; color: var(--text-dim); line-height: 1.5; }
+/* writing-mode has no utility, and the spine label must read bottom-to-top. */
+.sps-spine { writing-mode: vertical-rl; rotate: 180deg; }
 
 @media (prefers-reduced-motion: reduce) {
-  .sps__pane, .sps__body, .sps__spine { transition: none; }
+  .sps-pane, .sps-body, .sps-spine { transition: none; }
 }

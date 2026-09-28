@@ -26,6 +26,7 @@ import C_multiscript_text_column from '../../components-src/multiscript-text-col
 import C_odometer_stat from '../../components-src/odometer-stat/Component.tsx';
 import C_optimistic_row from '../../components-src/optimistic-row/Component.tsx';
 import C_origin_morph_dialog from '../../components-src/origin-morph-dialog/Component.tsx';
+import C_priority_overflow_toolbar from '../../components-src/priority-overflow-toolbar/Component.tsx';
 import C_progressive_blur_sheet from '../../components-src/progressive-blur-sheet/Component.tsx';
 import C_queue_position from '../../components-src/queue-position/Component.tsx';
 import C_scroll_filmstrip from '../../components-src/scroll-filmstrip/Component.tsx';
@@ -34,6 +35,7 @@ import C_segmented_cache_bar from '../../components-src/segmented-cache-bar/Comp
 import C_shared_field_steps from '../../components-src/shared-field-steps/Component.tsx';
 import C_shortcut_recorder from '../../components-src/shortcut-recorder/Component.tsx';
 import C_slide_confirm from '../../components-src/slide-confirm/Component.tsx';
+import C_sliding_pane_stack from '../../components-src/sliding-pane-stack/Component.tsx';
 import C_sort_morph_table from '../../components-src/sort-morph-table/Component.tsx';
 import C_spotlight_card from '../../components-src/spotlight-card/Component.tsx';
 import C_staged_pipeline from '../../components-src/staged-pipeline/Component.tsx';
@@ -64,6 +66,7 @@ export const components: Record<string, ComponentType> = {
   "odometer-stat": C_odometer_stat,
   "optimistic-row": C_optimistic_row,
   "origin-morph-dialog": C_origin_morph_dialog,
+  "priority-overflow-toolbar": C_priority_overflow_toolbar,
   "progressive-blur-sheet": C_progressive_blur_sheet,
   "queue-position": C_queue_position,
   "scroll-filmstrip": C_scroll_filmstrip,
@@ -72,6 +75,7 @@ export const components: Record<string, ComponentType> = {
   "shared-field-steps": C_shared_field_steps,
   "shortcut-recorder": C_shortcut_recorder,
   "slide-confirm": C_slide_confirm,
+  "sliding-pane-stack": C_sliding_pane_stack,
   "sort-morph-table": C_sort_morph_table,
   "spotlight-card": C_spotlight_card,
   "staged-pipeline": C_staged_pipeline,
