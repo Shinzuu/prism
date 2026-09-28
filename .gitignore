@@ -38,3 +38,4 @@ scripts-gen.mjs
 test/hero.png
 test-results/
 test/*.png
+.qa-stamp
