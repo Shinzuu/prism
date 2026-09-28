@@ -1,0 +1,46 @@
+# Bertin Matrix
+
+- **Element ID:** `bertin-matrix`
+- **Type:** table
+- **Live:** https://prism.shinzuu-dev.workers.dev/components/bertin-matrix
+- **Record (JSON for LLMs):** https://prism.shinzuu-dev.workers.dev/elements/bertin-matrix.json
+
+The data does not move — the rows and columns do. Permuting both axes by barycentre drags the block structure onto the diagonal, turning noise into three visible clusters.
+
+## Final prompt
+
+```
+Build a reorderable matrix — Bertin's technique — in plain HTML, CSS and vanilla JavaScript.
+
+Render a teams × features grid where each cell's value is shown as colour intensity. The values must NEVER change: the only thing that moves is the order of the rows and the order of the columns.
+
+Reorder by the BARYCENTRE heuristic: order each row by the weighted mean index of its mass along the other axis, then do the same for the columns, and ALTERNATE for three or four passes. One pass of each is not enough — reordering the columns changes what 'similar' means for the rows, so it must iterate to converge. Explain in a comment why sorting one axis alone cannot work: matrix structure lives in the pairing, so ordering rows by their totals only stacks the heavy ones.
+
+Plant real block structure in the data and then scramble the starting order. Without genuine structure to find, every permutation looks equally good and the component demonstrates nothing.
+
+Report a diagonal-concentration score before and after, so the improvement is a number rather than a claim.
+
+Transition the cell colour, not the layout, so a reorder reads as the pattern migrating rather than the table blinking.
+
+A colour cell is invisible to assistive technology: give every cell role="img" with an aria-label naming both axes and the value, and use real <th scope="row"> and <th scope="col"> headers.
+
+Use tokens only: var(--accent), var(--bg), var(--border), var(--text), var(--text-dim), var(--mono), and derive cell intensity with color-mix on the accent. No literal colours. Let the grid scroll horizontally rather than shrink below legibility.
+```
+
+## What failed first
+
+### Attempt 1
+
+> Build a heatmap table of teams against features and let the user sort it.
+
+Sorting rows by their total made the tallest rows adjacent and revealed nothing. Structure in a matrix lives in the PAIRING of rows and columns, so ordering one axis while the other stays scrambled cannot expose it — the same three clusters were still spread across the grid, just with the heavy rows at the top.
+
+### Attempt 2
+
+> Reorder both axes to group similar rows and similar columns together.
+
+Reordered rows by similarity, then columns, once each. One pass is not enough: reordering the columns changes what 'similar' means for the rows, so the arrangement was better than random and still visibly broken. It needs to alternate to convergence, which for this size is three or four passes.
+
+## Why this one is worth keeping
+
+Bertin's insight is that a matrix has no inherent order — the rows and columns are labels, and their sequence is a free variable you can spend on making the structure visible. That reframes 'sorting' entirely: the usual move, ordering rows by a column, is a one-dimensional operation applied to a two-dimensional object, and it cannot reveal a block pattern no matter which column you pick. The implementation lesson is the iteration. Permuting both axes once looks like it should be enough and is not, because each permutation invalidates the similarity judgement that drove the other — the alternation is the algorithm, not an optimisation of it.

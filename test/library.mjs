@@ -1,67 +1,64 @@
+/* Homepage contract. Rewritten 2026-09-29: the previous version asserted a
+   30-entry two-column #grid that the sectioned redesign removed, so it had
+   been failing against a page that was correct. */
 import { chromium } from 'playwright';
+import { allComponents, COMPONENT_TYPES } from '../src/lib/registry.js';
+
 const BASE = process.env.BASE || 'https://prism.shinzuu-dev.workers.dev';
-const r = []; const ck = (n, p, d='') => { r.push(p); console.log(`${p?'PASS':'FAIL'}  ${n}${d?'  — '+d:''}`); };
+const fails = [];
+const ck = (name, ok, detail = '') => {
+  if (!ok) fails.push(`${name}${detail ? ` — ${detail}` : ''}`);
+};
 
-const b = await chromium.launch();
-const pg = await b.newPage({ viewport: { width: 1440, height: 1000 } });
-const errs = []; pg.on('pageerror', e => errs.push(e.message));
+const total = allComponents().length;
+const browser = await chromium.launch();
+const pg = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+const errors = [];
+pg.on('console', (m) => { if (m.type() === 'error') errors.push(m.text().slice(0, 120)); });
+
 await pg.goto(BASE, { waitUntil: 'networkidle' });
-await pg.waitForTimeout(4600);
+await pg.waitForTimeout(3000);
 
-const n = await pg.locator('.cell').count();
-ck('library: 30 entries', n === 30, `${n}`);
-const builtN = await pg.locator('.cell__view iframe').count();
-const soonN = await pg.locator('.cell--soon').count();
-ck('library: built + scheduled = 30', builtN + soonN === 30, `${builtN} built, ${soonN} scheduled`);
-ck('library: every built entry has a preview', builtN > 0 && builtN === n - soonN);
+const cards = await pg.locator('.stack li').count();
+ck('library: every component has a tile', cards === total, `${cards} tiles for ${total} components`);
 
-const cols = await pg.evaluate(() => getComputedStyle(document.getElementById('grid')).gridTemplateColumns.split(' ').length);
-ck('library: two columns', cols === 2, `${cols} columns`);
+const stacks = await pg.locator('.stack').count();
+ck('library: one section per type', stacks === COMPONENT_TYPES.length, `${stacks} sections`);
 
+/* Each type section must carry its own count, and those must sum to the whole
+   library — a section that silently drops a component is the failure mode a
+   sectioned gallery has that a flat list does not. */
+const perSection = await pg.evaluate(() =>
+  [...document.querySelectorAll('.stack')].map((s) => s.querySelectorAll('li').length));
+ck('library: sections sum to the library', perSection.reduce((a, b) => a + b, 0) === total,
+  perSection.join('+'));
+ck('library: no empty section', perSection.every((n) => n > 0));
+
+const previews = await pg.locator('iframe').count();
+ck('library: every tile carries a preview', previews === total, `${previews} previews`);
+
+// Search narrows, and says so when it finds nothing.
 await pg.fill('#q', 'table');
-await pg.waitForTimeout(200);
-let shown = await pg.locator('.cell:not([hidden])').count();
-ck('search: narrows results', shown > 0 && shown < 30, `${shown} shown for "table"`);
-await pg.fill('#q', 'zzzz'); await pg.waitForTimeout(200);
-ck('search: empty state', await pg.locator('#empty').isVisible());
-await pg.fill('#q', ''); await pg.waitForTimeout(200);
+await pg.waitForTimeout(300);
+const narrowed = await pg.locator('.stack li:not([hidden])').count();
+ck('search: narrows results', narrowed > 0 && narrowed < total, `${narrowed} shown for "table"`);
 
-await pg.locator('.chipf[data-type="chart"]').click();
-await pg.waitForTimeout(200);
-shown = await pg.locator('.cell:not([hidden])').count();
-const allChart = await pg.evaluate(() => [...document.querySelectorAll('.cell:not([hidden])')].every(c => c.dataset.type === 'chart'));
-ck('filter: type chip filters', shown === 3 && allChart, `${shown} chart entries`);
-await pg.locator('.chipf[data-type="all"]').click(); await pg.waitForTimeout(200);
-ck('filter: reset to all', await pg.locator('.cell:not([hidden])').count() === 30);
+await pg.fill('#q', 'zzzzqqq');
+await pg.waitForTimeout(300);
+const none = await pg.locator('.stack li:not([hidden])').count();
+ck('search: empty state', none === 0, `${none} still shown`);
 
-await pg.keyboard.press('/');
-ck('search: slash focuses', await pg.evaluate(() => document.activeElement?.id === 'q'));
+await pg.fill('#q', '');
+await pg.waitForTimeout(300);
+const restored = await pg.locator('.stack li:not([hidden])').count();
+ck('search: clearing restores every tile', restored === total, `${restored} restored`);
 
-const hero = await pg.evaluate(() => {
-  const parts = [...document.querySelectorAll('.craft .ln')];
-  const notes = [...document.querySelectorAll('.note')];
-  const annotated = notes.filter((nt) => {
-    const t = nt.querySelector('.note__t');
-    const lead = nt.querySelector('.note__lead');
-    const dash = getComputedStyle(lead).strokeDasharray;
-    const drawn = dash === 'none' || (parseFloat(dash) || 0) >= (lead.getTotalLength() - 2);
-    return +getComputedStyle(t).opacity > .9 && drawn;
-  }).length;
-  const stbd = notes.length, port = annotated;
-  const h1 = [...document.querySelectorAll('h1 i')].map(i => getComputedStyle(i).translate);
-  return { parts: parts.length,
-           drawn: parts.filter(p => parseFloat(getComputedStyle(p).strokeDashoffset) < 1).length,
-           filled: parts.filter(p => parseFloat(getComputedStyle(p).fillOpacity) > .5).length,
-           stbd, port, h1 };
-});
-ck('hero: airframe parts drawn', hero.parts >= 18 && hero.drawn === hero.parts, `${hero.drawn}/${hero.parts}`);
-ck('hero: surfaces filled', hero.filled >= 10, `${hero.filled} filled`);
-ck('hero: every subsystem annotated', hero.stbd === 5 && hero.port === 5, `${hero.port}/${hero.stbd} callouts drawn`);
-ck('hero: headline lines settled', hero.h1.every(t => /^(none|0px 0%?|0px 0px)$/.test(t)), JSON.stringify(hero.h1));
-ck('no runtime errors', errs.length === 0, errs.slice(0,2).join(' | '));
+ck('library: no console errors', errors.length === 0, errors.slice(0, 2).join(' | '));
 
-await pg.screenshot({ path: 'test/library.png', fullPage: false });
-await b.close();
-const bad = r.filter(x => !x).length;
-console.log(`\n${r.length - bad}/${r.length} passed`);
-process.exit(bad ? 1 : 0);
+await browser.close();
+
+if (fails.length) {
+  console.error('library FAILED:\n  ' + fails.join('\n  '));
+  process.exit(1);
+}
+console.log(`library clean — ${total} tiles across ${stacks} sections, search narrows and restores`);

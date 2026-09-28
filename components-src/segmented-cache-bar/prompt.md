@@ -1,0 +1,42 @@
+# Segmented Cache Bar
+
+- **Element ID:** `segmented-cache-bar`
+- **Type:** loader
+- **Live:** https://prism.shinzuu-dev.workers.dev/components/segmented-cache-bar
+- **Record (JSON for LLMs):** https://prism.shinzuu-dev.workers.dev/elements/segmented-cache-bar.json
+
+Fills out of order, because the work does. Sixteen shards taken off a shared queue by four workers, each lighting its own segment as it lands — plus a hatched state for the ones that came back a miss.
+
+## Final prompt
+
+```
+Build a progress indicator for parallel work — sixteen cache shards warmed by four workers — in plain HTML, CSS and vanilla JavaScript.
+
+Render ONE ELEMENT PER SHARD, not one bar with a width. A width can only move forward and can only report a count; it cannot say which shards are in flight, which are done, or which came back a miss, and it has to lie about order when jobs finish out of sequence. Four states per segment: idle, running (a soft pulse), done, and miss (a hatched repeating-linear-gradient, so it is distinguishable without relying on colour).
+
+Model a SHARED QUEUE, not round-robin assignment. Each worker takes the next unclaimed shard when it frees up, and each shard costs a random amount of time. Round-robin is the natural thing to write and it is wrong: it produces an even, regular fill that shows no concurrency, because a worker that draws a cheap shard should come back for another while its neighbour is still busy. Show a per-worker lane listing which shard each is on, so the queue behaviour is legible rather than asserted.
+
+Put role="progressbar" with aria-valuemin, aria-valuemax and a live aria-valuenow on the container, and keep a text count alongside — the segments are a picture.
+
+Stop the simulation when the component scrolls out of view with IntersectionObserver, and clear every pending timer when it does; a demo that keeps timers alive off-screen is a leak. Respect prefers-reduced-motion by dropping the pulse and the transitions.
+
+Use tokens only: var(--accent), var(--bg), var(--border), var(--text), var(--text-dim), var(--mono). No literal colours.
+```
+
+## What failed first
+
+### Attempt 1
+
+> Build a progress bar for a job that warms sixteen cache shards in parallel.
+
+A single bar with a width driven by completed/total. Four workers finishing out of order made the width jump in uneven steps, and the bar could not show which shards were in flight or that three had come back a miss. A width is one number; the state being reported is sixteen.
+
+### Attempt 2
+
+> Use sixteen segments and animate each one as its shard completes.
+
+Segments were assigned to workers round-robin, so worker 0 always took shards 0, 4, 8, 12. Real workers take the next item off a shared queue, which means a worker that draws a cheap shard comes back for another while a neighbour is still busy. The round-robin version produced an even, regular fill that looked plausible and showed no concurrency at all.
+
+## Why this one is worth keeping
+
+The interesting mistake is not the bar, it is the fake parallelism. Assigning shards to workers round-robin is the obvious implementation and it produces a smooth, even fill — which looks correct and communicates nothing, because real workers pull from a shared queue and therefore finish out of order and at uneven intervals. The gaps and the overtaking ARE the information. Once the queue is modelled honestly, the segmented display becomes necessary rather than decorative: it is the only shape that can show sixteen independent states, including the misses, which a width cannot represent at all.

@@ -11,6 +11,7 @@ export async function getStaticPaths() {
 }
 const { c, prev, next } = Astro.props;
 const repo = `https://github.com/Shinzuu/prism/blob/main/${c.repoPath}`;
+const site = 'https://prism.shinzuu-dev.workers.dev';
 const files = [
   /* React components publish their .tsx. style.css survives only where Tailwind
      genuinely cannot reach — @property registration, keyframes, scroll
@@ -26,20 +27,34 @@ const files = [
       <h1>{c.name}</h1>
       <p class="doc__sum">{c.summary}</p>
       <p class="doc__meta"><span>{c.type}</span><span>week {c.week}</span><a href={repo}>source</a></p>
+
+      <div class="use" data-use>
+        <p class="use__lab">Element ID</p>
+        <code class="use__id" data-use-id>{c.slug}</code>
+        <button class="link" type="button" data-use-copy={`Use the "${c.slug}" element from ${site}/components/${c.slug}`}>copy reference</button>
+        <p class="use__hint">Ask for it by ID: <em>use the <code>{c.slug}</code> element</em>. The
+          full source and props are at <code>/elements/{c.slug}.json</code>.</p>
+      </div>
     </header>
 
     <figure class="stage">
       <div class="stage__wrap" data-wb-wrap>
-        <iframe class="stage__frame" data-wb-frame title={`${c.name}, running`} sandbox="allow-scripts"></iframe>
+        {/* The frame loads the BUILT preview. The old workbench assembled a
+            document from html/css/js panes, which stopped existing when the
+            components became .tsx — it was handing the iframe an empty body,
+            so every detail page showed a blank stage. TSX cannot be compiled
+            in the browser, so the built route is the only honest source. */}
+        <iframe class="stage__frame" data-wb-frame src={`/preview/${c.slug}`}
+          title={`${c.name}, running`} loading="lazy" sandbox="allow-scripts"></iframe>
       </div>
       <figcaption class="stage__bar">
-        <span data-wb-status data-state="edit">loading</span>
+        <span data-wb-status data-state="ok">live</span>
         <span class="rig" data-wb-rig>
           <button type="button" data-w="360" aria-pressed="false">360</button>
           <button type="button" data-w="768" aria-pressed="false">768</button>
           <button type="button" data-w="full" aria-pressed="true">full</button>
         </span>
-        <button class="link" type="button" data-wb-reset>restore original</button>
+        <a class="link" href={`/preview/${c.slug}`} target="_blank" rel="noopener">open alone</a>
       </figcaption>
     </figure>
 
@@ -52,10 +67,10 @@ const files = [
         <button class="link link--end" type="button" data-wb-copy>copy</button>
       </div>
       {files.map((f, i) => (
-        <textarea class="src__text" data-wb-pane={f.lang} hidden={i !== 0}
+        <textarea class="src__text" data-wb-pane={f.lang} hidden={i !== 0} readonly
           spellcheck="false" aria-label={f.label} rows="20">{f.body}</textarea>
       ))}
-      <p class="src__note">Editable. The frame re-renders as you type.</p>
+      <p class="src__note">Read-only. Copy it into a React + Tailwind project as-is.</p>
     </section>
 
     <section class="say">

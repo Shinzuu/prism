@@ -1,0 +1,44 @@
+# Constraint Solver Form
+
+- **Element ID:** `constraint-solver-form`
+- **Type:** form
+- **Live:** https://prism.shinzuu-dev.workers.dev/components/constraint-solver-form
+- **Record (JSON for LLMs):** https://prism.shinzuu-dev.workers.dev/elements/constraint-solver-form.json
+
+Four interdependent dimensions with two degrees of freedom. Pin the ones you know and the rest are solved; pin too many and it names the exact field to release instead of calling the input invalid.
+
+## Final prompt
+
+```
+Build a form for interdependent dimensions — width, height, ratio, area — in plain HTML, CSS and vanilla JavaScript.
+
+The system has FOUR variables and TWO degrees of freedom. Each field carries a toggle marking it as driving or derived. When exactly two are driving, solve the other two. Handle each of the six possible pairs explicitly rather than with a generic solver, so the awkward ones (area with ratio needs a square root) are visible in the code instead of silently wrong.
+
+Mark derived fields with readonly, NEVER disabled. disabled drops the field out of the tab order, removes it from the accessibility tree, and greys the text below readable contrast — hiding the value the form just computed, which is the whole output. readonly keeps it focusable, announced and selectable.
+
+When more than two fields are pinned, the form is over-constrained. Do not say 'invalid': every individual value is fine, the combination is not. Name the exact field to release, and pick the OLDEST pin, because the newest is what the person just asked for. Track pin order for this. Highlight the conflicting fields.
+
+When fewer than two are pinned, say how many more are needed.
+
+Recalculate only from the driving fields, and only on input to a driving field. Writing back into the field being typed in is what makes these forms fight the caret.
+
+Put the message in a role="status" live region. Use tokens only: var(--bg), var(--raised), var(--text), var(--text-dim), var(--border), var(--accent), var(--mono). No literal colours. Collapse to one column under about 460px.
+```
+
+## What failed first
+
+### Attempt 1
+
+> Build a form where width, height, ratio and area stay consistent with each other.
+
+Recalculated every other field on each input event. Editing width rewrote ratio, which fired its own handler and rewrote height, which rewrote width — the values oscillated and the caret jumped out of the field being typed in. Nothing declares which fields are inputs and which are outputs, so every field is both.
+
+### Attempt 2
+
+> Let the user mark which fields are inputs, and disable the rest.
+
+Used the disabled attribute on the derived fields. That removes them from the tab order, strips them from the accessibility tree and greys the text below readable contrast — so the value the form just computed, which is the entire output, becomes the hardest thing on screen to read. readonly is the correct attribute: still focusable, still announced, still selectable.
+
+## Why this one is worth keeping
+
+Two lessons, and the second is the one that generalises. The first is that a form over interdependent values needs an explicit direction of flow: without driving and derived, every field is both input and output, and editing one sets off a write-back loop that fights the caret. The second is the choice of readonly over disabled. disabled is the reflex for a field the user should not edit, and it is almost always wrong for a computed value — it removes the field from the accessibility tree and drops its contrast, so the number the form exists to produce becomes the least readable thing on the screen. The error message matters as much: 'invalid' is false here, because each value is valid and only the set is impossible, so the useful thing to report is which one to let go of.

@@ -1,0 +1,44 @@
+# Origin Morph Dialog
+
+- **Element ID:** `origin-morph-dialog`
+- **Type:** modal
+- **Live:** https://prism.shinzuu-dev.workers.dev/components/origin-morph-dialog
+- **Record (JSON for LLMs):** https://prism.shinzuu-dev.workers.dev/elements/origin-morph-dialog.json
+
+The dialog grows out of the exact row that opened it, and that row becomes its header — so a detail view never costs you your place in the list.
+
+## Final prompt
+
+```
+Build a list whose rows open a dialog that visually grows out of the clicked row, in plain HTML, CSS and vanilla JavaScript.
+
+Use the View Transitions API. The critical constraint: view-transition-name must be UNIQUE among rendered elements at capture time. Do NOT put the name in the stylesheet on every row — duplicate names abort the whole transition, nothing animates, and the only evidence is a console warning that looks exactly like the browser not supporting the feature. Assign the name in JavaScript to the one row being opened, immediately before calling startViewTransition, and clear it in the transition's finished handler.
+
+Copy the row's own markup into the dialog header so the two elements genuinely become each other rather than crossfading. Carry the name across: the row holds it before the snapshot, the header holds it after.
+
+Reverse the same dance on close, and also handle the dialog's native close event (Esc) so the names are cleaned up on that path too — a stale view-transition-name left on an element poisons the NEXT transition.
+
+Feature-detect with typeof document.startViewTransition === 'function' and fall back to opening the dialog plainly. The fallback is not a degradation worth apologising for; a dialog that simply appears is the normal behaviour.
+
+Use a real <dialog> with showModal so focus trapping, Esc and inertness come from the platform. Under prefers-reduced-motion, collapse the transition duration rather than branching the logic.
+
+Use tokens only: var(--bg), var(--raised), var(--text), var(--text-dim), var(--border), var(--accent), var(--accent-fg), var(--mono). No literal colours.
+```
+
+## What failed first
+
+### Attempt 1
+
+> Build a dialog that animates out of the list row that opened it.
+
+Measured the row with getBoundingClientRect and animated a transform from its box to the dialog's. It tracks position but not content: the row's text stays the row's text and the dialog's header fades in over it, so the two never actually become each other. Any list scroll between opening and closing also left the animation pointing at empty space.
+
+### Attempt 2
+
+> Use a view transition with view-transition-name to morph the row into the dialog header.
+
+Put view-transition-name on every row in the stylesheet. Duplicate names abort the entire transition — the spec requires uniqueness at capture time, so with three rows sharing one name nothing animates at all and the only sign is a console warning. Worse, it fails identically to no support, so it reads as the browser's fault.
+
+## Why this one is worth keeping
+
+The uniqueness rule is the whole component, and it fails in the most misleading way available: put view-transition-name on all three rows in CSS — which is the obvious place — and the transition does not degrade, it aborts. Nothing animates, no exception is thrown, and the result is pixel-identical to a browser without View Transitions, so the natural conclusion is that support is missing. The second trap is the cleanup: a name left behind on a closed dialog's header silently breaks the NEXT transition, which means the bug appears one interaction after the mistake.

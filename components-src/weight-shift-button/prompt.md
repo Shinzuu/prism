@@ -1,0 +1,46 @@
+# Weight Shift Button
+
+- **Element ID:** `weight-shift-button`
+- **Type:** button
+- **Live:** https://prism.shinzuu-dev.workers.dev/components/weight-shift-button
+- **Record (JSON for LLMs):** https://prism.shinzuu-dev.workers.dev/elements/weight-shift-button.json
+
+Hold it and the label physically thickens and widens on the font's weight and width axes, then springs past rest before settling. The letterforms are redrawn, not scaled.
+
+## Final prompt
+
+```
+Build a press-and-hold button whose label gains weight and width on a variable font's axes, in plain HTML, CSS and vanilla JavaScript.
+
+Self-host a variable font carrying BOTH the wght and wdth axes, and declare it with a scoped @font-face inside this component's stylesheet — not globally. A two-axis latin subset is around 90KB and should not be paid for by pages that never use it. Keep every value you animate inside the ranges the face declares: an axis pushed past its range is clamped silently, so the animation simply stops short with nothing to indicate why. Give the @font-face a font-weight range and a font-stretch range, or the browser will not know the axes exist.
+
+Register two custom properties with @property, syntax '<number>' — one per axis — and drive font-variation-settings from them. Both halves are required: font-variation-settings does not ramp when transitioned directly, and an UNREGISTERED custom property is a string, so the transition is accepted silently and does nothing at all. There is no error for either failure.
+
+On release, drive the axes BELOW their rest values briefly before settling, so the button springs rather than fades. The overshoot is what makes it read as physical.
+
+Explain in a comment why animating plain font-weight is not equivalent: with static cuts the browser jumps between installed weights, and where one is missing it SYNTHESISES a bold by smearing the glyphs, which thickens strokes and closes counters — the type gets muddier, not heavier.
+
+Press-and-hold is a pointer gesture, so bind Space and Enter keydown/keyup to the same states, and release on blur and pointercancel so the button cannot get stuck held.
+
+Read the live axis values back with getComputedStyle and display them, so the interpolation is visible as numbers. Sample only while the component is on screen.
+
+Under prefers-reduced-motion, drop the axis transitions and keep the colour change. Use tokens only: var(--raised), var(--text), var(--text-dim), var(--border), var(--accent), var(--sans), var(--mono). No literal colours.
+```
+
+## What failed first
+
+### Attempt 1
+
+> Build a button whose label gets bolder while you hold it down.
+
+Animated font-weight between 400 and 700 with a static font family. The browser has only the two cut weights installed, so it jumps between them with nothing in between, and where a weight is missing it synthesises one by smearing the glyphs — which thickens the strokes and closes the counters, so the type gets muddier rather than heavier.
+
+### Attempt 2
+
+> Use a variable font and transition font-variation-settings.
+
+font-variation-settings is not an interpolable property in the way this needs: transitioning the whole declaration produces a jump, not a ramp. Driving it from custom properties fixes that — but only if the properties are registered. Unregistered, they are strings: the transition is accepted, throws nothing, logs nothing, and the button simply snaps between two states.
+
+## Why this one is worth keeping
+
+Two silent failures stacked on each other. Transitioning font-variation-settings directly looks like the obvious approach and yields a hard jump, which reads as a missing easing curve. The repair — driving the axes from custom properties — is correct and still does nothing until those properties are registered with @property, because an unregistered custom property is an untyped string and the engine has no way to interpolate between two strings. Neither mistake produces an error, a warning, or anything in the inspector. The deeper typographic point is why the variable axes are worth the trouble at all: synthesised bold smears a glyph outward uniformly, closing the counters, while a real weight axis redraws the letterform, so the stroke thickens and the white space inside the letter is preserved.

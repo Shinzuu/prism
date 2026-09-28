@@ -1,0 +1,52 @@
+# Command Palette
+
+- **Element ID:** `command-palette`
+- **Type:** modal
+- **Live:** https://prism.shinzuu-dev.workers.dev/components/command-palette
+- **Record (JSON for LLMs):** https://prism.shinzuu-dev.workers.dev/elements/command-palette.json
+
+Ctrl+K overlay with subsequence fuzzy matching, full keyboard navigation, a focus trap, and focus restored to the opener on close.
+
+## Final prompt
+
+```
+Build a command palette in plain HTML, CSS and vanilla JavaScript, no dependencies. Requirements, all of which matter:
+
+Open with Ctrl+K or Cmd+K from anywhere on the page, and from a visible trigger button. Close with Escape or a click on the backdrop.
+
+Use the combobox pattern, not a focus-moving listbox: DOM focus stays in the text input at all times, and the highlighted option is communicated with aria-activedescendant pointing at that option's id. The input is role="combobox" with aria-controls on the list; the list is role="listbox"; each option is role="option" with aria-selected. The dialog is role="dialog" aria-modal="true" with an aria-labelledby pointing at a visually hidden label.
+
+Filter by subsequence, so "gtd" matches "Go to definition", and wrap the matched characters in <mark> so the match is visible. Build the matched output with DOM nodes rather than innerHTML.
+
+Arrow Up and Arrow Down move the highlight and wrap around at both ends. Enter runs the highlighted command and closes. Tab is trapped inside the dialog and returns focus to the input. On close, restore focus to the element that opened it.
+
+Keep the highlighted option scrolled into view with scrollIntoView({ block: 'nearest' }).
+
+Use only CSS custom properties for colour: var(--surface), var(--text), var(--text-dim), var(--border), var(--accent), var(--accent-dim), var(--radius), var(--shadow), var(--mono). No literal hex, rgb or hsl values anywhere.
+
+Honour prefers-reduced-motion: reduce by disabling the entrance animations.
+
+Emit a bubbling CustomEvent named cp:run carrying the chosen command label, so a host page can react without editing the component.
+```
+
+## What failed first
+
+### Attempt 1
+
+> Build a command palette component in plain HTML, CSS and JavaScript.
+
+Produced a div with a text input and a filtered list. Keyboard support was click-only: no arrow keys, no Enter to run, no Escape to close. Tab moved focus out of the open dialog and behind the overlay, so a keyboard user was stranded. Screen readers announced nothing because the list was a plain ul with no listbox semantics.
+
+### Attempt 2
+
+> Add keyboard navigation and ARIA to the command palette.
+
+Added arrow keys and role="listbox", but moved DOM focus onto each option as it was highlighted. That is the wrong pattern for a combobox: focus must stay in the input while aria-activedescendant points at the highlighted option, otherwise typing stops working mid-navigation. Focus was also never returned to the trigger on close, and the highlighted option could scroll out of view.
+
+## Why this one is worth keeping
+
+The difference between the first attempt and the final one is almost entirely in naming behaviours the model will not infer. "Command palette" implies a filtered list to most people, so that is what you get. Focus management is invisible in a screenshot, so it is never volunteered.
+
+Three constraints did the heavy lifting. Naming the combobox pattern explicitly stopped the model moving DOM focus onto options, which is the single most common accessibility bug in this component. Saying focus must return to the opener closed the loop that leaves keyboard users lost after Escape. Forbidding literal colours in the same breath as listing the available tokens made the component themeable on the first try instead of needing a cleanup pass.
+
+The general lesson: state the pattern by name, state the invisible behaviours, and list the exact tokens. Asking for the visible thing gets you the visible thing only.

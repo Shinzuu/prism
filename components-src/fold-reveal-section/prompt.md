@@ -1,0 +1,46 @@
+# Fold Reveal Section
+
+- **Element ID:** `fold-reveal-section`
+- **Type:** section
+- **Live:** https://prism.shinzuu-dev.workers.dev/components/fold-reveal-section
+- **Record (JSON for LLMs):** https://prism.shinzuu-dev.workers.dev/elements/fold-reveal-section.json
+
+Unfolds like a paper map as you scroll, each panel rotating open on the hinge it shares with the one above, catching a different angle of light — with no scroll listener at all.
+
+## Final prompt
+
+```
+Build a section whose panels unfold like a paper map as they scroll into view, in plain HTML and CSS, with JavaScript used only to report capability.
+
+Drive it with animation-timeline: view(block) and an animation-range — no scroll listener. A scroll handler recalculating transforms runs on the main thread at scroll frequency and stutters precisely on the devices least able to afford it; a view timeline runs off the main thread and costs nothing when the section is off screen.
+
+Put the perspective on the SCROLLING CONTAINER, not on the individual panels. A per-element perspective gives each panel its own vanishing point, so five panels fold toward five different centres instead of one map opening — wrong in a way that reads as cheap rather than as a bug. Set perspective-origin toward the top so the fold recedes correctly.
+
+Set transform-origin to each panel's own TOP edge, so it hinges on the edge it shares with the panel above. Left at centre, panels rotate about their middles and pass through their neighbours.
+
+End the animation-range well before the panel exits (entry to about cover 42%), so each panel is flat long before it leaves. A panel still folding on its way out reads as broken.
+
+Vary the background gradient ANGLE by panel index so each catches the light differently — a flat fill makes a fold read as a slide.
+
+Provide @supports not (animation-timeline: view()) and prefers-reduced-motion fallbacks that show the panels OPEN, never folded: the folded state is decoration, and a browser without support must still show the content. Report in text which path was taken, since 'unsupported' and 'broken' otherwise look identical.
+
+Use tokens only: var(--raised), var(--text), var(--text-dim), var(--border), var(--mono), with color-mix for the gradient stops. No literal colours.
+```
+
+## What failed first
+
+### Attempt 1
+
+> Build a section whose panels unfold as the user scrolls.
+
+Drove the rotation from a scroll event handler, recalculating each panel's position on every event. That runs on the main thread at scroll frequency, forcing layout on each panel per event, and it stutters on exactly the low-powered devices where the effect is least affordable. It also kept running when the section was nowhere near the viewport.
+
+### Attempt 2
+
+> Use scroll-driven animations with animation-timeline instead.
+
+Put the perspective on each panel rather than on the scrolling container. A per-element perspective gives every panel its own vanishing point, so instead of one map opening, five panels each fold toward their own centre — the geometry is subtly wrong in a way that reads as cheap without being obviously incorrect. transform-origin was also left at centre, so panels rotated about their middles and passed through their neighbours rather than hinging on a shared edge.
+
+## Why this one is worth keeping
+
+The two mistakes are of different kinds and both are instructive. The first is a performance one with a clean modern answer: scroll-driven animations move this class of effect off the main thread entirely, so the usual trade-off between a nice reveal and a smooth scroll simply disappears. The second is geometric and much easier to get wrong, because it still looks like something: perspective on each element rather than the container means every panel has its own vanishing point, which produces a plausible-looking animation that no physical object could perform. Fixing it is one property moved up one level, and it is the difference between a map opening and five cards flipping.

@@ -1,0 +1,54 @@
+# Ridgeline Plot
+
+- **Element ID:** `ridgeline-plot`
+- **Type:** chart
+- **Live:** https://prism.shinzuu-dev.workers.dev/components/ridgeline-plot
+- **Record (JSON for LLMs):** https://prism.shinzuu-dev.workers.dev/elements/ridgeline-plot.json
+
+Overlapping density curves for comparing the shape of many distributions at once. One shared vertical scale, opaque fills so the ridges occlude, and a real table behind them.
+
+## Final prompt
+
+```
+Build a ridgeline plot in plain HTML, CSS and vanilla JavaScript with inline SVG, no dependencies and no chart library.
+
+Stack five density curves with a negative top margin so each ridge overlaps the one above it by roughly a third.
+
+Two rules define the form. First, all curves share one vertical scale: find the single highest density across every series and scale everything to it. Normalising each curve to its own peak makes every ridge the same height and destroys the comparison the chart exists to make. Second, fills are fully opaque, matching the page background, so nearer ridges occlude the ones behind. Transparency turns overlap into mud; occlusion is what makes the stack readable.
+
+Compute each curve as a normal density over a fixed domain, sampled at about 64 points, drawn as a closed path down to the baseline so it can be filled.
+
+Mark each distribution's centre with a dashed vertical line from the baseline to the curve, so the eye can compare positions as well as shapes.
+
+Highlight one series with the accent colour for both stroke and fill, driven by a data attribute, so an outlier can be called out without a legend.
+
+Use preserveAspectRatio="none" on the SVG and let CSS size it, so the plot fills whatever width it is given without recomputing.
+
+Accessibility: mark the SVG aria-hidden and ship a visually hidden table of the centre and spread for each series with a caption. A distribution chart is a picture of a table; ship the table.
+
+Add a simple axis beneath with the low, middle and high values of the domain, tabular-nums.
+
+Colour comes only from CSS custom properties: var(--bg), var(--text), var(--text-dim), var(--accent). No literal hex, rgb or hsl values.
+```
+
+## What failed first
+
+### Attempt 1
+
+> Build a ridgeline plot showing several distributions stacked.
+
+Normalised each curve to its own peak, so every ridge reached the same height and the chart implied that a tight distribution and a broad one were equally common at their modes. That is the one thing a ridgeline must not do: the vertical axis is shared, and rescaling per row turns a comparison into five unrelated pictures.
+
+### Attempt 2
+
+> Use one shared vertical scale across all the curves.
+
+Scaling was right but the fills were semi-transparent, so overlapping ridges blended into a muddy wash and the ordering became impossible to read. The occlusion is the mechanism — a ridgeline works because nearer ridges hide the ones behind them. It also had no text equivalent at all, so the whole comparison was invisible to assistive technology.
+
+## Why this one is worth keeping
+
+Both failures were about a default that is right in other charts and wrong here. Per-series normalisation is correct for sparklines, which is the previous component in this library — and catastrophic for ridgelines, where the shared axis is the entire point. Transparency is correct for overlapping scatter, and wrong here, where occlusion carries the depth ordering.
+
+That is the transferable lesson: chart conventions do not generalise across chart types, and a model will carry over the habit from whichever form it has seen most. Stating the rule and the consequence together — normalising per row turns a comparison into five unrelated pictures — is what makes it stick, because the reason is checkable against the output.
+
+The third time in this library that the answer to charting accessibility has been ship the table. It is worth treating as a rule rather than rediscovering per chart.

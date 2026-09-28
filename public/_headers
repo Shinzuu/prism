@@ -4,7 +4,13 @@
   Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=31536000, immutable
 
+# Same reason as the fonts, and it became load-bearing when the components
+# moved to React: an island fetches its module from /_astro/, and a sandboxed
+# frame's null origin makes that a cross-origin request. Without this every
+# preview inside the gallery renders an empty box while a direct visit to
+# /preview/<slug> looks perfect.
 /_astro/*
+  Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=31536000, immutable
 
 /wallpapers/*

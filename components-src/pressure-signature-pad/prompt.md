@@ -1,0 +1,44 @@
+# Pressure Signature Pad
+
+- **Element ID:** `pressure-signature-pad`
+- **Type:** form
+- **Live:** https://prism.shinzuu-dev.workers.dev/components/pressure-signature-pad
+- **Record (JSON for LLMs):** https://prism.shinzuu-dev.workers.dev/elements/pressure-signature-pad.json
+
+Stroke width swells and tapers with real stylus pressure and tilt, drawn from the coalesced samples the browser batched — so the line is smooth instead of one straight segment per frame.
+
+## Final prompt
+
+```
+Build a signature pad on a canvas, in plain HTML, CSS and vanilla JavaScript.
+
+Draw from event.getCoalescedEvents(), not from the pointermove event alone. A pointermove is delivered roughly once per animation frame while the digitiser samples much faster; the coalesced list contains the samples the browser batched. Using only the delivered event produces one straight segment per frame, with a visible corner at every join — precisely on the fast curved strokes that make up a signature. Report the samples-per-frame ratio on screen so the difference is a measured number rather than a claim, and LABEL what that number means. A mouse has only one sample per frame to give, so a bare ratio of one reads as the feature being broken rather than as the input device having nothing more to offer; say which of the two it is.
+
+Use e.pressure for stroke width ONLY when e.pointerType is 'pen' and pressure is above zero. A mouse reports a constant 0.5 while down, so applying it unconditionally makes the feature look broken on the hardware most reviewers have. Fall back to a speed-based width — faster movement draws thinner — so the pad still behaves like a pen for everyone else. Factor tiltX and tiltY in as well, so a stylus held at an angle lays down a broader line.
+
+Set touch-action: none on the canvas, or a touch drag scrolls the page instead of drawing. Use setPointerCapture so a stroke survives leaving the canvas.
+
+The canvas is displayed at a different size than its backing store, so scale pointer coordinates by canvas.width / rect.width — skipping this makes the ink land offset from the pointer, increasingly so toward the edges.
+
+Read the ink colour from the design token with getComputedStyle rather than hard-coding it, so the signature follows the theme. Give the canvas a role and an accessible label, and provide a Clear button.
+
+Use tokens only: var(--bg), var(--raised), var(--text), var(--text-dim), var(--border), var(--accent), var(--mono). No literal colours.
+```
+
+## What failed first
+
+### Attempt 1
+
+> Build a signature pad on a canvas where you draw with the mouse or a stylus.
+
+Drew a line from the previous pointermove to the current one. pointermove fires about once per frame while the digitiser samples several times faster, so a quick signature became a chain of long straight segments with a visible corner at every frame boundary — worst on exactly the fast, curved strokes a signature is made of.
+
+### Attempt 2
+
+> Vary the stroke width with pointer pressure.
+
+Used e.pressure unconditionally. A mouse reports exactly 0.5 while a button is down and 0 otherwise, so on the hardware most people have, the width never varied and the feature appeared broken rather than unavailable. Tilt was also ignored, so a stylus held at an angle drew the same as one held upright.
+
+## Why this one is worth keeping
+
+Coalesced events are the part almost nobody reaches for, and they are the difference between a signature that looks handwritten and one that looks polygonal. The reason it is missed is that the naive version looks fine in testing — slow, deliberate strokes stay smooth, and the segmentation only appears at signing speed. The pressure half carries a different lesson about feature detection: e.pressure always returns a number, so there is no error to notice, and a mouse's constant 0.5 silently flattens the effect. Branching on pointerType and keeping a speed-based fallback means the pad behaves like a pen on every device rather than only on the one the author happened to test with.
