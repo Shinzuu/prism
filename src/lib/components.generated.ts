@@ -10,18 +10,22 @@ import C_challenge_response_checklist from '../../components-src/challenge-respo
 import C_code_input from '../../components-src/code-input/Component.tsx';
 import C_collation_sort_table from '../../components-src/collation-sort-table/Component.tsx';
 import C_command_button from '../../components-src/command-button/Component.tsx';
+import C_constraint_solver_form from '../../components-src/constraint-solver-form/Component.tsx';
 import C_copy_receipt from '../../components-src/copy-receipt/Component.tsx';
 import C_difference_header from '../../components-src/difference-header/Component.tsx';
 import C_duration_field from '../../components-src/duration-field/Component.tsx';
 import C_fold_reveal_section from '../../components-src/fold-reveal-section/Component.tsx';
+import C_forced_colors_chart from '../../components-src/forced-colors-chart/Component.tsx';
 import C_grapheme_budget_field from '../../components-src/grapheme-budget-field/Component.tsx';
 import C_ime_search_field from '../../components-src/ime-search-field/Component.tsx';
 import C_infinite_drag_field from '../../components-src/infinite-drag-field/Component.tsx';
 import C_localized_progress_loader from '../../components-src/localized-progress-loader/Component.tsx';
+import C_magic_plus_drag from '../../components-src/magic-plus-drag/Component.tsx';
 import C_marching_ants from '../../components-src/marching-ants/Component.tsx';
 import C_multiscript_text_column from '../../components-src/multiscript-text-column/Component.tsx';
 import C_odometer_stat from '../../components-src/odometer-stat/Component.tsx';
 import C_optimistic_row from '../../components-src/optimistic-row/Component.tsx';
+import C_origin_morph_dialog from '../../components-src/origin-morph-dialog/Component.tsx';
 import C_progressive_blur_sheet from '../../components-src/progressive-blur-sheet/Component.tsx';
 import C_queue_position from '../../components-src/queue-position/Component.tsx';
 import C_scroll_filmstrip from '../../components-src/scroll-filmstrip/Component.tsx';
@@ -44,18 +48,22 @@ export const components: Record<string, ComponentType> = {
   "code-input": C_code_input,
   "collation-sort-table": C_collation_sort_table,
   "command-button": C_command_button,
+  "constraint-solver-form": C_constraint_solver_form,
   "copy-receipt": C_copy_receipt,
   "difference-header": C_difference_header,
   "duration-field": C_duration_field,
   "fold-reveal-section": C_fold_reveal_section,
+  "forced-colors-chart": C_forced_colors_chart,
   "grapheme-budget-field": C_grapheme_budget_field,
   "ime-search-field": C_ime_search_field,
   "infinite-drag-field": C_infinite_drag_field,
   "localized-progress-loader": C_localized_progress_loader,
+  "magic-plus-drag": C_magic_plus_drag,
   "marching-ants": C_marching_ants,
   "multiscript-text-column": C_multiscript_text_column,
   "odometer-stat": C_odometer_stat,
   "optimistic-row": C_optimistic_row,
+  "origin-morph-dialog": C_origin_morph_dialog,
   "progressive-blur-sheet": C_progressive_blur_sheet,
   "queue-position": C_queue_position,
   "scroll-filmstrip": C_scroll_filmstrip,

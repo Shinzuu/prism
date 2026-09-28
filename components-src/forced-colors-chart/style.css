@@ -1,43 +1,14 @@
-.fc { display: grid; gap: 8px; }
-.fc__head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-.fc__title { margin: 0; font-size: .82rem; font-weight: 500; }
-.fc__sim {
-  font: inherit; font-size: .68rem; cursor: pointer;
-  padding: 5px 9px; border-radius: 6px;
-  border: 1px solid var(--border); background: var(--raised); color: var(--text);
-}
-.fc__sim[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
-.fc__sim:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fc-line { stroke-width: 1.7; vector-effect: non-scaling-stroke; }
+.fc-mark { stroke: none; }
 
-.fc__svg {
-  width: 100%; height: auto; display: block;
-  border: 1px solid var(--border); border-radius: 8px;
-  background: var(--bg);
-}
-.fc__line { fill: none; stroke-width: 1.7; vector-effect: non-scaling-stroke; }
-.fc__mark { stroke: none; }
-
-/* Colour is a convenience. Under forced colors the UA replaces every colour
-   with its own pair, so the dash patterns and marker shapes become the only
-   thing telling the four series apart — which is why they are always on. */
+/* Colour is a convenience. Under forced colors the UA substitutes its own
+   pair, so the dash patterns and marker shapes become the only thing telling
+   the four series apart — which is why they are never switched on here. */
 @media (forced-colors: active) {
-  .fc__line { stroke: CanvasText; forced-color-adjust: none; stroke: LinkText; }
-  .fc__line, .fc__mark { forced-color-adjust: auto; }
-  .fc__svg { border-color: CanvasText; }
+  .fc-line, .fc-mark { forced-color-adjust: auto; }
 }
 
 /* The simulation reproduces what the UA does: one ink, one ground. */
-.fc[data-fc-forced] .fc__line, .fc[data-fc-forced] .fc__mark { stroke: var(--text); fill: var(--text); }
-.fc[data-fc-forced] .fc__line { fill: none; }
-.fc[data-fc-forced] .fc__swatch { background: var(--text) !important; }
-
-.fc__legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
-.fc__leg { display: flex; align-items: center; gap: 5px; font-size: .7rem; color: var(--text-dim); }
-.fc__swatch { width: 22px; height: 0; border-top-width: 2px; border-top-style: solid; }
-.fc__legsvg { width: 12px; height: 12px; overflow: visible; }
-
-.fc__data { font-size: .72rem; color: var(--text-dim); }
-.fc__data summary { cursor: pointer; }
-.fc__table { border-collapse: collapse; margin-top: 6px; font-family: var(--mono); font-size: .62rem; }
-.fc__table th, .fc__table td { border: 1px solid var(--border); padding: 2px 6px; text-align: right; }
-.fc__table th:first-child, .fc__table td:first-child { text-align: left; }
+.fc-sim .fc-line { stroke: var(--text) !important; fill: none; }
+.fc-sim .fc-mark { fill: var(--text) !important; }
+.fc-sim .fc-swatch { border-top-color: var(--text) !important; }
