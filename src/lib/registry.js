@@ -34,8 +34,9 @@ function loadOne(slug) {
   if (!TYPES.includes(meta.type)) {
     fail(slug, `"type" is ${JSON.stringify(meta.type)}. Must be one of: ${TYPES.join(', ')}`);
   }
-  if (!Number.isInteger(meta.week) || meta.week < 1 || meta.week > 13) {
-    fail(slug, `"week" must be an integer 1-13, got ${JSON.stringify(meta.week)}`);
+  /* Weeks 1-13 are the challenge itself; beyond that is the ongoing library. */
+  if (!Number.isInteger(meta.week) || meta.week < 1 || meta.week > 60) {
+    fail(slug, `"week" must be an integer 1-60, got ${JSON.stringify(meta.week)}`);
   }
   if (!existsSync(join(dir, 'index.html'))) fail(slug, 'index.html is missing.');
 

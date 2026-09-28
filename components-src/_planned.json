@@ -1,4 +1,245 @@
 {
-  "note": "All thirty built. This file is kept so the library can show scheduled work again if the slate is extended.",
-  "components": []
+  "note": "The ongoing library beyond the ninety-day challenge. Selected from 98 researched candidates against one test: a working developer has not seen it, and wants it on sight. Weighted toward universal browser support, because these get pasted into client pages.",
+  "components": [
+    {
+      "week": 14,
+      "type": "button",
+      "name": "Weight Shift Button",
+      "summary": "Hold it and the label physically thickens and widens on the font's weight and width axes, then springs past rest before settling. Zero JavaScript."
+    },
+    {
+      "week": 14,
+      "type": "card",
+      "name": "Peel Corner Card",
+      "summary": "Grab the corner and the paper peels back — curled, self-shadowed, showing its own reverse — snapping flat or flipping fully depending on how far you take it."
+    },
+    {
+      "week": 15,
+      "type": "chart",
+      "name": "Outlier Heatmap",
+      "summary": "Drag a box around the slow blob and it ranks which dimensions are over-represented inside it versus outside. Answers why the p99 is bad, not that it is."
+    },
+    {
+      "week": 15,
+      "type": "form",
+      "name": "Constraint Solver Form",
+      "summary": "Interdependent dimensions where you mark which fields drive and which derive. Over-constrain it and it names the exact field to relax, rather than saying invalid."
+    },
+    {
+      "week": 16,
+      "type": "input",
+      "name": "Highlight Search Field",
+      "summary": "Type and every match in the document highlights — overlapping ranges, priority colours, and not one DOM node inserted. Works on virtualized content."
+    },
+    {
+      "week": 16,
+      "type": "loader",
+      "name": "Convergence Trace",
+      "summary": "Residual falling on a log axis, so the slope gives an estimate a spinner never can and a flat line means stalled rather than working."
+    },
+    {
+      "week": 17,
+      "type": "modal",
+      "name": "Progressive Blur Sheet",
+      "summary": "The scrim is not a flat dim but a graduated blur deepening toward the sheet edge, built from stacked masked layers. Opens and closes with no JavaScript."
+    },
+    {
+      "week": 17,
+      "type": "navbar",
+      "name": "Difference Blend Header",
+      "summary": "Every glyph inverts itself in real time against whatever photo or dark block scrolls beneath it. Never unreadable, never a scrim, two declarations."
+    },
+    {
+      "week": 18,
+      "type": "section",
+      "name": "Snap Guide Canvas",
+      "summary": "Drag a block and guides snap it to the edges, centres and equal-spacing rhythm of its neighbours, with live distance badges. The alignment engine, not the canvas."
+    },
+    {
+      "week": 18,
+      "type": "table",
+      "name": "Endless Ledger",
+      "summary": "Fifty thousand rows that paint instantly and scroll smoothly with no virtualization library and a scrollbar that does not jitter."
+    },
+    {
+      "week": 19,
+      "type": "button",
+      "name": "Declarative Command Button",
+      "summary": "Works before any JavaScript has loaded, then dispatches typed custom commands to a target element once it does. Invoker Commands, Baseline since late 2025."
+    },
+    {
+      "week": 19,
+      "type": "card",
+      "name": "Tear-Off Panel",
+      "summary": "Drag a panel off its dock and it becomes a real second browser window, still live and in sync through a BroadcastChannel. Drag it back to redock."
+    },
+    {
+      "week": 20,
+      "type": "chart",
+      "name": "Quantile Dots",
+      "summary": "A hundred dots drawn from the predictive distribution, so probability is countable rather than read off a shaded band. The form people actually reason with correctly."
+    },
+    {
+      "week": 20,
+      "type": "form",
+      "name": "Country Address Form",
+      "summary": "Switch the country and the form rebuilds — fields reorder, labels rewrite, the state select disappears, Japan grows a furigana row. Not every name is first and last."
+    },
+    {
+      "week": 21,
+      "type": "input",
+      "name": "IME Search Field",
+      "summary": "Waits for the composed word. A naive field fires a query for every pinyin keystroke and searches nihao instead of the characters the user is actually choosing."
+    },
+    {
+      "week": 21,
+      "type": "loader",
+      "name": "Segmented Cache Bar",
+      "summary": "Fills out of order — parallel jobs light their own segments as they land, so you see real concurrency instead of a fake left-to-right lie."
+    },
+    {
+      "week": 22,
+      "type": "modal",
+      "name": "Origin Morph Dialog",
+      "summary": "Grows out of the exact row that opened it, which becomes its header, and stays tethered to it. View Transitions and anchor positioning, both Baseline in 2026."
+    },
+    {
+      "week": 22,
+      "type": "navbar",
+      "name": "Sliding Pane Stack",
+      "summary": "Opening a link pushes a new pane to the right instead of replacing the view; older panes collapse to spines you can click back into. The trail is the layout."
+    },
+    {
+      "week": 23,
+      "type": "section",
+      "name": "Multiscript Text Column",
+      "summary": "Breaks Thai without spaces, honours Japanese kinsoku, and keeps Arabic letters joined at narrow measures. A ruler shows every legal break opportunity."
+    },
+    {
+      "week": 23,
+      "type": "table",
+      "name": "Sort Morph Table",
+      "summary": "Sort a column and the rows physically travel to their new places, so you can see where a row went instead of re-finding it. Different motion for sort than for filter."
+    },
+    {
+      "week": 24,
+      "type": "button",
+      "name": "Magic Plus Drag",
+      "summary": "The plus is not clicked — it is torn off and dropped between two rows, and the item is created exactly there, the list parting to show where it will land."
+    },
+    {
+      "week": 24,
+      "type": "card",
+      "name": "Paste Drop Inspector",
+      "summary": "Fans out every flavour the clipboard actually handed you, with byte sizes, and unfolds a dropped directory as a tree. Most apps read text/plain and discard the rest."
+    },
+    {
+      "week": 25,
+      "type": "chart",
+      "name": "Forced Colors Chart",
+      "summary": "Re-encodes itself live when colour is confiscated — dash patterns and marker shapes take over, the legend rewrites. Survives Windows High Contrast intact."
+    },
+    {
+      "week": 25,
+      "type": "form",
+      "name": "Pressure Signature Pad",
+      "summary": "Stroke width swells and tapers with real stylus pressure and tilt, drawn from the coalesced samples between frames that a mouse-event version throws away."
+    },
+    {
+      "week": 26,
+      "type": "input",
+      "name": "Grapheme Budget Field",
+      "summary": "Counts what a person would call a character. A family emoji costs one, not eleven, and truncation never splits a cluster into tofu."
+    },
+    {
+      "week": 26,
+      "type": "loader",
+      "name": "Marching Ants Wait",
+      "summary": "A dashed outline crawls the actual perimeter of whatever is loading — a row, a card, an irregular shape — rather than a spinner parked in the middle."
+    },
+    {
+      "week": 27,
+      "type": "modal",
+      "name": "Adjust Last Action",
+      "summary": "After an action completes, a panel shows that action's parameters. Change one and it silently re-runs from the pre-action state — retroactive tuning, not undo and retry."
+    },
+    {
+      "week": 27,
+      "type": "navbar",
+      "name": "Priority Overflow Toolbar",
+      "summary": "Measures its own content rather than the viewport, so at 400 percent zoom the actions migrate into the overflow menu one by one instead of clipping away."
+    },
+    {
+      "week": 28,
+      "type": "section",
+      "name": "Fold Reveal Section",
+      "summary": "Unfolds like a paper map as you scroll, panels rotating open on shared hinges, each catching a different amount of light."
+    },
+    {
+      "week": 28,
+      "type": "table",
+      "name": "Bertin Matrix",
+      "summary": "The data does not move — the rows and columns do. Reordering both axes drags structure onto the diagonal that no single-column sort reveals."
+    },
+    {
+      "week": 29,
+      "type": "button",
+      "name": "Safe Triangle Hover",
+      "summary": "Draws the wedge your pointer is allowed to travel through on its way to the panel, so moving diagonally never dismisses it. Taps to toggle on coarse pointers."
+    },
+    {
+      "week": 29,
+      "type": "card",
+      "name": "Bidi Comment Card",
+      "summary": "Arabic and Hebrew text mixed with Latin handles, URLs and trailing punctuation, isolated per string so the period stops teleporting to the wrong end of the line."
+    },
+    {
+      "week": 30,
+      "type": "chart",
+      "name": "Zone Overlap Ribbon",
+      "summary": "Working-hours bands across timezones, where one participant's band visibly jogs an hour mid-week at the daylight-saving seam and Kathmandu sits off the gridlines."
+    },
+    {
+      "week": 30,
+      "type": "form",
+      "name": "Shared Field Steps",
+      "summary": "Between wizard steps the fields that persist glide to their new positions while only the new ones fade in. The form reorganises instead of sliding panels."
+    },
+    {
+      "week": 31,
+      "type": "input",
+      "name": "Infinite Drag Field",
+      "summary": "Drag the label and the number climbs forever — the cursor vanishes, wraps at the screen edge, and never runs out of travel. Modifiers change the precision."
+    },
+    {
+      "week": 31,
+      "type": "loader",
+      "name": "Localized Progress Loader",
+      "summary": "The sentence rewrites itself as the count changes, through the live plural category, and the bar fills from the inline start so it runs the other way in Arabic."
+    },
+    {
+      "week": 32,
+      "type": "modal",
+      "name": "Challenge Response Checklist",
+      "summary": "Each item states a condition to verify and is confirmed individually, with one deliberate hold. Aviation discipline instead of typing the repo name."
+    },
+    {
+      "week": 32,
+      "type": "navbar",
+      "name": "Scroll Condense Wordmark",
+      "summary": "Compresses on the font's width axis as the page scrolls — narrowing rather than shrinking — to slot into the collapsed bar."
+    },
+    {
+      "week": 33,
+      "type": "section",
+      "name": "Switch Scanning Menu",
+      "summary": "A bar of light walks the groups; one key drops inside and walks the items, with a countdown ring for the dwell. How single-switch users actually navigate."
+    },
+    {
+      "week": 33,
+      "type": "table",
+      "name": "Collation Sort Table",
+      "summary": "The same ten names take four different orders depending on locale. Ö belongs in the middle in German and at the end in Swedish, and neither is UTF-16 order."
+    }
+  ]
 }
