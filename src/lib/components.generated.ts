@@ -16,6 +16,7 @@ import C_constraint_solver_form from '../../components-src/constraint-solver-for
 import C_convergence_trace from '../../components-src/convergence-trace/Component.tsx';
 import C_copy_receipt from '../../components-src/copy-receipt/Component.tsx';
 import C_country_address_form from '../../components-src/country-address-form/Component.tsx';
+import C_cron_builder from '../../components-src/cron-builder/Component.tsx';
 import C_difference_header from '../../components-src/difference-header/Component.tsx';
 import C_duration_field from '../../components-src/duration-field/Component.tsx';
 import C_endless_ledger from '../../components-src/endless-ledger/Component.tsx';
@@ -33,6 +34,7 @@ import C_magic_plus_drag from '../../components-src/magic-plus-drag/Component.ts
 import C_marching_ants from '../../components-src/marching-ants/Component.tsx';
 import C_multiscript_text_column from '../../components-src/multiscript-text-column/Component.tsx';
 import C_odometer_stat from '../../components-src/odometer-stat/Component.tsx';
+import C_oklch_picker from '../../components-src/oklch-picker/Component.tsx';
 import C_optimistic_row from '../../components-src/optimistic-row/Component.tsx';
 import C_origin_morph_dialog from '../../components-src/origin-morph-dialog/Component.tsx';
 import C_outlier_heatmap from '../../components-src/outlier-heatmap/Component.tsx';
@@ -83,6 +85,7 @@ export const components: Record<string, ComponentType> = {
   "convergence-trace": C_convergence_trace,
   "copy-receipt": C_copy_receipt,
   "country-address-form": C_country_address_form,
+  "cron-builder": C_cron_builder,
   "difference-header": C_difference_header,
   "duration-field": C_duration_field,
   "endless-ledger": C_endless_ledger,
@@ -100,6 +103,7 @@ export const components: Record<string, ComponentType> = {
   "marching-ants": C_marching_ants,
   "multiscript-text-column": C_multiscript_text_column,
   "odometer-stat": C_odometer_stat,
+  "oklch-picker": C_oklch_picker,
   "optimistic-row": C_optimistic_row,
   "origin-morph-dialog": C_origin_morph_dialog,
   "outlier-heatmap": C_outlier_heatmap,
