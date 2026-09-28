@@ -16,12 +16,27 @@ for (const c of allComponents()) {
   await p.waitForTimeout(900);
 
   const info = await p.evaluate(() => {
-    const body = document.body;
-    const painted = [...body.querySelectorAll('*')].filter((el) => {
-      const r = el.getBoundingClientRect();
-      return r.width > 4 && r.height > 4;
-    }).length;
-    const text = body.innerText.trim().length;
+    /* Bounded. Spreading querySelectorAll('*') and measuring each element
+       walks 250,000 nodes on endless-ledger and never returns — the same trap
+       that hung qa.mjs. The question here is "did anything paint", and the
+       first few hundred elements answer it as well as all of them. */
+    const CAP = 400;
+    let painted = 0, seen = 0;
+    const walk = (node, depth) => {
+      if (seen >= CAP || depth > 12) return;
+      for (const el of node.children) {
+        if (seen++ >= CAP) return;
+        const r = el.getBoundingClientRect();
+        if (r.width > 4 && r.height > 4) painted++;
+        const o = getComputedStyle(el);
+        if (o.overflow === 'visible' && o.overflowX === 'visible' && o.overflowY === 'visible') {
+          walk(el, depth + 1);
+        }
+      }
+    };
+    walk(document.body, 0);
+    // innerText on a 50,000-row body forces a full layout; take a slice.
+    const text = (document.querySelector('#fit-inner')?.textContent ?? '').slice(0, 4000).trim().length;
     const svg = document.querySelectorAll('svg').length;
     return { painted, text, svg };
   });

@@ -49,16 +49,10 @@ ck('hero: surfaces filled', done.filled >= 10, `${done.filled}`);
 ck('hero: callouts annotate by GSAP', done.notes === 5 && done.notesDone === 5, `${done.notesDone}/${done.notes}`);
 ck('no smooth-scroll library loaded', !done.lenis, 'native scrolling');
 
-// Flip filtering
-const before = await pg.evaluate(() => [...document.querySelectorAll('.cell:not([hidden])')].length);
-await pg.locator('.chipf[data-type="table"]').click();
-await pg.waitForTimeout(520);
-const after = await pg.evaluate(() => [...document.querySelectorAll('.cell:not([hidden])')].length);
-ck('filter: Flip narrows to type', before === 30 && after === 3, `${before} -> ${after}`);
-ck('filter: prismFilter installed', await pg.evaluate(() => typeof window.prismFilter === 'function'));
-await pg.locator('.chipf[data-type="all"]').click();
-await pg.waitForTimeout(800);
-ck('filter: restores all', await pg.evaluate(() => [...document.querySelectorAll('.cell:not([hidden])')].length) === 30);
+/* The Flip type-filter assertions lived here and were removed 2026-09-29:
+   the sectioned redesign replaced the .chipf chips and the flat .cell grid
+   with a per-type rail and a search field, so they were asserting a UI that
+   no longer exists. Search narrowing is covered by test/library.mjs. */
 
 // component page reveals
 await pg.goto(`${BASE}/components/command-palette`, { waitUntil: 'networkidle' });
