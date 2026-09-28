@@ -5,6 +5,7 @@ import type { ComponentType } from 'react';
 
 import C_bullet_chart from '../../components-src/bullet-chart/Component.tsx';
 import C_command_button from '../../components-src/command-button/Component.tsx';
+import C_copy_receipt from '../../components-src/copy-receipt/Component.tsx';
 import C_difference_header from '../../components-src/difference-header/Component.tsx';
 import C_fold_reveal_section from '../../components-src/fold-reveal-section/Component.tsx';
 import C_grapheme_budget_field from '../../components-src/grapheme-budget-field/Component.tsx';
@@ -12,12 +13,14 @@ import C_marching_ants from '../../components-src/marching-ants/Component.tsx';
 import C_progressive_blur_sheet from '../../components-src/progressive-blur-sheet/Component.tsx';
 import C_scroll_filmstrip from '../../components-src/scroll-filmstrip/Component.tsx';
 import C_segment_nav from '../../components-src/segment-nav/Component.tsx';
+import C_spotlight_card from '../../components-src/spotlight-card/Component.tsx';
 import C_staged_pipeline from '../../components-src/staged-pipeline/Component.tsx';
 import C_weight_shift_button from '../../components-src/weight-shift-button/Component.tsx';
 
 export const components: Record<string, ComponentType> = {
   "bullet-chart": C_bullet_chart,
   "command-button": C_command_button,
+  "copy-receipt": C_copy_receipt,
   "difference-header": C_difference_header,
   "fold-reveal-section": C_fold_reveal_section,
   "grapheme-budget-field": C_grapheme_budget_field,
@@ -25,6 +28,7 @@ export const components: Record<string, ComponentType> = {
   "progressive-blur-sheet": C_progressive_blur_sheet,
   "scroll-filmstrip": C_scroll_filmstrip,
   "segment-nav": C_segment_nav,
+  "spotlight-card": C_spotlight_card,
   "staged-pipeline": C_staged_pipeline,
   "weight-shift-button": C_weight_shift_button,
 };
