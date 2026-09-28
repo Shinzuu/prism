@@ -1,39 +1,11 @@
 @font-face {
   /* Archivo, chosen by measurement: across its 62-125 width axis the same
-     string renders at 0.53 of its widest, against 0.79 for Roboto Flex — the
-     axis actually condenses rather than merely tightening. */
+     string renders at 0.53 of its widest, against 0.79 for Roboto Flex whose
+     nominal range is far wider. Nominal range is not effect size. */
   font-family: 'Archivo SCW';
   src: url('/fonts/Archivo-wght-wdth.woff2') format('woff2-variations');
   font-weight: 100 900;
   font-stretch: 62% 125%;
   font-display: swap;
 }
-
-.scw { display: grid; gap: 8px; }
-
-.scw__bar {
-  display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
-  padding: 10px 12px;
-  border: 1px solid var(--border); border-radius: 9px 9px 0 0; background: var(--raised);
-  /* Fixed height: only the mark's proportion changes, so nothing reflows. */
-  min-height: 3rem;
-}
-.scw__mark {
-  font-family: 'Archivo SCW', var(--display), var(--sans), system-ui, sans-serif;
-  font-size: 1.6rem; line-height: 1; text-decoration: none; color: var(--text);
-  font-variation-settings: 'wdth' var(--scw-wdth, 125), 'wght' var(--scw-wght, 700);
-  white-space: nowrap;
-}
-.scw__nav { display: flex; gap: 12px; font-size: .74rem; }
-.scw__nav a { color: var(--text-dim); text-decoration: none; }
-.scw__nav a:hover { color: var(--text); }
-
-.scw__scroll {
-  height: 170px; overflow-y: auto;
-  border: 1px solid var(--border); border-top: 0; border-radius: 0 0 9px 9px;
-  background: var(--bg); padding: 11px 13px;
-  display: grid; gap: 10px; align-content: start;
-}
-.scw__p { margin: 0; font-size: .76rem; line-height: 1.6; color: var(--text-dim); max-width: 46ch; }
-
-.scw__read { margin: 0; font-family: var(--mono); font-size: .66rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.scw-mark { font-family: 'Archivo SCW', var(--display), var(--sans), system-ui, sans-serif; }

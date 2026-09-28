@@ -29,10 +29,12 @@ import C_multiscript_text_column from '../../components-src/multiscript-text-col
 import C_odometer_stat from '../../components-src/odometer-stat/Component.tsx';
 import C_optimistic_row from '../../components-src/optimistic-row/Component.tsx';
 import C_origin_morph_dialog from '../../components-src/origin-morph-dialog/Component.tsx';
+import C_peel_corner_card from '../../components-src/peel-corner-card/Component.tsx';
 import C_priority_overflow_toolbar from '../../components-src/priority-overflow-toolbar/Component.tsx';
 import C_progressive_blur_sheet from '../../components-src/progressive-blur-sheet/Component.tsx';
 import C_queue_position from '../../components-src/queue-position/Component.tsx';
 import C_safe_triangle_hover from '../../components-src/safe-triangle-hover/Component.tsx';
+import C_scroll_condense_wordmark from '../../components-src/scroll-condense-wordmark/Component.tsx';
 import C_scroll_filmstrip from '../../components-src/scroll-filmstrip/Component.tsx';
 import C_segment_nav from '../../components-src/segment-nav/Component.tsx';
 import C_segmented_cache_bar from '../../components-src/segmented-cache-bar/Component.tsx';
@@ -75,10 +77,12 @@ export const components: Record<string, ComponentType> = {
   "odometer-stat": C_odometer_stat,
   "optimistic-row": C_optimistic_row,
   "origin-morph-dialog": C_origin_morph_dialog,
+  "peel-corner-card": C_peel_corner_card,
   "priority-overflow-toolbar": C_priority_overflow_toolbar,
   "progressive-blur-sheet": C_progressive_blur_sheet,
   "queue-position": C_queue_position,
   "safe-triangle-hover": C_safe_triangle_hover,
+  "scroll-condense-wordmark": C_scroll_condense_wordmark,
   "scroll-filmstrip": C_scroll_filmstrip,
   "segment-nav": C_segment_nav,
   "segmented-cache-bar": C_segmented_cache_bar,
