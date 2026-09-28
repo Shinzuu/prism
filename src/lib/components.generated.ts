@@ -7,6 +7,7 @@ import C_bullet_chart from '../../components-src/bullet-chart/Component.tsx';
 import C_command_button from '../../components-src/command-button/Component.tsx';
 import C_copy_receipt from '../../components-src/copy-receipt/Component.tsx';
 import C_difference_header from '../../components-src/difference-header/Component.tsx';
+import C_duration_field from '../../components-src/duration-field/Component.tsx';
 import C_fold_reveal_section from '../../components-src/fold-reveal-section/Component.tsx';
 import C_grapheme_budget_field from '../../components-src/grapheme-budget-field/Component.tsx';
 import C_marching_ants from '../../components-src/marching-ants/Component.tsx';
@@ -15,9 +16,11 @@ import C_progressive_blur_sheet from '../../components-src/progressive-blur-shee
 import C_queue_position from '../../components-src/queue-position/Component.tsx';
 import C_scroll_filmstrip from '../../components-src/scroll-filmstrip/Component.tsx';
 import C_segment_nav from '../../components-src/segment-nav/Component.tsx';
+import C_shortcut_recorder from '../../components-src/shortcut-recorder/Component.tsx';
 import C_slide_confirm from '../../components-src/slide-confirm/Component.tsx';
 import C_spotlight_card from '../../components-src/spotlight-card/Component.tsx';
 import C_staged_pipeline from '../../components-src/staged-pipeline/Component.tsx';
+import C_unit_field from '../../components-src/unit-field/Component.tsx';
 import C_weight_shift_button from '../../components-src/weight-shift-button/Component.tsx';
 
 export const components: Record<string, ComponentType> = {
@@ -25,6 +28,7 @@ export const components: Record<string, ComponentType> = {
   "command-button": C_command_button,
   "copy-receipt": C_copy_receipt,
   "difference-header": C_difference_header,
+  "duration-field": C_duration_field,
   "fold-reveal-section": C_fold_reveal_section,
   "grapheme-budget-field": C_grapheme_budget_field,
   "marching-ants": C_marching_ants,
@@ -33,8 +37,10 @@ export const components: Record<string, ComponentType> = {
   "queue-position": C_queue_position,
   "scroll-filmstrip": C_scroll_filmstrip,
   "segment-nav": C_segment_nav,
+  "shortcut-recorder": C_shortcut_recorder,
   "slide-confirm": C_slide_confirm,
   "spotlight-card": C_spotlight_card,
   "staged-pipeline": C_staged_pipeline,
+  "unit-field": C_unit_field,
   "weight-shift-button": C_weight_shift_button,
 };
