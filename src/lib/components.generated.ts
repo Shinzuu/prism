@@ -51,12 +51,14 @@ import C_slide_confirm from '../../components-src/slide-confirm/Component.tsx';
 import C_sliding_pane_stack from '../../components-src/sliding-pane-stack/Component.tsx';
 import C_snap_guide_canvas from '../../components-src/snap-guide-canvas/Component.tsx';
 import C_sort_morph_table from '../../components-src/sort-morph-table/Component.tsx';
+import C_sparkline_table from '../../components-src/sparkline-table/Component.tsx';
 import C_spotlight_card from '../../components-src/spotlight-card/Component.tsx';
 import C_staged_pipeline from '../../components-src/staged-pipeline/Component.tsx';
 import C_switch_scanning_menu from '../../components-src/switch-scanning-menu/Component.tsx';
 import C_tear_off_panel from '../../components-src/tear-off-panel/Component.tsx';
 import C_unit_field from '../../components-src/unit-field/Component.tsx';
 import C_weight_shift_button from '../../components-src/weight-shift-button/Component.tsx';
+import C_word_diff from '../../components-src/word-diff/Component.tsx';
 import C_zone_overlap_ribbon from '../../components-src/zone-overlap-ribbon/Component.tsx';
 
 export const components: Record<string, ComponentType> = {
@@ -108,11 +110,13 @@ export const components: Record<string, ComponentType> = {
   "sliding-pane-stack": C_sliding_pane_stack,
   "snap-guide-canvas": C_snap_guide_canvas,
   "sort-morph-table": C_sort_morph_table,
+  "sparkline-table": C_sparkline_table,
   "spotlight-card": C_spotlight_card,
   "staged-pipeline": C_staged_pipeline,
   "switch-scanning-menu": C_switch_scanning_menu,
   "tear-off-panel": C_tear_off_panel,
   "unit-field": C_unit_field,
   "weight-shift-button": C_weight_shift_button,
+  "word-diff": C_word_diff,
   "zone-overlap-ribbon": C_zone_overlap_ribbon,
 };
