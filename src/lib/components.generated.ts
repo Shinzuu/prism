@@ -12,6 +12,7 @@ import C_code_input from '../../components-src/code-input/Component.tsx';
 import C_collation_sort_table from '../../components-src/collation-sort-table/Component.tsx';
 import C_column_resizer from '../../components-src/column-resizer/Component.tsx';
 import C_command_button from '../../components-src/command-button/Component.tsx';
+import C_command_palette from '../../components-src/command-palette/Component.tsx';
 import C_constraint_solver_form from '../../components-src/constraint-solver-form/Component.tsx';
 import C_convergence_trace from '../../components-src/convergence-trace/Component.tsx';
 import C_copy_receipt from '../../components-src/copy-receipt/Component.tsx';
@@ -38,6 +39,7 @@ import C_oklch_picker from '../../components-src/oklch-picker/Component.tsx';
 import C_optimistic_row from '../../components-src/optimistic-row/Component.tsx';
 import C_origin_morph_dialog from '../../components-src/origin-morph-dialog/Component.tsx';
 import C_outlier_heatmap from '../../components-src/outlier-heatmap/Component.tsx';
+import C_pan_zoom_canvas from '../../components-src/pan-zoom-canvas/Component.tsx';
 import C_paste_drop_inspector from '../../components-src/paste-drop-inspector/Component.tsx';
 import C_peel_corner_card from '../../components-src/peel-corner-card/Component.tsx';
 import C_pressure_signature_pad from '../../components-src/pressure-signature-pad/Component.tsx';
@@ -81,6 +83,7 @@ export const components: Record<string, ComponentType> = {
   "collation-sort-table": C_collation_sort_table,
   "column-resizer": C_column_resizer,
   "command-button": C_command_button,
+  "command-palette": C_command_palette,
   "constraint-solver-form": C_constraint_solver_form,
   "convergence-trace": C_convergence_trace,
   "copy-receipt": C_copy_receipt,
@@ -107,6 +110,7 @@ export const components: Record<string, ComponentType> = {
   "optimistic-row": C_optimistic_row,
   "origin-morph-dialog": C_origin_morph_dialog,
   "outlier-heatmap": C_outlier_heatmap,
+  "pan-zoom-canvas": C_pan_zoom_canvas,
   "paste-drop-inspector": C_paste_drop_inspector,
   "peel-corner-card": C_peel_corner_card,
   "pressure-signature-pad": C_pressure_signature_pad,
