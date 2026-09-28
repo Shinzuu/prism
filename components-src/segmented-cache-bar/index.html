@@ -1,0 +1,15 @@
+<div class="scb" data-scb>
+  <div class="scb__head">
+    <p class="scb__title">Warming cache</p>
+    <p class="scb__meta"><span data-scb-done>0</span>/<span data-scb-total>0</span> shards<span class="scb__sep">·</span><span data-scb-el>0.0s</span></p>
+  </div>
+
+  <!-- One element per shard, not one bar with a width. A single width can only
+       tell you how much is done, never which parts, and it has to lie about
+       order when four jobs finish out of sequence. -->
+  <div class="scb__bar" data-scb-bar role="progressbar"
+       aria-label="Cache warm progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+
+  <ol class="scb__lanes" data-scb-lanes></ol>
+  <p class="scb__note">Four workers, sixteen shards, taken off a shared queue. Segments light where they land — the gaps are real concurrency, not a stalled animation.</p>
+</div>

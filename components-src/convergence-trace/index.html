@@ -1,0 +1,24 @@
+<div class="ct" data-ct>
+  <div class="ct__head">
+    <p class="ct__title">Solving <span class="ct__dim">— residual</span></p>
+    <p class="ct__read"><span data-ct-res>—</span><span class="ct__sep">·</span><span data-ct-eta>estimating</span></p>
+  </div>
+
+  <div class="ct__plot">
+    <!-- Decades label the vertical axis, so they sit beside the plot. Laid out
+         in a row under it they read as if residual were the x axis. -->
+    <div class="ct__yaxis" aria-hidden="true"><span>1e0</span><span>1e-3</span><span>1e-6</span></div>
+  <!-- A log y-axis is the point. On a linear axis the residual collapses into
+       the floor after two iterations and the trace is a flat line for the rest
+       of the run, which is exactly when you most want to read it. -->
+  <svg class="ct__svg" viewBox="0 0 300 96" preserveAspectRatio="none" role="img"
+       aria-label="Residual falling on a logarithmic axis">
+    <g class="ct__grid" data-ct-grid></g>
+    <path class="ct__fit" data-ct-fit fill="none" />
+    <path class="ct__line" data-ct-line fill="none" />
+    <circle class="ct__dot" data-ct-dot r="2.6" />
+  </svg>
+  </div>
+  <p class="ct__xaxis" aria-hidden="true">iteration →</p>
+  <p class="ct__note" data-ct-note>The slope gives an estimate a spinner cannot. A flat trace means stalled, not working.</p>
+</div>

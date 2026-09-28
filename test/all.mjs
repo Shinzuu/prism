@@ -33,5 +33,6 @@ for (const c of allComponents()) {
 }
 
 await b.close();
-console.log(bad ? `\n${bad} component(s) failed` : '\nall 30 components mount and run clean');
+const total = allComponents().length;
+console.log(bad ? `\n${bad} of ${total} component(s) failed` : `\nall ${total} components mount and run clean`);
 process.exit(bad ? 1 : 0);

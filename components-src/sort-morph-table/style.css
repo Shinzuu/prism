@@ -1,0 +1,26 @@
+.smt { display: grid; gap: 8px; }
+.smt__head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.smt__title { margin: 0; font-size: .82rem; font-weight: 500; }
+.smt__meta { margin: 0; font-family: var(--mono); font-size: .66rem; color: var(--text-dim); }
+
+.smt__table { width: 100%; border-collapse: collapse; font-size: .76rem; }
+.smt__table th { text-align: left; padding: 0 0 5px; border-bottom: 1px solid var(--border); }
+.smt__sort {
+  font: inherit; font-size: .68rem; font-weight: 500;
+  background: none; border: 0; padding: 3px 4px; cursor: pointer;
+  color: var(--text-dim); border-radius: 4px;
+}
+.smt__sort:hover { color: var(--text); }
+.smt__sort[aria-sort] { color: var(--accent); }
+.smt__sort[aria-sort]::after { content: ' ↑'; }
+.smt__sort[aria-sort="descending"]::after { content: ' ↓'; }
+.smt__sort:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.smt__table td { padding: 6px 4px; border-bottom: 1px solid color-mix(in oklab, var(--border) 45%, transparent); }
+.smt__table td:nth-child(2), .smt__table td:nth-child(3) { font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: .68rem; }
+.smt__table tr[data-hot="1"] td:nth-child(3) { color: var(--accent); }
+.smt__table td:last-child { color: var(--text-dim); font-family: var(--mono); font-size: .66rem; }
+
+/* The row being animated is lifted so it passes over its neighbours rather
+   than through them — without this the travel reads as a flicker. */
+.smt__table tr[data-moving] { position: relative; z-index: 1; background: var(--bg); }

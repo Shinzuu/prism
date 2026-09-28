@@ -1,0 +1,80 @@
+.pc { display: grid; gap: 8px; }
+
+.pc__card {
+  --pc-size: 132px;          /* how far the corner can travel */
+  --pc-cut: calc(var(--pc-peel) * var(--pc-size));
+  position: relative; isolation: isolate;
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--raised);
+  min-height: 158px;
+}
+
+/* One clip-path drives everything: the face loses exactly the triangle the
+   curl covers, so the two can never disagree about where the fold is. */
+.pc__face {
+  position: relative; z-index: 2;
+  padding: 14px 16px;
+  background: var(--raised);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--pc-cut)), calc(100% - var(--pc-cut)) 100%, 0 100%);
+}
+.pc__kicker { margin: 0 0 6px; font-size: .64rem; letter-spacing: .04em; color: var(--text-dim); font-family: var(--mono); }
+.pc__t { margin: 0 0 5px; font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; }
+.pc__d { margin: 0; font-size: .74rem; color: var(--text-dim); }
+
+.pc__back {
+  position: absolute; inset: 0; z-index: 1;
+  /* The peel uncovers a bottom-RIGHT triangle, so the reverse content has to
+     live there. Left-aligned text on this layer is hidden by the face and only
+     its wrapped tail shows through the wedge. */
+  display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end;
+  padding: 14px 16px; text-align: right;
+  background: color-mix(in oklab, var(--accent) 12%, var(--bg));
+}
+.pc__back-t { margin: 0 0 4px; font-size: .72rem; font-weight: 500; }
+.pc__back-d { margin: 0; font-size: .68rem; color: var(--text-dim); line-height: 1.45; }
+
+/* The lifted paper. The flap is the triangle the face cut away, MIRRORED across
+   the fold — so it lands on top of the face and leaves the cut showing the
+   reverse. Clipping it to the cut itself (the obvious guess) covers the hole it
+   is supposed to open, and the reverse layer can never be seen.
+   The gradient runs along the fold's normal: lit at the fold, falling into
+   shadow toward the free corner. drop-shadow, not box-shadow — clip-path clips
+   a box-shadow away with the rest of the box. */
+.pc__curl {
+  position: absolute; z-index: 3; right: 0; bottom: 0;
+  width: var(--pc-cut); height: var(--pc-cut);
+  clip-path: polygon(100% 0, 0 100%, 0 0);
+  /* Shade by LIGHTNESS only. Mixing toward var(--text) also pulls the chroma
+     out, so the flap turns grey against a tinted card and stops reading as the
+     same paper. Relative colour keeps hue and chroma and moves L alone —
+     the same rule the site's palette ladder uses. */
+  background: linear-gradient(315deg,
+    oklch(from var(--raised) calc(l - 0.015) c h) 0%,
+    oklch(from var(--raised) calc(l - 0.055) c h) 55%,
+    oklch(from var(--raised) calc(l - 0.130) c h) 100%);
+  filter: drop-shadow(-1px -1px 5px color-mix(in oklab, black 26%, transparent));
+}
+
+.pc__grab {
+  position: absolute; z-index: 4; right: 0; bottom: 0;
+  width: 44px; height: 44px; padding: 0;
+  border: 0; background: none; cursor: grab;
+  touch-action: none;
+}
+.pc__grab:active { cursor: grabbing; }
+.pc__grab:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; border-radius: 0 0 12px 0; }
+.pc__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Only the settle is animated. While dragging the card tracks the pointer
+   exactly, so the transition is added on release and removed on grab. */
+.pc__card[data-pc-settling] { transition: none; }
+.pc__card[data-pc-settling] .pc__face,
+.pc__card[data-pc-settling] .pc__curl { transition: none; }
+.pc__card[data-pc-settling="1"] { --pc-peel: var(--pc-target); transition: --pc-peel .42s cubic-bezier(.2, .9, .25, 1); }
+
+.pc__hint { margin: 0; font-size: .72rem; color: var(--text-dim); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pc__card[data-pc-settling="1"] { transition-duration: 1ms; }
+}

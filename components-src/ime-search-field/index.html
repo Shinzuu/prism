@@ -1,0 +1,22 @@
+<div class="ime" data-ime>
+  <label class="ime__label" for="ime-q">Search products</label>
+  <div class="ime__box">
+    <input class="ime__input" id="ime-q" type="search" autocomplete="off"
+           placeholder="Type — or compose with an IME" data-ime-input>
+    <span class="ime__state" data-ime-state>idle</span>
+  </div>
+
+  <div class="ime__cols">
+    <div class="ime__col">
+      <p class="ime__h">This field</p>
+      <ol class="ime__log" data-ime-good aria-live="polite"></ol>
+    </div>
+    <div class="ime__col">
+      <p class="ime__h ime__h--bad">Without the guard</p>
+      <ol class="ime__log ime__log--bad" data-ime-bad></ol>
+    </div>
+  </div>
+
+  <p class="ime__note">Type <b data-ime-demo>nihao</b> with a Chinese IME and the naive field fires five queries for the letters. This one fires once, for 你好.</p>
+  <button class="ime__sim" data-ime-sim>Replay a composition</button>
+</div>

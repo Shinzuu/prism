@@ -1,0 +1,27 @@
+.qd { margin: 0; display: grid; gap: 9px; }
+.qd__cap { font-size: .84rem; font-weight: 500; }
+
+.qd__plot {
+  display: flex; align-items: flex-end; gap: 3px;
+  height: 92px; padding: 0 2px;
+}
+.qd__col { display: flex; flex-direction: column-reverse; gap: 2px; flex: 1; }
+.qd__dot {
+  aspect-ratio: 1; width: 100%; max-width: 9px;
+  border-radius: 50%;
+  background: var(--border);
+  margin-inline: auto;
+}
+/* Dots before the deadline are the outcomes that make it. */
+.qd__dot[data-in="true"] { background: var(--accent); }
+
+.qd__axis { display: flex; justify-content: space-between; font-family: var(--mono); font-size: .64rem; color: var(--text-dim); }
+
+.qd__read { margin: 0; font-size: .84rem; }
+.qd__read b { font-variant-numeric: tabular-nums; }
+
+.qd__ctl { display: flex; align-items: center; gap: 10px; font-size: .78rem; color: var(--text-dim); }
+.qd__ctl input { flex: 1; accent-color: var(--accent); }
+.qd__ctl output { font-family: var(--mono); font-size: .74rem; color: var(--text); font-variant-numeric: tabular-nums; min-width: 4.5ch; }
+
+.qd__data { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); margin: -1px; }

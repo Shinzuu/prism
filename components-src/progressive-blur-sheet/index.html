@@ -1,0 +1,30 @@
+<div class="pbs">
+  <p class="pbs__hint">A flat dim reads as a sheet of grey laid over the page. A gradient of blur reads as depth.</p>
+  <button class="pbs__open" commandfor="pbs-sheet" command="show-modal">Open sheet</button>
+
+  <div class="pbs__bed" aria-hidden="true">
+    <p class="pbs__bed-t">Deployment 41c9</p>
+    <p class="pbs__bed-d">Content behind the sheet, so the blur has something to act on.</p>
+    <div class="pbs__bars"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
+
+  <dialog class="pbs__sheet" id="pbs-sheet">
+    <!-- Four stacked layers. Each blurs more than the one below and is masked
+         to a narrower band, so the blur ramps instead of stepping. A single
+         backdrop-filter cannot do this: filters take one uniform radius. -->
+    <div class="pbs__veil" aria-hidden="true">
+      <div class="pbs__veil-l" style="--pbs-b: 2px;  --pbs-from: 0%;"></div>
+      <div class="pbs__veil-l" style="--pbs-b: 6px;  --pbs-from: 28%;"></div>
+      <div class="pbs__veil-l" style="--pbs-b: 14px; --pbs-from: 52%;"></div>
+      <div class="pbs__veil-l" style="--pbs-b: 28px; --pbs-from: 74%;"></div>
+    </div>
+    <div class="pbs__panel">
+      <p class="pbs__t">Roll back to 41c9?</p>
+      <p class="pbs__d">Traffic shifts over about ninety seconds. The blur under this panel is a gradient, not a flat scrim — sharpest far from the sheet, deepest right against it.</p>
+      <div class="pbs__actions">
+        <button class="pbs__btn pbs__btn--ghost" commandfor="pbs-sheet" command="close">Cancel</button>
+        <button class="pbs__btn" commandfor="pbs-sheet" command="close">Roll back</button>
+      </div>
+    </div>
+  </dialog>
+</div>

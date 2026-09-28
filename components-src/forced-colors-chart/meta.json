@@ -1,0 +1,20 @@
+{
+  "slug": "forced-colors-chart",
+  "name": "Forced Colors Chart",
+  "type": "chart",
+  "week": 25,
+  "date": "2026-09-28",
+  "summary": "A four-series chart that still reads when colour is confiscated. Dash patterns and marker shapes carry the identity at all times, so Windows High Contrast, a monochrome print or colour blindness costs nothing.",
+  "attempts": [
+    {
+      "prompt": "Build a multi-series line chart with a legend.",
+      "problem": "Four lines separated by hue alone. In Windows High Contrast the user agent replaces every colour with one ink and one ground, so all four lines and all four legend swatches become identical and the chart carries no information at all. The same happens on a monochrome printer, and roughly one man in twelve cannot separate two of those hues anyway."
+    },
+    {
+      "prompt": "Add dash patterns that appear when forced-colors is active.",
+      "problem": "Switching encoding inside the media query means the encoding that matters is the one nobody ever looks at. It was wrong — two series shared a pattern — and stayed wrong, because the layout only exists in a mode the author never opens. Redundant encoding has to be on all the time or it is not tested."
+    }
+  ],
+  "finalPrompt": "Build a four-series line chart in plain HTML, CSS, SVG and vanilla JavaScript that remains readable when colour is removed.\n\nGive every series THREE encodings at once: a colour, a stroke-dasharray, and a marker shape (circle, square, triangle, diamond) drawn via <defs> and <use>. All three are always on. Do NOT switch encodings on inside a forced-colors media query — an encoding that only exists in a mode the author never opens is an encoding that is never tested, and it will be wrong.\n\nThe legend must repeat all three: the marker shape, a rule showing the dash pattern, and the name. A legend that only shows colour swatches fails in exactly the situations this chart is built for.\n\nDerive the per-series hues with relative colour — oklch(from var(--accent) l c calc(h + N)) — so they rotate around the site accent and hold its lightness and chroma. No literal colours anywhere.\n\nInclude a @media (forced-colors: active) block that lets system colours through rather than fighting them, and use forced-color-adjust deliberately. Add a button that simulates the mode by collapsing everything to a single ink, so a reviewer on macOS or Linux can see the result; if matchMedia('(forced-colors: active)').matches is already true, disable the button and say so instead of offering to fake a state the user is already in.\n\nPut the actual numbers in a real <table> inside a <details>. An SVG is a picture — the table is what works in a screen reader, in a text browser and on paper. Give the svg role=\"img\" and an aria-label that points at the table.\n\nUse tokens only: var(--accent), var(--bg), var(--text), var(--text-dim), var(--border), var(--mono), plus CSS system colours inside the forced-colors block.",
+  "why": "The trap is subtler than forgetting accessibility: it is adding the accessible encoding inside the media query that needs it. The dash patterns then only exist in a rendering mode the author never opens, so nobody notices when two series share one — the feature is written, shipped, and broken simultaneously. Redundant encoding has to be visible in the default view to stay correct, which is the same argument as keeping a fallback path in production traffic. The chart is also better for everyone: it survives a monochrome printer, a screenshot pasted into a greyscale doc, and the roughly eight percent of men who cannot separate two of the hues."
+}
