@@ -21,6 +21,8 @@ import C_endless_ledger from '../../components-src/endless-ledger/Component.tsx'
 import C_fold_reveal_section from '../../components-src/fold-reveal-section/Component.tsx';
 import C_forced_colors_chart from '../../components-src/forced-colors-chart/Component.tsx';
 import C_grapheme_budget_field from '../../components-src/grapheme-budget-field/Component.tsx';
+import C_heatmap_calendar from '../../components-src/heatmap-calendar/Component.tsx';
+import C_highlight_search from '../../components-src/highlight-search/Component.tsx';
 import C_ime_search_field from '../../components-src/ime-search-field/Component.tsx';
 import C_infinite_drag_field from '../../components-src/infinite-drag-field/Component.tsx';
 import C_localized_progress_loader from '../../components-src/localized-progress-loader/Component.tsx';
@@ -76,6 +78,8 @@ export const components: Record<string, ComponentType> = {
   "fold-reveal-section": C_fold_reveal_section,
   "forced-colors-chart": C_forced_colors_chart,
   "grapheme-budget-field": C_grapheme_budget_field,
+  "heatmap-calendar": C_heatmap_calendar,
+  "highlight-search": C_highlight_search,
   "ime-search-field": C_ime_search_field,
   "infinite-drag-field": C_infinite_drag_field,
   "localized-progress-loader": C_localized_progress_loader,

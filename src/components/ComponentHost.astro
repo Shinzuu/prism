@@ -18,6 +18,8 @@ import C_endless_ledger from '../../components-src/endless-ledger/Component.tsx'
 import C_fold_reveal_section from '../../components-src/fold-reveal-section/Component.tsx';
 import C_forced_colors_chart from '../../components-src/forced-colors-chart/Component.tsx';
 import C_grapheme_budget_field from '../../components-src/grapheme-budget-field/Component.tsx';
+import C_heatmap_calendar from '../../components-src/heatmap-calendar/Component.tsx';
+import C_highlight_search from '../../components-src/highlight-search/Component.tsx';
 import C_ime_search_field from '../../components-src/ime-search-field/Component.tsx';
 import C_infinite_drag_field from '../../components-src/infinite-drag-field/Component.tsx';
 import C_localized_progress_loader from '../../components-src/localized-progress-loader/Component.tsx';
@@ -73,6 +75,8 @@ const { slug } = Astro.props as { slug: string };
 {slug === "fold-reveal-section" && <C_fold_reveal_section client:only="react" />}
 {slug === "forced-colors-chart" && <C_forced_colors_chart client:only="react" />}
 {slug === "grapheme-budget-field" && <C_grapheme_budget_field client:only="react" />}
+{slug === "heatmap-calendar" && <C_heatmap_calendar client:only="react" />}
+{slug === "highlight-search" && <C_highlight_search client:only="react" />}
 {slug === "ime-search-field" && <C_ime_search_field client:only="react" />}
 {slug === "infinite-drag-field" && <C_infinite_drag_field client:only="react" />}
 {slug === "localized-progress-loader" && <C_localized_progress_loader client:only="react" />}
