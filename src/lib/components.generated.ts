@@ -25,6 +25,7 @@ import C_grapheme_budget_field from '../../components-src/grapheme-budget-field/
 import C_heatmap_calendar from '../../components-src/heatmap-calendar/Component.tsx';
 import C_highlight_search from '../../components-src/highlight-search/Component.tsx';
 import C_histogram_range from '../../components-src/histogram-range/Component.tsx';
+import C_history_scrubber from '../../components-src/history-scrubber/Component.tsx';
 import C_ime_search_field from '../../components-src/ime-search-field/Component.tsx';
 import C_infinite_drag_field from '../../components-src/infinite-drag-field/Component.tsx';
 import C_localized_progress_loader from '../../components-src/localized-progress-loader/Component.tsx';
@@ -42,6 +43,7 @@ import C_priority_overflow_toolbar from '../../components-src/priority-overflow-
 import C_progressive_blur_sheet from '../../components-src/progressive-blur-sheet/Component.tsx';
 import C_quantile_dots from '../../components-src/quantile-dots/Component.tsx';
 import C_queue_position from '../../components-src/queue-position/Component.tsx';
+import C_radial_menu from '../../components-src/radial-menu/Component.tsx';
 import C_reading_rail from '../../components-src/reading-rail/Component.tsx';
 import C_ridgeline_plot from '../../components-src/ridgeline-plot/Component.tsx';
 import C_safe_triangle_hover from '../../components-src/safe-triangle-hover/Component.tsx';
@@ -90,6 +92,7 @@ export const components: Record<string, ComponentType> = {
   "heatmap-calendar": C_heatmap_calendar,
   "highlight-search": C_highlight_search,
   "histogram-range": C_histogram_range,
+  "history-scrubber": C_history_scrubber,
   "ime-search-field": C_ime_search_field,
   "infinite-drag-field": C_infinite_drag_field,
   "localized-progress-loader": C_localized_progress_loader,
@@ -107,6 +110,7 @@ export const components: Record<string, ComponentType> = {
   "progressive-blur-sheet": C_progressive_blur_sheet,
   "quantile-dots": C_quantile_dots,
   "queue-position": C_queue_position,
+  "radial-menu": C_radial_menu,
   "reading-rail": C_reading_rail,
   "ridgeline-plot": C_ridgeline_plot,
   "safe-triangle-hover": C_safe_triangle_hover,
