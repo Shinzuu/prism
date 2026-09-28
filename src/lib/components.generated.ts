@@ -5,6 +5,7 @@ import type { ComponentType } from 'react';
 
 import C_bidi_comment_card from '../../components-src/bidi-comment-card/Component.tsx';
 import C_bullet_chart from '../../components-src/bullet-chart/Component.tsx';
+import C_challenge_response_checklist from '../../components-src/challenge-response-checklist/Component.tsx';
 import C_code_input from '../../components-src/code-input/Component.tsx';
 import C_collation_sort_table from '../../components-src/collation-sort-table/Component.tsx';
 import C_command_button from '../../components-src/command-button/Component.tsx';
@@ -13,14 +14,17 @@ import C_difference_header from '../../components-src/difference-header/Componen
 import C_duration_field from '../../components-src/duration-field/Component.tsx';
 import C_fold_reveal_section from '../../components-src/fold-reveal-section/Component.tsx';
 import C_grapheme_budget_field from '../../components-src/grapheme-budget-field/Component.tsx';
+import C_ime_search_field from '../../components-src/ime-search-field/Component.tsx';
 import C_localized_progress_loader from '../../components-src/localized-progress-loader/Component.tsx';
 import C_marching_ants from '../../components-src/marching-ants/Component.tsx';
+import C_multiscript_text_column from '../../components-src/multiscript-text-column/Component.tsx';
 import C_odometer_stat from '../../components-src/odometer-stat/Component.tsx';
 import C_optimistic_row from '../../components-src/optimistic-row/Component.tsx';
 import C_progressive_blur_sheet from '../../components-src/progressive-blur-sheet/Component.tsx';
 import C_queue_position from '../../components-src/queue-position/Component.tsx';
 import C_scroll_filmstrip from '../../components-src/scroll-filmstrip/Component.tsx';
 import C_segment_nav from '../../components-src/segment-nav/Component.tsx';
+import C_segmented_cache_bar from '../../components-src/segmented-cache-bar/Component.tsx';
 import C_shortcut_recorder from '../../components-src/shortcut-recorder/Component.tsx';
 import C_slide_confirm from '../../components-src/slide-confirm/Component.tsx';
 import C_spotlight_card from '../../components-src/spotlight-card/Component.tsx';
@@ -31,6 +35,7 @@ import C_weight_shift_button from '../../components-src/weight-shift-button/Comp
 export const components: Record<string, ComponentType> = {
   "bidi-comment-card": C_bidi_comment_card,
   "bullet-chart": C_bullet_chart,
+  "challenge-response-checklist": C_challenge_response_checklist,
   "code-input": C_code_input,
   "collation-sort-table": C_collation_sort_table,
   "command-button": C_command_button,
@@ -39,14 +44,17 @@ export const components: Record<string, ComponentType> = {
   "duration-field": C_duration_field,
   "fold-reveal-section": C_fold_reveal_section,
   "grapheme-budget-field": C_grapheme_budget_field,
+  "ime-search-field": C_ime_search_field,
   "localized-progress-loader": C_localized_progress_loader,
   "marching-ants": C_marching_ants,
+  "multiscript-text-column": C_multiscript_text_column,
   "odometer-stat": C_odometer_stat,
   "optimistic-row": C_optimistic_row,
   "progressive-blur-sheet": C_progressive_blur_sheet,
   "queue-position": C_queue_position,
   "scroll-filmstrip": C_scroll_filmstrip,
   "segment-nav": C_segment_nav,
+  "segmented-cache-bar": C_segmented_cache_bar,
   "shortcut-recorder": C_shortcut_recorder,
   "slide-confirm": C_slide_confirm,
   "spotlight-card": C_spotlight_card,

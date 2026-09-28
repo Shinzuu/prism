@@ -1,42 +1,16 @@
-.scb { display: grid; gap: 8px; }
-.scb__head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-.scb__title { margin: 0; font-size: .82rem; font-weight: 500; }
-.scb__meta { margin: 0; font-family: var(--mono); font-size: .68rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
-.scb__sep { margin: 0 6px; opacity: .5; }
+.scb-seg { transition: background-color .18s ease; }
 
-.scb__bar {
-  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 2px;
-  height: 16px; padding: 2px;
-  border: 1px solid var(--border); border-radius: 7px; background: var(--bg);
-}
-.scb__seg {
-  border-radius: 2px;
-  background: color-mix(in oklab, var(--border) 55%, transparent);
-  transition: background-color .18s ease;
-}
-.scb__seg[data-state="run"] {
-  background: color-mix(in oklab, var(--accent) 30%, transparent);
-  animation: scb-pulse 1s ease-in-out infinite;
-}
-.scb__seg[data-state="done"] { background: var(--accent); }
-.scb__seg[data-state="miss"] {
+@keyframes scb-pulse { 50% { opacity: .45; } }
+.scb-pulse { animation: scb-pulse 1s ease-in-out infinite; }
+
+/* A hatch, so a miss is distinguishable without relying on colour. */
+.scb-miss {
   background: repeating-linear-gradient(45deg,
     color-mix(in oklab, var(--accent) 28%, transparent) 0 3px,
     transparent 3px 6px);
 }
-@keyframes scb-pulse { 50% { opacity: .45; } }
-
-.scb__lanes { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
-.scb__lane {
-  display: grid; grid-template-columns: 4.2rem 1fr; gap: 8px; align-items: center;
-  font-family: var(--mono); font-size: .62rem; color: var(--text-dim);
-}
-.scb__lane-k { color: var(--text-dim); }
-.scb__lane-v { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-.scb__note { margin: 0; font-size: .72rem; color: var(--text-dim); line-height: 1.5; }
 
 @media (prefers-reduced-motion: reduce) {
-  .scb__seg { transition: none; }
-  .scb__seg[data-state="run"] { animation: none; }
+  .scb-seg { transition: none; }
+  .scb-pulse { animation: none; }
 }
