@@ -10,9 +10,12 @@ import C_difference_header from '../../components-src/difference-header/Componen
 import C_fold_reveal_section from '../../components-src/fold-reveal-section/Component.tsx';
 import C_grapheme_budget_field from '../../components-src/grapheme-budget-field/Component.tsx';
 import C_marching_ants from '../../components-src/marching-ants/Component.tsx';
+import C_odometer_stat from '../../components-src/odometer-stat/Component.tsx';
 import C_progressive_blur_sheet from '../../components-src/progressive-blur-sheet/Component.tsx';
+import C_queue_position from '../../components-src/queue-position/Component.tsx';
 import C_scroll_filmstrip from '../../components-src/scroll-filmstrip/Component.tsx';
 import C_segment_nav from '../../components-src/segment-nav/Component.tsx';
+import C_slide_confirm from '../../components-src/slide-confirm/Component.tsx';
 import C_spotlight_card from '../../components-src/spotlight-card/Component.tsx';
 import C_staged_pipeline from '../../components-src/staged-pipeline/Component.tsx';
 import C_weight_shift_button from '../../components-src/weight-shift-button/Component.tsx';
@@ -25,9 +28,12 @@ export const components: Record<string, ComponentType> = {
   "fold-reveal-section": C_fold_reveal_section,
   "grapheme-budget-field": C_grapheme_budget_field,
   "marching-ants": C_marching_ants,
+  "odometer-stat": C_odometer_stat,
   "progressive-blur-sheet": C_progressive_blur_sheet,
+  "queue-position": C_queue_position,
   "scroll-filmstrip": C_scroll_filmstrip,
   "segment-nav": C_segment_nav,
+  "slide-confirm": C_slide_confirm,
   "spotlight-card": C_spotlight_card,
   "staged-pipeline": C_staged_pipeline,
   "weight-shift-button": C_weight_shift_button,
