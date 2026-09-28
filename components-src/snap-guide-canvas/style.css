@@ -6,8 +6,8 @@
 }
 .sgc__block {
   position: absolute; left: 0; top: 0;
-  width: var(--w); height: var(--h);
-  translate: var(--x) var(--y);
+  width: var(--sgc-w); height: var(--sgc-h);
+  translate: var(--sgc-x) var(--sgc-y);
   display: grid; place-items: center;
   font-size: .7rem; color: var(--text-dim);
   border: 1px solid var(--border); border-radius: 7px; background: var(--raised);

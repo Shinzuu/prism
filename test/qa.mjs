@@ -6,9 +6,17 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { allComponents } from '../src/lib/registry.js';
 
+import { appendFileSync, writeFileSync } from 'node:fs';
+
 const BASE = process.env.BASE || 'https://prism.shinzuu-dev.workers.dev';
+const PROGRESS = process.env.QA_PROGRESS || '/tmp/qa-progress.txt';
 const fails = [];
-const fail = (rule, detail) => fails.push(`${rule}: ${detail}`);
+/* Written through to disk as they are found. This run takes minutes on a
+   low-memory laptop and has twice been killed before printing anything;
+   a partial result on disk beats a complete result that never arrives. */
+writeFileSync(PROGRESS, '');
+const note = (line) => { try { appendFileSync(PROGRESS, line + '\n'); } catch {} };
+const fail = (rule, detail) => { fails.push(`${rule}: ${detail}`); note('FAIL ' + rule + ': ' + detail); };
 
 /* ---------- 1. token collisions, no browser needed ----------
    A component using --h or --c as a local variable silently inherits the hue
@@ -51,15 +59,51 @@ const withPage = async (opts, fn, label) => {
   return null;
 };
 
-/* ---------- 2. nothing may overflow its frame ---------- */
+/* ---------- 2. nothing may overflow its frame ----------
+   One page, reused for every component. A fresh page per component spawns a
+   renderer per component and is what put this run over the machine's memory. */
+let shared = await browser.newPage({ viewport: { width: 520, height: 347 } });
+const onShared = async (fn, label) => {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      if (!browser.isConnected()) { browser = await chromium.launch(); shared = null; }
+      if (!shared || shared.isClosed()) shared = await browser.newPage({ viewport: { width: 520, height: 347 } });
+      return await fn(shared);
+    } catch (err) {
+      try { if (shared && !shared.isClosed()) await shared.close(); } catch {}
+      shared = null;
+      if (attempt === 1) { fail('crashed', `${label}: ${String(err).split('\n')[0]}`); return null; }
+    }
+  }
+  return null;
+};
+
+let done = 0;
+const total = allComponents().length;
 for (const c of allComponents()) {
-  const r = await withPage({ viewport: { width: 520, height: 347 } }, async (p) => {
-  await p.goto(`${BASE}/preview/${c.slug}`, { waitUntil: 'networkidle' });
-  await p.waitForTimeout(1200);
+  const r = await onShared(async (p) => {
+  await p.goto(`${BASE}/preview/${c.slug}`, { waitUntil: 'load' });
+  await p.waitForTimeout(700);
   return await p.evaluate(() => {
     const box = document.getElementById('fit');
     const b = box.getBoundingClientRect();
-    const clipped = [...document.querySelectorAll('#fit-inner *')].filter((el) => {
+    /* Only elements that can actually escape the frame are worth measuring.
+       Anything inside a clipping container is contained by definition, and
+       descending into one is how this check used to walk 250,000 rows of
+       endless-ledger at one forced layout each — it never returned. */
+    const candidates = [];
+    const walk = (node, depth) => {
+      if (candidates.length > 2000 || depth > 12) return;
+      for (const el of node.children) {
+        candidates.push(el);
+        const o = getComputedStyle(el);
+        if (o.overflow === 'visible' && o.overflowX === 'visible' && o.overflowY === 'visible') {
+          walk(el, depth + 1);
+        }
+      }
+    };
+    walk(document.getElementById('fit-inner') || document.body, 0);
+    const clipped = candidates.filter((el) => {
       const r = el.getBoundingClientRect();
       if (r.width < 2 || r.height < 2) return false;
       return r.right > innerWidth + 2 || r.bottom > innerHeight + 2 || r.left < -2 || r.top < -2;
@@ -72,11 +116,13 @@ for (const c of allComponents()) {
     };
   });
   }, `preview/${c.slug}`);
+  note(`checked ${++done}/${total} ${c.slug}`);
   if (!r) continue;
   if (r.out) fail('overflow', `${c.slug} escapes its frame`);
   if (r.scale < 0.45) fail('scale', `${c.slug} shrunk to ${r.scale.toFixed(2)} — something is far too large`);
   if (r.empty) fail('empty', `${c.slug} renders nothing at rest`);
 }
+try { if (shared && !shared.isClosed()) await shared.close(); } catch {}
 
 /* ---------- 3. no horizontal overflow at any width ---------- */
 for (const w of [320, 390, 768, 1440]) {

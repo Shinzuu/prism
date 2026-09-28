@@ -14,7 +14,7 @@
 
     const px = (el, p) => parseFloat(getComputedStyle(el).getPropertyValue(p));
     const boxOf = (el) => {
-      const x = px(el, '--x'), y = px(el, '--y'), w = px(el, '--w'), h = px(el, '--h');
+      const x = px(el, '--sgc-x'), y = px(el, '--sgc-y'), w = px(el, '--sgc-w'), h = px(el, '--sgc-h');
       return { x, y, w, h, cx: x + w / 2, cy: y + h / 2, r: x + w, b: y + h };
     };
 
@@ -42,7 +42,7 @@
        collected first and the closest wins per axis, so two near-misses cannot
        both apply and drag the block somewhere neither of them asked for. */
     const resolve = (x, y) => {
-      const me = { x, y, w: px(live, '--w'), h: px(live, '--h') };
+      const me = { x, y, w: px(live, '--sgc-w'), h: px(live, '--sgc-h') };
       me.cx = x + me.w / 2; me.cy = y + me.h / 2; me.r = x + me.w; me.b = y + me.h;
       const boxes = others.map(boxOf);
       const lines = [], labels = [];
@@ -95,12 +95,12 @@
 
     const place = (x, y) => {
       const W = stage.clientWidth, H = stage.clientHeight;
-      const w = px(live, '--w'), h = px(live, '--h');
+      const w = px(live, '--sgc-w'), h = px(live, '--sgc-h');
       x = Math.max(0, Math.min(W - w, x));
       y = Math.max(0, Math.min(H - h, y));
       const r = resolve(x, y);
-      live.style.setProperty('--x', r.x + 'px');
-      live.style.setProperty('--y', r.y + 'px');
+      live.style.setProperty('--sgc-x', r.x + 'px');
+      live.style.setProperty('--sgc-y', r.y + 'px');
       draw(r.lines, r.labels);
       read.textContent = r.said || Math.round(r.x) + ', ' + Math.round(r.y);
     };
