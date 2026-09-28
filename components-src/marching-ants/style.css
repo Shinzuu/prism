@@ -1,35 +1,16 @@
-.ma { display: grid; gap: 12px; }
-.ma__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
-
-.ma__row, .ma__odd {
-  position: relative;
-  padding: 11px 14px;
-  background: var(--surface);
-  border-radius: 9px;
-  font-size: .84rem;
-}
-.ma__row { display: flex; align-items: center; gap: 12px; }
-.ma__name { flex: 1; }
-.ma__state { font-family: var(--mono); font-size: .68rem; color: var(--text-dim); }
-
-.ma__odd {
-  /* An irregular outline, to show the ants are tracing the real border box. */
-  border-radius: 9px;
-  corner-shape: scoop;
-  padding: 14px 16px;
-}
-.ma__odd p { margin: 0; font-size: .78rem; color: var(--text-dim); max-width: 46ch; }
-
-/* The angle has to be a registered custom property or it cannot be animated —
-   an unregistered one is a string, and strings do not interpolate. */
+/* @property registration is the component. An unregistered custom property is
+   a string, so the angle would not interpolate: no error, no warning, no
+   motion — which reads as a broken keyframe rather than a missing @property. */
 @property --ma-angle {
   syntax: "<angle>";
   inherits: false;
   initial-value: 0deg;
 }
 
-/* The ants are a conic gradient used as a border image, so they follow the
-   element's own border box whatever shape or size it is. */
+.ma-odd { corner-shape: scoop; }
+
+/* The ants are a conic gradient painted on the border box, so they follow the
+   element's own shape whatever it is. No utility can express this. */
 [data-ma-item][aria-busy="true"] {
   border: 1.5px dashed transparent;
   background-origin: border-box;
@@ -44,12 +25,8 @@
   animation: ma-crawl 4s linear infinite;
 }
 
-[data-ma-item]:not([aria-busy="true"]) .ma__state { color: var(--accent); }
-
 @keyframes ma-crawl { to { --ma-angle: 360deg; } }
 
 @media (prefers-reduced-motion: reduce) {
   [data-ma-item][aria-busy="true"] { animation: none; }
 }
-
-.ma__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); margin: -1px; }

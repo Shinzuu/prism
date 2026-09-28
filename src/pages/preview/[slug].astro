@@ -6,6 +6,11 @@ export async function getStaticPaths() {
 const { c } = Astro.props;
 // Inlined: a 1KB shell beats 30 frames each fetching an 8KB stylesheet.
 import shell from '../../styles/preview.css?raw';
+import '../../styles/tailwind.css';
+
+import ComponentHost from '../../components/ComponentHost.astro';
+import { components } from '../../lib/components.generated.ts';
+const hasReact = Boolean(components[c.slug]);
 ---
 <!doctype html>
 <html lang="en">
@@ -18,8 +23,10 @@ import shell from '../../styles/preview.css?raw';
   <style set:html={c.css}></style>
 </head>
 <body>
-  <div id="fit"><div id="fit-inner"><Fragment set:html={c.html} /></div></div>
-  {c.js && <script is:inline set:html={c.js} />}
+  <div id="fit"><div id="fit-inner">
+    {hasReact ? <ComponentHost slug={c.slug} /> : <Fragment set:html={c.html} />}
+  </div></div>
+  {!hasReact && c.js && <script is:inline set:html={c.js} />}
   <script is:inline>
     /* Fit the component to the frame. Previews are a fixed aspect and components
        are not, so without this some are cropped mid-sentence and others float in

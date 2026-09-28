@@ -1,53 +1,6 @@
-/* The blending group is the whole point: isolation on the wrapper stops the
-   header reaching past this component, and keeps the panels as its backdrop. */
-.dh {
-  position: relative;
-  isolation: isolate;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  height: 260px;
-}
-
-.dh__bar {
-  position: absolute; inset-inline: 0; top: 0; z-index: 2;
-  display: flex; align-items: center; gap: 18px;
-  padding: 14px 18px;
-  /* No background. A background would defeat it — the text must have the
-     content itself as its backdrop. */
-  mix-blend-mode: difference;
-  color: #fff;               /* difference against white inverts the backdrop */
-  pointer-events: none;
-}
-.dh__bar a { pointer-events: auto; }
-
-.dh__mark { font-weight: 700; font-size: 1rem; letter-spacing: -.02em; }
-.dh__nav { display: flex; gap: 14px; margin-inline-start: auto; font-size: .82rem; }
-.dh__nav a { color: inherit; text-decoration: none; }
-.dh__nav a:hover { text-decoration: underline; text-underline-offset: 3px; }
-
-.dh__scroll { height: 100%; overflow-y: auto; scroll-behavior: smooth; }
-.dh__panel {
-  min-height: 100%;
-  display: grid; align-items: end;
-  padding: 18px;
-  scroll-snap-align: start;
-}
-.dh__scroll { scroll-snap-type: y mandatory; }
-.dh__panel p { margin: 0; max-width: 34ch; font-size: .84rem; }
-
-.dh__panel--pale   { background: var(--bg); color: var(--text); }
-.dh__panel--ink    { background: var(--text); color: var(--bg); }
-.dh__panel--accent { background: var(--accent); color: var(--accent-fg); }
-.dh__panel--split  {
-  background: linear-gradient(100deg, var(--text) 0 46%, var(--bg) 46% 100%);
-  color: var(--text-dim);
-}
-
-@media (prefers-reduced-motion: reduce) { .dh__scroll { scroll-behavior: auto; } }
-
-/* Forced colours remove the backdrop the effect depends on, so opt out and
-   fall back to system colours on a solid bar. */
+/* Forced colours remove the backdrop the effect depends on. Tailwind's
+   forced-colors variant handles the blend and the ground, but opting the bar
+   out of the UA's own colour substitution needs the property itself. */
 @media (forced-colors: active) {
-  .dh__bar { mix-blend-mode: normal; background: Canvas; color: CanvasText; forced-color-adjust: none; }
+  .dh-bar { forced-color-adjust: none; }
 }

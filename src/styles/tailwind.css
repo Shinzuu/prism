@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+/* Tailwind's own palette is a wall of literal hex, which is exactly what this
+   project forbids — every colour must derive from the wallpaper-driven OKLCH
+   tokens so contrast stays structurally guaranteed. Mapping the theme onto the
+   existing custom properties means `bg-accent` compiles to var(--accent) and
+   the build's literal-colour gate keeps its teeth. */
+@theme inline {
+  --color-bg:         var(--bg);
+  --color-surface:    var(--surface);
+  --color-raised:     var(--raised);
+  --color-border:     var(--border);
+  --color-text:       var(--text);
+  --color-text-dim:   var(--text-dim);
+  --color-accent:     var(--accent);
+  --color-accent-fg:  var(--accent-fg);
+  --color-accent-dim: var(--accent-dim);
+
+  --font-sans:    var(--sans);
+  --font-mono:    var(--mono);
+  --font-display: var(--display);
+
+  --radius-token:    var(--radius);
+  --radius-token-sm: var(--radius-sm);
+}
+
+/* Tailwind v4 scans for class names it can see. Component sources live outside
+   src/, so they have to be named explicitly or every utility they use is
+   dropped from the output. */
+@source "../../components-src/**/*.tsx";

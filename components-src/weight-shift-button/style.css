@@ -1,5 +1,5 @@
-/* Scoped to this component: 59KB of variable font is not worth loading on
-   pages that never use the axes. */
+/* Scoped to this component: 90KB of variable font is not worth loading on
+   pages that never touch the axes. */
 @font-face {
   font-family: 'Archivo WSB';
   src: url('/fonts/Archivo-wght-wdth.woff2') format('woff2-variations');
@@ -8,49 +8,32 @@
   font-display: swap;
 }
 
-.wsb { display: grid; gap: 9px; justify-items: start; }
-
-/* @property is mandatory here. Unregistered custom properties are strings and
-   do not interpolate, so the transition below silently does nothing. */
+/* @property is mandatory. Unregistered custom properties are strings and do
+   not interpolate, so the transition below would silently do nothing. */
 @property --wsb-wght { syntax: '<number>'; inherits: false; initial-value: 400; }
 @property --wsb-wdth { syntax: '<number>'; inherits: false; initial-value: 100; }
 
-.wsb__btn {
+.wsb-btn {
   --wsb-wght: 400;
   --wsb-wdth: 100;
   font-family: 'Archivo WSB', var(--sans), system-ui, sans-serif;
-  font-size: 1.1rem;
-  /* The axes, driven by the registered properties. */
   font-variation-settings: 'wght' var(--wsb-wght), 'wdth' var(--wsb-wdth);
-  cursor: pointer;
-  padding: 13px 22px; border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--raised); color: var(--text);
   transition: --wsb-wght .45s cubic-bezier(.3,.7,.3,1),
               --wsb-wdth .45s cubic-bezier(.3,.7,.3,1),
               border-color .2s ease, color .2s ease;
 }
-.wsb__btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-
-/* Holding drives both axes up. The overshoot on release is what makes it feel
-   like a physical spring rather than a fade. */
-.wsb__btn[data-holding] {
+.wsb-btn[data-holding] {
   --wsb-wght: 900;
   --wsb-wdth: 125;
   border-color: var(--accent);
   color: var(--accent);
 }
-.wsb__btn[data-released] {
+.wsb-btn[data-released] {
   --wsb-wght: 300;
   --wsb-wdth: 78;
   transition: --wsb-wght .16s ease-out, --wsb-wdth .16s ease-out;
 }
 
-.wsb__label { display: inline-block; }
-
-.wsb__read { margin: 0; font-family: var(--mono); font-size: .68rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
-.wsb__note { margin: 0; font-size: .72rem; color: var(--text-dim); line-height: 1.5; max-width: 34ch; }
-
 @media (prefers-reduced-motion: reduce) {
-  .wsb__btn, .wsb__btn[data-released] { transition: border-color .2s ease, color .2s ease; }
+  .wsb-btn, .wsb-btn[data-released] { transition: border-color .2s ease, color .2s ease; }
 }

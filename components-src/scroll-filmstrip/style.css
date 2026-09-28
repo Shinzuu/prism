@@ -1,7 +1,7 @@
+/* scroll-timeline, sticky staging and the runway have no utility equivalents,
+   and the runway needs a definite height to multiply: a percentage height
+   against an indefinite parent resolves to zero and the strip never scrolls. */
 .fs {
-  /* A definite height, because the runway below multiplies it. A percentage
-     height against an indefinite parent resolves to zero and the strip then
-     has nothing to scroll. */
   --fs-h: 320px;
   position: relative;
   block-size: var(--fs-h);
@@ -14,97 +14,39 @@
 .fs::-webkit-scrollbar { display: none; }
 .fs:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 
-.fs__stage {
-  position: sticky;
-  top: 0;
+.fs-stage {
+  position: sticky; top: 0;
   block-size: var(--fs-h);
   overflow: hidden;
-  display: grid;
-  align-content: center;
+  display: grid; align-content: center;
 }
 
-.fs__rail {
-  display: flex;
-  gap: var(--gap, 18px);
-  padding-inline: 22px;
-  will-change: transform;
-}
-
-.fs__panel {
-  flex: 0 0 min(300px, 78%);
-  padding: 20px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-}
-.fs__panel h3 { margin: 6px 0 6px; font-size: 1.02rem; }
-.fs__panel p { margin: 0; color: var(--text-dim); font-size: 0.86rem; line-height: 1.55; }
-
-.fs__no {
-  margin: 0;
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
-  color: var(--accent);
-}
-
-.fs__bar {
-  position: absolute;
-  left: 22px; right: 22px; bottom: 16px;
-  height: 2px;
-  background: var(--border);
-  border-radius: 2px;
-}
-.fs__bar i {
-  display: block;
-  height: 100%;
-  width: 100%;
-  transform-origin: left;
-  background: var(--accent);
-  border-radius: inherit;
-  scale: 0.08 1;
-}
-
-.fs__hint {
-  position: absolute;
-  right: 22px; bottom: 30px;
-  margin: 0;
-  font-family: var(--mono);
-  font-size: 0.62rem;
-  color: var(--text-dim);
-}
-
-/* Runway gives the container something to scroll. Without a timeline it
-   collapses, so the strip degrades to a plain horizontal scroller. */
-.fs__runway { block-size: 0; }
+.fs-runway { block-size: calc(var(--fs-h) * 3); }
 
 @supports (animation-timeline: scroll()) {
-  .fs { overflow-x: hidden; }
-  .fs__runway { block-size: calc(var(--fs-h) * 2.6); }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .fs__rail {
-      animation: fs-pan linear both;
-      animation-timeline: --strip;
-    }
-    .fs__bar i {
-      animation: fs-fill linear both;
-      animation-timeline: --strip;
-    }
+  .fs-rail {
+    animation: fs-pan linear both;
+    animation-timeline: --strip;
   }
+  .fs-bar i {
+    animation: fs-fill linear both;
+    animation-timeline: --strip;
+  }
+  .fs-bar i { scale: 0.08 1; }
 
-  /* Reduced motion keeps the layout but drops the mapped movement. */
   @media (prefers-reduced-motion: reduce) {
     .fs { overflow-x: auto; }
-    .fs__runway { block-size: 0; }
-    .fs__stage { position: static; }
+    .fs-runway { block-size: 0; }
+    .fs-stage { position: static; }
   }
 }
 
+/* No timeline support: a plain horizontal scroller, every panel reachable. */
 @supports not (animation-timeline: scroll()) {
   .fs { overflow-x: auto; overflow-y: hidden; }
-  .fs__stage { position: static; }
-  .fs__bar, .fs__hint { display: none; }
+  .fs-stage { position: static; }
+  .fs-bar, .fs .fs-stage p[aria-hidden] { display: none; }
+  .fs-runway { block-size: 0; }
 }
 
 @keyframes fs-pan {

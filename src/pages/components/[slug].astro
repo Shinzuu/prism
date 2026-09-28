@@ -12,9 +12,12 @@ export async function getStaticPaths() {
 const { c, prev, next } = Astro.props;
 const repo = `https://github.com/Shinzuu/prism/blob/main/${c.repoPath}`;
 const files = [
-  { label: 'index.html', lang: 'html', body: c.html },
-  { label: 'style.css', lang: 'css', body: c.css },
-  ...(c.js ? [{ label: 'script.js', lang: 'js', body: c.js }] : [])
+  /* React components publish their .tsx. style.css survives only where Tailwind
+     genuinely cannot reach — @property registration, keyframes, scroll
+     timelines, @font-face — so it is shown only when it exists. */
+  ...(c.hasTsx ? [{ label: 'Component.tsx', lang: 'tsx', body: c.tsx }] : [{ label: 'index.html', lang: 'html', body: c.html }]),
+  ...(c.css ? [{ label: 'style.css', lang: 'css', body: c.css }] : []),
+  ...(!c.hasTsx && c.js ? [{ label: 'script.js', lang: 'js', body: c.js }] : [])
 ];
 ---
 <Base title={c.name} description={c.summary}>

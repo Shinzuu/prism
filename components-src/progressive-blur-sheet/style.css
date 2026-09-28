@@ -1,59 +1,7 @@
-.pbs { display: grid; gap: 10px; }
-.pbs__hint { margin: 0; font-size: .74rem; color: var(--text-dim); line-height: 1.5; }
+/* ::backdrop is a pseudo-element, so no utility class can reach it. */
+.pbs-sheet::backdrop { background: transparent; }
 
-.pbs__open, .pbs__btn {
-  font: inherit; font-size: .8rem; cursor: pointer;
-  padding: 8px 14px; border-radius: 8px;
-  border: 1px solid transparent;
-  background: var(--accent); color: var(--accent-fg);
-}
-.pbs__open { justify-self: start; }
-.pbs__btn--ghost { background: transparent; color: var(--text); border-color: var(--border); }
-.pbs__open:focus-visible, .pbs__btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-.pbs__bed {
-  border: 1px solid var(--border); border-radius: 10px;
-  padding: 12px 14px; background: var(--raised);
-}
-.pbs__bed-t { margin: 0 0 3px; font-size: .8rem; font-weight: 500; }
-.pbs__bed-d { margin: 0 0 10px; font-size: .72rem; color: var(--text-dim); }
-.pbs__bars { display: flex; gap: 5px; align-items: flex-end; height: 34px; }
-.pbs__bars i { flex: 1; border-radius: 2px; background: var(--accent); opacity: .5; }
-.pbs__bars i:nth-child(1) { height: 42%; } .pbs__bars i:nth-child(2) { height: 78%; }
-.pbs__bars i:nth-child(3) { height: 30%; } .pbs__bars i:nth-child(4) { height: 95%; }
-.pbs__bars i:nth-child(5) { height: 61%; } .pbs__bars i:nth-child(6) { height: 48%; }
-
-/* The dialog holds the sheet only. Its own backdrop stays transparent, because
-   the graduated veil below is doing that job and ::backdrop cannot be layered. */
-.pbs__sheet {
-  margin: 0; padding: 0; border: 0; background: none;
-  max-width: none; max-height: none; width: 100%; height: 100%;
-  inset: 0; overflow: hidden;
-}
-.pbs__sheet::backdrop { background: transparent; }
-
-.pbs__veil { position: absolute; inset: 0; }
-/* Each layer blurs the whole backdrop, then a mask keeps only the band where
-   that radius should dominate. Stacked, the visible radius ramps smoothly. */
-.pbs__veil-l {
-  position: absolute; inset: 0;
-  backdrop-filter: blur(var(--pbs-b));
-  -webkit-backdrop-filter: blur(var(--pbs-b));
-  mask-image: linear-gradient(to bottom, transparent var(--pbs-from), black calc(var(--pbs-from) + 24%));
-  -webkit-mask-image: linear-gradient(to bottom, transparent var(--pbs-from), black calc(var(--pbs-from) + 24%));
-}
-
-.pbs__panel {
-  position: absolute; left: 0; right: 0; bottom: 0;
-  padding: 16px 16px 18px;
-  background: var(--raised);
-  border-top: 1px solid var(--border);
-  border-radius: 14px 14px 0 0;
-  animation: pbs-rise .34s cubic-bezier(.2, .8, .2, 1) both;
-}
-.pbs__t { margin: 0 0 6px; font-size: .88rem; font-weight: 500; }
-.pbs__d { margin: 0 0 14px; font-size: .76rem; color: var(--text-dim); line-height: 1.55; }
-.pbs__actions { display: flex; gap: 8px; justify-content: flex-end; }
-
+/* Keyframes have no Tailwind equivalent. */
 @keyframes pbs-rise { from { translate: 0 100%; } to { translate: 0 0; } }
-@media (prefers-reduced-motion: reduce) { .pbs__panel { animation: none; } }
+.pbs-panel { animation: pbs-rise .34s cubic-bezier(.2, .8, .2, 1) both; }
+@media (prefers-reduced-motion: reduce) { .pbs-panel { animation: none; } }

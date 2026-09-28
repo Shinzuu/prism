@@ -38,20 +38,43 @@ function loadOne(slug) {
   if (!Number.isInteger(meta.week) || meta.week < 1 || meta.week > 60) {
     fail(slug, `"week" must be an integer 1-60, got ${JSON.stringify(meta.week)}`);
   }
-  if (!existsSync(join(dir, 'index.html'))) fail(slug, 'index.html is missing.');
-
   const read = (f) => existsSync(join(dir, f)) ? readFileSync(join(dir, f), 'utf8') : '';
+
+  /* The library ships React + TypeScript + Tailwind. A component is published
+     from Component.tsx; index.html only remains for entries still being
+     migrated, and the build refuses anything that has neither. */
+  const hasTsx = existsSync(join(dir, 'Component.tsx'));
+  const hasHtml = existsSync(join(dir, 'index.html'));
+  if (!hasTsx && !hasHtml) fail(slug, 'Component.tsx is missing.');
+
+  const tsx = read('Component.tsx');
   const html = read('index.html');
   const css = read('style.css');
   const js = read('script.js');
 
   /* Components must theme from tokens, never from literal colours.
      A hardcoded colour breaks the wallpaper palette and fails the library's purpose. */
-  const literal = [...css.matchAll(/#[0-9a-fA-F]{3,8}\b|\brgba?\([^)]*\)|\bhsla?\([^)]*\)/g)]
-    .map(m => m[0])
-    .filter(v => !/^#(fff|ffffff|000|000000)$/i.test(v));
+  const COLOUR = /#[0-9a-fA-F]{3,8}\b|\brgba?\([^)]*\)|\bhsla?\([^)]*\)/g;
+  const notWhiteOrBlack = (v) => !/^#(fff|ffffff|000|000000)$/i.test(v);
+  const literal = [...css.matchAll(COLOUR)].map(m => m[0]).filter(notWhiteOrBlack);
   if (literal.length) {
     fail(slug, `style.css uses literal colours instead of tokens: ${[...new Set(literal)].slice(0, 5).join(', ')}\n  Use var(--accent), var(--text), var(--surface) and friends.`);
+  }
+
+  /* Tailwind's arbitrary-value syntax is a hole straight through the palette
+     rule — bg-[#0af] compiles fine and is exactly what this forbids. Scan the
+     component source for literal colours too, including inside class strings. */
+  const tsxLiteral = [...tsx.matchAll(COLOUR)].map(m => m[0]).filter(notWhiteOrBlack);
+  if (tsxLiteral.length) {
+    fail(slug, `Component.tsx uses literal colours instead of tokens: ${[...new Set(tsxLiteral)].slice(0, 5).join(', ')}\n  Use the Tailwind token classes (bg-accent, text-text-dim, border-border) or var(--token).`);
+  }
+
+  /* Tailwind's default palette is literal by definition, so a class naming one
+     bypasses the tokens just as surely as a hex value would. */
+  const PALETTE = 'slate|gray|grey|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose';
+  const paletteClass = [...tsx.matchAll(new RegExp(`\\b(?:bg|text|border|ring|fill|stroke|from|via|to|outline|decoration|shadow|accent|caret|divide|placeholder)-(?:${PALETTE})-\\d{2,3}\\b`, 'g'))].map(m => m[0]);
+  if (paletteClass.length) {
+    fail(slug, `Component.tsx uses Tailwind's built-in palette: ${[...new Set(paletteClass)].slice(0, 5).join(', ')}\n  Those are literal colours. Use bg-accent, text-text-dim, border-border and friends.`);
   }
 
   return {
@@ -64,7 +87,7 @@ function loadOne(slug) {
     finalPrompt,
     attempts: Array.isArray(meta.attempts) ? meta.attempts : [],
     why: meta.why || '',
-    html, css, js,
+    html, css, js, tsx, hasTsx,
     repoPath: `components-src/${slug}`
   };
 }
