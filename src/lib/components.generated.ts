@@ -29,6 +29,7 @@ import C_origin_morph_dialog from '../../components-src/origin-morph-dialog/Comp
 import C_priority_overflow_toolbar from '../../components-src/priority-overflow-toolbar/Component.tsx';
 import C_progressive_blur_sheet from '../../components-src/progressive-blur-sheet/Component.tsx';
 import C_queue_position from '../../components-src/queue-position/Component.tsx';
+import C_safe_triangle_hover from '../../components-src/safe-triangle-hover/Component.tsx';
 import C_scroll_filmstrip from '../../components-src/scroll-filmstrip/Component.tsx';
 import C_segment_nav from '../../components-src/segment-nav/Component.tsx';
 import C_segmented_cache_bar from '../../components-src/segmented-cache-bar/Component.tsx';
@@ -39,6 +40,7 @@ import C_sliding_pane_stack from '../../components-src/sliding-pane-stack/Compon
 import C_sort_morph_table from '../../components-src/sort-morph-table/Component.tsx';
 import C_spotlight_card from '../../components-src/spotlight-card/Component.tsx';
 import C_staged_pipeline from '../../components-src/staged-pipeline/Component.tsx';
+import C_switch_scanning_menu from '../../components-src/switch-scanning-menu/Component.tsx';
 import C_unit_field from '../../components-src/unit-field/Component.tsx';
 import C_weight_shift_button from '../../components-src/weight-shift-button/Component.tsx';
 
@@ -69,6 +71,7 @@ export const components: Record<string, ComponentType> = {
   "priority-overflow-toolbar": C_priority_overflow_toolbar,
   "progressive-blur-sheet": C_progressive_blur_sheet,
   "queue-position": C_queue_position,
+  "safe-triangle-hover": C_safe_triangle_hover,
   "scroll-filmstrip": C_scroll_filmstrip,
   "segment-nav": C_segment_nav,
   "segmented-cache-bar": C_segmented_cache_bar,
@@ -79,6 +82,7 @@ export const components: Record<string, ComponentType> = {
   "sort-morph-table": C_sort_morph_table,
   "spotlight-card": C_spotlight_card,
   "staged-pipeline": C_staged_pipeline,
+  "switch-scanning-menu": C_switch_scanning_menu,
   "unit-field": C_unit_field,
   "weight-shift-button": C_weight_shift_button,
 };
