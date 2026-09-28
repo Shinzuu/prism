@@ -1,0 +1,56 @@
+Week: 01
+Task: Diagnose why a 16 GB dev laptop was swapping under normal load, and fix it
+Agent: Claude (Claude Code, terminal)
+
+Prompt or workflow:
+The workflow was three prompts, not one. The first was deliberately open:
+
+  "check now and can you tell me how much each of the workspace is eating ram?"
+
+That produced a per-workspace breakdown, which mattered because the obvious
+suspects turned out to be wrong. The follow-up did the real work:
+
+  "close the servers when you are not actively using it and show me the ram
+   usage before and after"
+
+Insisting on before-and-after numbers in the prompt is what made the result
+trustworthy. The agent measured PSS rather than RSS without being told, because
+RSS double-counts shared pages across Node processes and would have overstated
+the saving. Then:
+
+  "anything else?"
+
+which pushed it past the processes I had asked about to a full scan.
+
+Result:
+The first pass was honest about being nearly worthless. Killing idle MCP servers
+reclaimed 413 MB of PSS and 374 MB of swap, but most of that memory had already
+been paged out by the kernel, so free RAM barely moved. The agent said so plainly
+instead of claiming a win.
+
+The real finding came from the wider scan. A voice-dictation daemon had been
+running for two days holding 1471 MB resident and 2040 MB of swap. Rather than
+killing it, the agent read its config and found the cause:
+
+  parakeet.on_demand_loading = false
+
+The speech model was pinned in memory permanently instead of loading on demand.
+One config change and a service restart:
+
+  voxtype config set parakeet.on_demand_loading true
+  systemctl --user restart voxtype
+
+Measured before and after:
+
+  voxtype   PSS 1471 -> 0 MB     RSS 1478 -> 5 MB     Swap 2040 -> 1 MB
+  System    free 1202 -> 2728 MB      swap used 7079 -> 5031 MB
+
+1.5 GB of RAM and 2 GB of swap recovered, with dictation still working — the
+model now loads when the key is pressed. Roughly fifteen minutes end to end.
+
+What it saved: I had assumed the memory pressure came from running several
+coding agents at once and was planning to close workspaces. The actual cause was
+a single config default in an unrelated background daemon. I would not have
+looked there, because the process was doing exactly what I expected it to do.
+The lesson for prompting: ask for measurements before and after, and ask "what
+else" once the obvious answer is in hand.

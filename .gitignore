@@ -32,6 +32,9 @@ pnpm-debug.log*
 .dev.vars*
 !.dev.vars.example
 !.env.example
+# Generated component submission blocks — rebuilt by scripts-gen.mjs.
+# Hand-written agent logs live in agent-logs/ and ARE tracked: they are
+# deliverables, not build output, and nothing regenerates them.
 submissions/
 scripts-gen.mjs
 

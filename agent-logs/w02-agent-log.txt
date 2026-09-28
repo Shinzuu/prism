@@ -1,0 +1,65 @@
+Week: 02
+Task: Find out why a component whose entire claim was speed took 5.6 seconds to paint
+Agent: Claude (Claude Code, terminal)
+
+Prompt or workflow:
+The component renders 50,000 table rows with no virtualization library, relying
+on CSS content-visibility to skip the off-screen ones. It worked, and it took
+5,638ms to first paint — which contradicts the only thing it was built to show.
+
+The first two prompts were mine and both were wrong, which is the point of this
+log. I proposed fixes instead of asking for a diagnosis:
+
+  "build the rows with one innerHTML string instead of createElement"
+
+5,638ms -> 5,383ms. Essentially nothing.
+
+  "add table-layout: fixed so the engine doesn't measure every row"
+
+5,383ms -> 5,738ms. Nothing again, and slightly worse.
+
+Two plausible theories, two deploys, forty minutes, no progress. The third
+prompt stopped proposing:
+
+  "stop guessing. measure where the time actually goes, phase by phase,
+   in the real browser"
+
+Result:
+One measurement, run in the live page, ended it:
+
+  buildString      57ms
+  parseHTML       610ms
+  forcedLayout   3658ms      <- here
+  toPaint         916ms
+
+Layout, not JavaScript. Both of my fixes had been aimed at JavaScript, which
+was 1.2% of the problem. A follow-up A/B in the same page isolated the cause:
+
+  table + content-visibility      3,367ms
+  div rows + content-visibility     434ms
+
+content-visibility cannot help a <table> at all. A table box builds its own
+row and column grid by walking every row, so per-row containment is ignored —
+and table-layout: fixed does not change that, which is why my second fix did
+nothing. Rebuilt on div rows with ARIA grid roles (role="table"/"row"/"cell")
+so the semantics survive for assistive technology.
+
+The same measurement caught a second cost for free:
+
+  toLocaleString() in the loop        1,105ms
+  one hoisted Intl.NumberFormat          26ms
+
+Number.prototype.toLocaleString() resolves a fresh formatter on every call —
+42x, across 50,000 rows.
+
+  5,638ms -> 1,809ms, and the component's claim is true again.
+
+What it saved: about three hours, most of which I had already spent. But the
+saving is not the time — it is that both of my confident fixes were aimed at
+the wrong 1% of the problem and I could not tell, because each one was
+individually reasonable and the number barely moved either way.
+
+The lesson for prompting: when you tell an agent what to fix, you have already
+made the diagnosis, and it will dutifully implement your mistake. "Measure
+where the time goes" costs one tool call and is the difference between two
+wasted deploys and a 3x improvement. Ask for the profile before the patch.

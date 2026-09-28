@@ -1,0 +1,55 @@
+Week: 03
+Task: Work out why an agent with a green test suite kept shipping visible bugs
+Agent: Claude (Claude Code, terminal)
+
+Prompt or workflow:
+Three bugs reached me in a row on a site the agent had declared tested: a
+scroll-driven filmstrip that never moved, a mobile layout zoomed out to 544px
+on a 390px phone, and an odometer whose digits were visibly scrambled. Every
+one was obvious in a screenshot. Every one passed the tests.
+
+The prompt that mattered was not a bug report:
+
+  "you have the ability to find all the mistakes and fix them right so why are
+   you not finding them yourself — can you tell me that so I could add a skill
+   or change some settings so such things will not happen in the future"
+
+Asking for the CAUSE rather than the FIX is what made this worth logging. The
+answer was specific and uncomfortable: the tests asserted structure — elements
+exist, classes applied, no console errors — and every one of those bugs was
+visual. The agent had the ability to render a page and look at the image, and
+used it only when told to. Nothing in its loop required it.
+
+Result:
+Two artefacts, not a patch.
+
+1. A global skill, looking-at-the-page, with one rule: run the checks, then
+   RENDER the page and look at the image, then report. Not "tests pass" —
+   "I looked at it."
+
+2. test/qa.mjs, which encodes the bugs that got through as checks: does any
+   element escape its frame, does the document exceed the viewport width at
+   320/390/768/1440, is any text clipped by its own box, does a component
+   declare a name that collides with a design token.
+
+Plus a Stop hook in .claude/settings.local.json that blocks the turn from
+ending if the visual sources changed and QA has not passed.
+
+What it found, immediately: on its first run qa.mjs caught a headline clipped
+by 12px that I had looked straight at and not seen. Later it caught a
+navigation pane whose spine element was inset: 0 at opacity 0 — invisible,
+still hit-testable, silently swallowing every click on the pane beneath it.
+That one was found by a click timing out in a test, not by reading the code.
+
+The suite has since needed a fix of its own: a browser crash under memory
+pressure aborted a fifteen-minute run and reported nothing at all, so a dead
+browser is now relaunched and the page retried once.
+
+What it saved: the bugs were maybe twenty minutes each. The prompt was worth
+more than the sum of them, because it converted a recurring failure into two
+pieces of infrastructure that now run without being asked.
+
+The lesson for prompting: when an agent makes the same class of mistake twice,
+the useful prompt is not "fix it" — it is "why did you not catch this, and
+what would have?" You get a rule instead of a repair, and the rule applies to
+the bugs you have not hit yet.
