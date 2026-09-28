@@ -62,6 +62,7 @@ import C_sort_morph_table from '../../components-src/sort-morph-table/Component.
 import C_sparkline_table from '../../components-src/sparkline-table/Component.tsx';
 import C_spatial_grid_nav from '../../components-src/spatial-grid-nav/Component.tsx';
 import C_spotlight_card from '../../components-src/spotlight-card/Component.tsx';
+import C_spreadsheet_grid from '../../components-src/spreadsheet-grid/Component.tsx';
 import C_staged_pipeline from '../../components-src/staged-pipeline/Component.tsx';
 import C_switch_scanning_menu from '../../components-src/switch-scanning-menu/Component.tsx';
 import C_tear_off_panel from '../../components-src/tear-off-panel/Component.tsx';
@@ -133,6 +134,7 @@ const { slug } = Astro.props as { slug: string };
 {slug === "sparkline-table" && <C_sparkline_table client:only="react" />}
 {slug === "spatial-grid-nav" && <C_spatial_grid_nav client:only="react" />}
 {slug === "spotlight-card" && <C_spotlight_card client:only="react" />}
+{slug === "spreadsheet-grid" && <C_spreadsheet_grid client:only="react" />}
 {slug === "staged-pipeline" && <C_staged_pipeline client:only="react" />}
 {slug === "switch-scanning-menu" && <C_switch_scanning_menu client:only="react" />}
 {slug === "tear-off-panel" && <C_tear_off_panel client:only="react" />}

@@ -65,6 +65,7 @@ import C_sort_morph_table from '../../components-src/sort-morph-table/Component.
 import C_sparkline_table from '../../components-src/sparkline-table/Component.tsx';
 import C_spatial_grid_nav from '../../components-src/spatial-grid-nav/Component.tsx';
 import C_spotlight_card from '../../components-src/spotlight-card/Component.tsx';
+import C_spreadsheet_grid from '../../components-src/spreadsheet-grid/Component.tsx';
 import C_staged_pipeline from '../../components-src/staged-pipeline/Component.tsx';
 import C_switch_scanning_menu from '../../components-src/switch-scanning-menu/Component.tsx';
 import C_tear_off_panel from '../../components-src/tear-off-panel/Component.tsx';
@@ -136,6 +137,7 @@ export const components: Record<string, ComponentType> = {
   "sparkline-table": C_sparkline_table,
   "spatial-grid-nav": C_spatial_grid_nav,
   "spotlight-card": C_spotlight_card,
+  "spreadsheet-grid": C_spreadsheet_grid,
   "staged-pipeline": C_staged_pipeline,
   "switch-scanning-menu": C_switch_scanning_menu,
   "tear-off-panel": C_tear_off_panel,
