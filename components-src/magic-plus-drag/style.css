@@ -1,0 +1,44 @@
+.mpd { display: grid; gap: 9px; justify-items: start; position: relative; }
+
+.mpd__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; width: 100%; counter-reset: step; }
+.mpd__item {
+  counter-increment: step;
+  display: grid; grid-template-columns: 1.6rem 1fr; align-items: center; gap: 6px;
+  padding: 9px 11px; font-size: .78rem;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--bg);
+}
+.mpd__item::before {
+  content: counter(step); font-family: var(--mono); font-size: .66rem; color: var(--text-dim);
+}
+.mpd__item--new { border-color: var(--accent); background: color-mix(in oklab, var(--accent) 9%, var(--bg)); }
+.mpd__item--new input {
+  font: inherit; font-size: .78rem; width: 100%; min-width: 0;
+  border: 0; background: none; color: var(--text); padding: 0;
+}
+.mpd__item--new input:focus-visible { outline: none; }
+
+/* The gap marker is a real element in the list, so the rows part to make room
+   instead of the marker floating over them. */
+.mpd__slot {
+  height: 0; margin: 0; border-radius: 2px;
+  background: var(--accent);
+  transition: height .14s ease, margin .14s ease;
+}
+.mpd__slot[data-open] { height: 3px; margin: 3px 0; }
+
+.mpd__plus {
+  font: inherit; font-size: 1rem; line-height: 1; cursor: grab;
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid var(--border); background: var(--raised); color: var(--text);
+  touch-action: none; display: grid; place-items: center;
+}
+.mpd__plus:active { cursor: grabbing; }
+.mpd__plus:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mpd__plus[data-dragging] {
+  position: fixed; z-index: 3; pointer-events: none;
+  border-color: var(--accent); color: var(--accent);
+}
+
+.mpd__read { margin: 0; font-size: .72rem; color: var(--text-dim); }
+
+@media (prefers-reduced-motion: reduce) { .mpd__slot { transition: none; } }

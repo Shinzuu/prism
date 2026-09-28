@@ -1,0 +1,49 @@
+.omd { display: grid; gap: 8px; }
+.omd__rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+.omd__open {
+  width: 100%; font: inherit; font-size: .78rem; cursor: pointer; text-align: left;
+  display: grid; grid-template-columns: 5.6rem 1fr auto; gap: 10px; align-items: baseline;
+  padding: 9px 11px; border-radius: 9px;
+  border: 1px solid var(--border); background: var(--bg); color: var(--text);
+}
+.omd__open:hover { background: var(--raised); }
+.omd__open:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.omd__k { font-family: var(--mono); font-size: .68rem; color: var(--text-dim); }
+.omd__n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.omd__v { font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: .72rem; }
+
+.omd__dlg {
+  width: min(22rem, calc(100% - 24px)); padding: 0; overflow: hidden;
+  border: 1px solid var(--border); border-radius: 12px;
+  background: var(--raised); color: var(--text);
+}
+.omd__dlg::backdrop { background: color-mix(in oklab, black 40%, transparent); }
+
+.omd__head {
+  display: grid; grid-template-columns: 5.6rem 1fr auto; gap: 10px; align-items: baseline;
+  padding: 10px 12px; font-size: .78rem;
+  border-bottom: 1px solid var(--border); background: var(--bg);
+}
+.omd__body { padding: 13px 14px 15px; }
+.omd__t { margin: 0 0 5px; font-size: .84rem; font-weight: 500; }
+.omd__d { margin: 0 0 13px; font-size: .75rem; color: var(--text-dim); line-height: 1.55; }
+.omd__close {
+  font: inherit; font-size: .76rem; cursor: pointer;
+  padding: 7px 13px; border-radius: 7px;
+  border: 0; background: var(--accent); color: var(--accent-fg);
+}
+.omd__close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.omd__note { margin: 0; font-size: .72rem; color: var(--text-dim); }
+
+/* The transition names are assigned in script, one pair at a time. Two
+   elements carrying the same view-transition-name in one capture aborts the
+   whole transition, so the name can only ever live on the row being opened. */
+::view-transition-old(omd-card),
+::view-transition-new(omd-card) { animation-duration: .34s; }
+
+/* Without a fallback the dialog still opens — it simply appears, which is the
+   ordinary behaviour and is fine. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*) { animation-duration: 1ms; }
+}

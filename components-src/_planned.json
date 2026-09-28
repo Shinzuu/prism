@@ -9,18 +9,6 @@
       "blocked": "Needs a variable font carrying both the wght and wdth axes. Bricolage is subset to weights 700-800 only, and adding a second variable font costs payload the site was explicitly trimmed to avoid. Revisit by subsetting one face to the two axes and a small glyph set."
     },
     {
-      "week": 15,
-      "type": "form",
-      "name": "Constraint Solver Form",
-      "summary": "Interdependent dimensions where you mark which fields drive and which derive. Over-constrain it and it names the exact field to relax, rather than saying invalid."
-    },
-    {
-      "week": 18,
-      "type": "section",
-      "name": "Snap Guide Canvas",
-      "summary": "Drag a block and guides snap it to the edges, centres and equal-spacing rhythm of its neighbours, with live distance badges. The alignment engine, not the canvas."
-    },
-    {
       "week": 19,
       "type": "card",
       "name": "Tear-Off Panel",
@@ -33,22 +21,10 @@
       "summary": "Switch the country and the form rebuilds \u2014 fields reorder, labels rewrite, the state select disappears, Japan grows a furigana row. Not every name is first and last."
     },
     {
-      "week": 22,
-      "type": "modal",
-      "name": "Origin Morph Dialog",
-      "summary": "Grows out of the exact row that opened it, which becomes its header, and stays tethered to it. View Transitions and anchor positioning, both Baseline in 2026."
-    },
-    {
       "week": 23,
       "type": "section",
       "name": "Multiscript Text Column",
       "summary": "Breaks Thai without spaces, honours Japanese kinsoku, and keeps Arabic letters joined at narrow measures. A ruler shows every legal break opportunity."
-    },
-    {
-      "week": 24,
-      "type": "button",
-      "name": "Magic Plus Drag",
-      "summary": "The plus is not clicked \u2014 it is torn off and dropped between two rows, and the item is created exactly there, the list parting to show where it will land."
     },
     {
       "week": 24,

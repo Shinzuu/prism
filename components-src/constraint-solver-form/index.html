@@ -1,0 +1,36 @@
+<form class="csf" data-csf novalidate>
+  <p class="csf__lead">Pin the values you know. The rest are solved for. Pin too many and it names the one to release.</p>
+
+  <div class="csf__grid" data-csf-grid>
+    <div class="csf__field" data-csf-field="w">
+      <label class="csf__label" for="csf-w">Width <span class="csf__u">mm</span></label>
+      <input class="csf__input" id="csf-w" name="w" type="number" inputmode="decimal" step="any" value="1200">
+      <button class="csf__pin" type="button" data-csf-pin="w" aria-pressed="true">
+        <span class="csf__pin-t">driving</span>
+      </button>
+    </div>
+    <div class="csf__field" data-csf-field="h">
+      <label class="csf__label" for="csf-h">Height <span class="csf__u">mm</span></label>
+      <input class="csf__input" id="csf-h" name="h" type="number" inputmode="decimal" step="any" value="800">
+      <button class="csf__pin" type="button" data-csf-pin="h" aria-pressed="true">
+        <span class="csf__pin-t">driving</span>
+      </button>
+    </div>
+    <div class="csf__field" data-csf-field="r">
+      <label class="csf__label" for="csf-r">Ratio <span class="csf__u">w:h</span></label>
+      <input class="csf__input" id="csf-r" name="r" type="number" inputmode="decimal" step="any" value="1.5">
+      <button class="csf__pin" type="button" data-csf-pin="r" aria-pressed="false">
+        <span class="csf__pin-t">derived</span>
+      </button>
+    </div>
+    <div class="csf__field" data-csf-field="a">
+      <label class="csf__label" for="csf-a">Area <span class="csf__u">m²</span></label>
+      <input class="csf__input" id="csf-a" name="a" type="number" inputmode="decimal" step="any" value="0.96">
+      <button class="csf__pin" type="button" data-csf-pin="a" aria-pressed="false">
+        <span class="csf__pin-t">derived</span>
+      </button>
+    </div>
+  </div>
+
+  <p class="csf__status" data-csf-status role="status"></p>
+</form>
