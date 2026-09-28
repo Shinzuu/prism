@@ -49,6 +49,7 @@ import C_segment_nav from '../../components-src/segment-nav/Component.tsx';
 import C_segmented_cache_bar from '../../components-src/segmented-cache-bar/Component.tsx';
 import C_shared_field_steps from '../../components-src/shared-field-steps/Component.tsx';
 import C_shortcut_recorder from '../../components-src/shortcut-recorder/Component.tsx';
+import C_shortcut_sheet from '../../components-src/shortcut-sheet/Component.tsx';
 import C_slide_confirm from '../../components-src/slide-confirm/Component.tsx';
 import C_sliding_pane_stack from '../../components-src/sliding-pane-stack/Component.tsx';
 import C_snap_guide_canvas from '../../components-src/snap-guide-canvas/Component.tsx';
@@ -111,6 +112,7 @@ export const components: Record<string, ComponentType> = {
   "segmented-cache-bar": C_segmented_cache_bar,
   "shared-field-steps": C_shared_field_steps,
   "shortcut-recorder": C_shortcut_recorder,
+  "shortcut-sheet": C_shortcut_sheet,
   "slide-confirm": C_slide_confirm,
   "sliding-pane-stack": C_sliding_pane_stack,
   "snap-guide-canvas": C_snap_guide_canvas,

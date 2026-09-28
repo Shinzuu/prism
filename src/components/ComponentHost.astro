@@ -46,6 +46,7 @@ import C_segment_nav from '../../components-src/segment-nav/Component.tsx';
 import C_segmented_cache_bar from '../../components-src/segmented-cache-bar/Component.tsx';
 import C_shared_field_steps from '../../components-src/shared-field-steps/Component.tsx';
 import C_shortcut_recorder from '../../components-src/shortcut-recorder/Component.tsx';
+import C_shortcut_sheet from '../../components-src/shortcut-sheet/Component.tsx';
 import C_slide_confirm from '../../components-src/slide-confirm/Component.tsx';
 import C_sliding_pane_stack from '../../components-src/sliding-pane-stack/Component.tsx';
 import C_snap_guide_canvas from '../../components-src/snap-guide-canvas/Component.tsx';
@@ -108,6 +109,7 @@ const { slug } = Astro.props as { slug: string };
 {slug === "segmented-cache-bar" && <C_segmented_cache_bar client:only="react" />}
 {slug === "shared-field-steps" && <C_shared_field_steps client:only="react" />}
 {slug === "shortcut-recorder" && <C_shortcut_recorder client:only="react" />}
+{slug === "shortcut-sheet" && <C_shortcut_sheet client:only="react" />}
 {slug === "slide-confirm" && <C_slide_confirm client:only="react" />}
 {slug === "sliding-pane-stack" && <C_sliding_pane_stack client:only="react" />}
 {slug === "snap-guide-canvas" && <C_snap_guide_canvas client:only="react" />}
