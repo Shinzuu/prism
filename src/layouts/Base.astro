@@ -1,7 +1,7 @@
 ---
 import '../styles/tokens.css';
 import '../styles/scale.css';
-const { title, description = 'Thirty components that read their palette out of an image.' } = Astro.props;
+const { title, wide = false, description = 'Thirty components that read their palette out of an image.' } = Astro.props;
 ---
 <!doctype html>
 <html lang="en">
@@ -18,7 +18,7 @@ const { title, description = 'Thirty components that read their palette out of a
   <link rel="stylesheet" href="/fonts/fonts.css" />
   <script is:inline src="/theme.js"></script>
 </head>
-<body>
+<body class={wide ? "wide" : ""}>
   <header class="mast">
     <a class="mast__id" href="/">prism</a>
     <nav class="mast__nav">
@@ -44,6 +44,7 @@ const { title, description = 'Thirty components that read their palette out of a
 
   <style is:global>
     :root { --well: 1180px; --gutter: var(--s-l); }
+    body.wide { --well: 1320px; }
     html { scroll-padding-block-start: calc(var(--s-2xl) + var(--s-s)); }
     /* Nothing may widen the document. A single overflowing decoration makes a
        phone zoom the whole page out, which reads as a broken layout. */
@@ -53,8 +54,8 @@ const { title, description = 'Thirty components that read their palette out of a
       position: sticky; top: 0; z-index: 40;
       display: flex; align-items: center; gap: var(--s-s); flex-wrap: wrap;
       max-width: var(--well); margin: 0 auto; padding: var(--s-s) var(--gutter);
-      backdrop-filter: blur(14px) saturate(130%);
-      background: color-mix(in oklab, var(--bg) 72%, transparent);
+      background: var(--bg);
+      border-bottom: var(--rule);
     }
     .mast__id { font-family: var(--serif); font-size: var(--f-1); font-weight: 600; letter-spacing: var(--tr-head); text-decoration: none; }
     .mast__nav { display: flex; gap: 2px; margin-left: auto; font-size: var(--f-n1); min-width: 0; }

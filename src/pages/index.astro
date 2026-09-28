@@ -5,71 +5,109 @@ import { allComponents, plannedComponents, COMPONENT_TYPES } from '../lib/regist
 
 const built = allComponents();
 const planned = plannedComponents();
-const all = [...built, ...planned].sort((a, b) => a.week - b.week || a.name.localeCompare(b.name));
-const counts = COMPONENT_TYPES.map((t) => ({
-  type: t,
-  total: all.filter((c) => c.type === t).length,
-  done: built.filter((c) => c.type === t).length
-}));
+const all = [...built, ...planned];
+
+const LABEL = {
+  button: 'Buttons', card: 'Cards', chart: 'Charts', form: 'Forms', input: 'Inputs',
+  loader: 'Loaders', modal: 'Modals', navbar: 'Navigation', section: 'Sections', table: 'Tables'
+};
+const BLURB = {
+  button: 'Actions, and the deliberation some of them need.',
+  card: 'Surfaces that hold one thing and respond to attention.',
+  chart: 'Quantities, shapes and distributions, with the table behind them.',
+  form: 'Input that parses what people actually type.',
+  input: 'Single controls, and the edge cases they live or die on.',
+  loader: 'Waiting, described honestly.',
+  modal: 'Layers that take over, and give focus back.',
+  navbar: 'Moving between places without losing your position.',
+  section: 'Page-scale compositions driven by scroll or pointer.',
+  table: 'Dense data, keyboard-first.'
+};
+
+const sections = COMPONENT_TYPES
+  .map((type) => ({
+    type,
+    label: LABEL[type],
+    blurb: BLURB[type],
+    items: all.filter((c) => c.type === type).sort((a, b) => a.week - b.week || a.name.localeCompare(b.name)),
+    done: built.filter((c) => c.type === type).length
+  }))
+  .filter((s) => s.items.length);
 ---
-<Base title="Library">
+<Base title="Library" wide={true}>
   <Hero count={built.length} total={all.length} />
 
-  <section class="filters" aria-label="Filter the library">
-    <div class="filters__search">
-      <input id="q" type="search" placeholder="Search by name, type or behaviour" autocomplete="off"
-        aria-label="Search components" />
-      <span class="filters__count" id="count" aria-live="polite"></span>
-    </div>
-    <div class="chips" role="group" aria-label="Filter by type">
-      <button class="chipf is-on" type="button" data-type="all">all <i>{all.length}</i></button>
-      {counts.map((c) => (
-        <button class="chipf" type="button" data-type={c.type}>{c.type} <i>{c.done}/{c.total}</i></button>
+  <div class="lib">
+    <aside class="rail">
+      <div class="rail__inner">
+        <div class="find">
+          <input id="q" type="search" placeholder="Search" autocomplete="off" aria-label="Search components" />
+          <span class="find__n" id="count" aria-live="polite"></span>
+        </div>
+        <nav class="rail__nav" aria-label="Component types">
+          {sections.map((s) => (
+            <a href={`#${s.type}`} data-jump={s.type}>
+              <span>{s.label}</span>
+              <i>{s.done}/{s.items.length}</i>
+            </a>
+          ))}
+        </nav>
+        <p class="rail__tot"><b>{built.length}</b> of {all.length} built</p>
+      </div>
+    </aside>
+
+    <div class="stacks" id="stacks">
+      {sections.map((s) => (
+        <section class="stack" id={s.type} data-stack={s.type}>
+          <header class="stack__head">
+            <h2>{s.label}</h2>
+            <p>{s.blurb}</p>
+            <span class="stack__n">{s.done} of {s.items.length}</span>
+          </header>
+
+          <ol class="tiles">
+            {s.items.map((c) => (
+              <li class={`tile ${c.planned ? 'tile--soon' : ''}`}
+                data-type={c.type}
+                data-search={`${c.name} ${c.type} ${c.summary}`.toLowerCase()}>
+                {c.planned ? (
+                  <div class="tile__in">
+                    <h3>{c.name}</h3>
+                    <p>{c.summary}</p>
+                    <span class="tile__wk">week {c.week} · scheduled</span>
+                  </div>
+                ) : (
+                  <a class="tile__in" href={`/components/${c.slug}`}>
+                    <span class="tile__view">
+                      <iframe data-src={`/preview/${c.slug}`} loading="lazy" sandbox="allow-scripts"
+                        title={c.name} tabindex="-1"></iframe>
+                    </span>
+                    <h3>{c.name}</h3>
+                    <p>{c.summary}</p>
+                    <span class="tile__wk">week {c.week}</span>
+                  </a>
+                )}
+              </li>
+            ))}
+          </ol>
+        </section>
       ))}
+      <p class="empty" id="empty" hidden>Nothing matches that.</p>
     </div>
-  </section>
-
-  <ol class="grid" id="grid">
-    {all.map((c) => (
-      <li class={`cell ${c.planned ? 'cell--soon' : ''}`}
-        data-type={c.type} data-week={c.week}
-        data-search={`${c.name} ${c.type} ${c.summary}`.toLowerCase()}>
-        {c.planned ? (
-          <div class="cell__inner">
-            <div class="cell__head">
-              <span class="tag">{c.type}</span>
-              <span class="cell__wk">week {c.week}</span>
-            </div>
-            <h2>{c.name}</h2>
-            <p>{c.summary}</p>
-            <span class="cell__soon">scheduled</span>
-          </div>
-        ) : (
-          <a class="cell__inner" href={`/components/${c.slug}`}>
-            <div class="cell__view">
-              <iframe data-src={`/preview/${c.slug}`} loading="lazy" sandbox="allow-scripts"
-                title={c.name} tabindex="-1"></iframe>
-            </div>
-            <div class="cell__head">
-              <span class="tag">{c.type}</span>
-              <span class="cell__wk">week {c.week}</span>
-            </div>
-            <h2>{c.name}</h2>
-            <p>{c.summary}</p>
-          </a>
-        )}
-      </li>
-    ))}
-  </ol>
-
-  <p class="empty" id="empty" hidden>Nothing matches that.</p>
+  </div>
 </Base>
 
 <script is:inline>
   (() => {
-    /* loading="lazy" still lets a browser fetch well ahead of the viewport, and
-       thirty preview documents is most of this page's weight. Attach the src
-       only when a card is genuinely close. */
+    const q = document.getElementById('q');
+    const count = document.getElementById('count');
+    const empty = document.getElementById('empty');
+    const tiles = [...document.querySelectorAll('.tile')];
+    const stacks = [...document.querySelectorAll('.stack')];
+    const jumps = [...document.querySelectorAll('[data-jump]')];
+
+    /* Attach a preview only when its tile is close. loading="lazy" fetches far
+       ahead, and this page is built to hold hundreds of these. */
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) {
         if (!e.isIntersecting) continue;
@@ -77,133 +115,147 @@ const counts = COMPONENT_TYPES.map((t) => ({
         if (f) { f.src = f.dataset.src; f.removeAttribute('data-src'); }
         io.unobserve(e.target);
       }
-    }, { rootMargin: '400px 0px' });
-    document.querySelectorAll('.cell__view').forEach((v) => io.observe(v));
-
-    const grid = document.getElementById('grid');
-    const cells = [...grid.querySelectorAll('.cell')];
-    const q = document.getElementById('q');
-    const count = document.getElementById('count');
-    const empty = document.getElementById('empty');
-    const chips = [...document.querySelectorAll('.chipf')];
-    let type = 'all';
+    }, { rootMargin: '500px 0px' });
+    document.querySelectorAll('.tile__view').forEach((v) => io.observe(v));
 
     function apply() {
       const term = q.value.trim().toLowerCase();
-      const match = (cell) =>
-        (type === 'all' || cell.dataset.type === type) &&
-        (!term || cell.dataset.search.includes(term));
-
-      // window.prismFilter is installed by the motion layer and animates the
-      // reflow with Flip. Until it loads, fall back to a plain toggle.
-      if (window.prismFilter) window.prismFilter(match);
-      else cells.forEach((c) => { c.hidden = !match(c); });
-
-      const shown = cells.filter((c) => !c.hidden).length;
-      count.textContent = `${shown} shown`;
+      let shown = 0;
+      for (const t of tiles) {
+        const on = !term || t.dataset.search.includes(term);
+        t.hidden = !on;
+        if (on) shown++;
+      }
+      // A section with nothing left in it disappears with its heading.
+      for (const s of stacks) {
+        s.hidden = ![...s.querySelectorAll('.tile')].some((t) => !t.hidden);
+      }
+      count.textContent = term ? `${shown} of ${tiles.length}` : `${tiles.length}`;
       empty.hidden = shown > 0;
     }
 
     q.addEventListener('input', apply);
-    chips.forEach((c) => c.addEventListener('click', () => {
-      chips.forEach((x) => x.classList.toggle('is-on', x === c));
-      type = c.dataset.type;
-      apply();
-    }));
     addEventListener('keydown', (e) => {
       if (e.key === '/' && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+      if (e.key === 'Escape' && document.activeElement === q) { q.value = ''; apply(); q.blur(); }
     });
+
+    /* Mark the section being read, from a reading line rather than visibility. */
+    function track() {
+      const line = innerHeight * 0.3;
+      let active = null;
+      for (const s of stacks) {
+        if (s.hidden) continue;
+        if (s.getBoundingClientRect().top <= line) active = s.id;
+      }
+      if (!active && stacks.length) active = stacks.find((s) => !s.hidden)?.id;
+      for (const j of jumps) j.setAttribute('aria-current', String(j.dataset.jump === active));
+    }
+    addEventListener('scroll', () => requestAnimationFrame(track), { passive: true });
+    addEventListener('resize', track);
+
     apply();
+    track();
   })();
 </script>
 
 <style>
-  .filters { margin: var(--s-m) 0 var(--s-m); display: grid; gap: var(--s-xs); }
-  .filters__search { display: flex; align-items: center; gap: var(--s-s); }
-  #q {
-    flex: 1; min-width: 0; max-width: 46ch; padding: 13px 18px;
-    background: color-mix(in oklab, var(--surface) 70%, transparent);
-    border: var(--rule); border-radius: 999px;
-    color: var(--text); font: inherit; font-size: var(--f-n1);
-  }
-  #q::placeholder { color: var(--text-dim); }
-  #q:focus { outline: none; border-color: var(--accent); background: var(--surface); }
-  .filters__count {
-    margin-left: auto; font-family: var(--mono); font-size: var(--f-n2);
-    color: var(--text-dim); white-space: nowrap; font-variant-numeric: tabular-nums;
-  }
+  .lib { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: var(--s-xl); align-items: start; }
 
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .chipf {
-    padding: 7px 14px; cursor: pointer;
-    background: transparent; color: var(--text-dim);
+  .rail__inner { position: sticky; top: calc(var(--s-l) + var(--s-m)); display: grid; gap: var(--s-s); }
+
+  .find { position: relative; display: flex; align-items: center; }
+  #q {
+    width: 100%; padding: 9px 44px 9px 13px;
+    background: var(--surface); color: var(--text);
     border: var(--rule); border-radius: 999px;
-    font-size: var(--f-n2); font-weight: 500;
-    transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+    font: inherit; font-size: var(--f-n1);
   }
-  .chipf i {
-    font-style: normal; margin-left: 6px; opacity: .78;
+  #q:focus { outline: none; border-color: var(--accent); }
+  .find__n {
+    position: absolute; right: 13px; pointer-events: none;
+    font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim);
     font-variant-numeric: tabular-nums;
   }
-  .chipf:hover { color: var(--text); }
-  .chipf.is-on { color: var(--accent-fg); background: var(--accent); border-color: var(--accent); }
 
-  .grid {
+  .rail__nav { display: grid; }
+  .rail__nav a {
+    display: flex; align-items: baseline; gap: var(--s-2xs);
+    padding: 6px 0; border-bottom: var(--rule);
+    font-size: var(--f-n1); color: var(--text-dim); text-decoration: none;
+  }
+  .rail__nav a span { flex: 1; }
+  .rail__nav a i { font-style: normal; font-size: var(--f-n2); font-variant-numeric: tabular-nums; opacity: .7; }
+  .rail__nav a:hover { color: var(--text); }
+  .rail__nav a[aria-current="true"] { color: var(--accent); }
+  .rail__tot { font-size: var(--f-n2); color: var(--text-dim); font-variant-numeric: tabular-nums; }
+  .rail__tot b { color: var(--text); }
+
+  .stacks { display: grid; gap: var(--s-xl); }
+  .stack { scroll-margin-top: calc(var(--s-2xl) + var(--s-s)); }
+
+  /* Explicit placement: auto-placement put the count in column one and pushed
+     the heading to the right. */
+  .stack__head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "title count" "blurb count";
+    align-items: baseline; column-gap: var(--s-s);
+    padding-bottom: var(--s-2xs); margin-bottom: var(--s-m);
+    border-bottom: 1px solid var(--text);
+  }
+  .stack__head h2 { grid-area: title; font-size: var(--f-2); }
+  .stack__head p { grid-area: blurb; font-size: var(--f-n1); color: var(--text-dim); max-width: 52ch; }
+  .stack__n {
+    grid-area: count; align-self: start; padding-top: .35em;
+    font-family: var(--mono); font-size: var(--f-n2);
+    color: var(--text-dim); font-variant-numeric: tabular-nums;
+  }
+
+  .tiles {
     list-style: none; margin: 0; padding: 0;
-    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--s-s); align-items: start;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(258px, 1fr)); gap: var(--s-s);
   }
-  /* Entrance driven by the browser's own scroll timeline. No observer, no
-     per-frame JavaScript, and it degrades to simply being visible. */
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .cell {
-        animation: cell-in linear both;
-        animation-timeline: view();
-        animation-range: entry 0% cover 22%;
-      }
-      @keyframes cell-in { from { opacity: 0; transform: translateY(20px) } }
-    }
-  }
-
-  .cell__inner {
-    display: grid; gap: 8px; height: 100%; padding: var(--s-s);
-    background: color-mix(in oklab, var(--surface) 55%, transparent);
-    border: var(--rule); border-radius: var(--radius);
+  .tile__in {
+    display: grid; gap: 6px; height: 100%;
     color: inherit; text-decoration: none;
-    transition: background 200ms ease, border-color 200ms ease;
   }
-  a.cell__inner:hover { background: var(--surface); border-color: color-mix(in oklab, var(--accent) 45%, transparent); }
-
-  .cell__view {
-    border-radius: var(--radius-sm); overflow: hidden;
+  /* A real border, not an inset shadow: the iframe paints over the padding box,
+     so an inset shadow only survives at the rounded corners. */
+  .tile__view {
+    display: block; overflow: hidden; margin-bottom: 2px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
     background: var(--bg);
-    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--border) 50%, transparent);
   }
-  .cell__view iframe { display: block; width: 100%; aspect-ratio: 3 / 2; border: 0; }
+  .tile__view iframe { display: block; width: 100%; aspect-ratio: 5 / 3; border: 0; }
+  a.tile__in:hover .tile__view { border-color: var(--accent); }
+  .tile h3 { font-size: var(--f-0); }
+  a.tile__in:hover h3 { color: var(--accent); }
+  .tile p { font-size: var(--f-n2); color: var(--text-dim); line-height: 1.5; }
+  .tile__wk { font-size: var(--f-n2); color: var(--text-dim); font-variant-numeric: tabular-nums; }
 
-  .cell__head { display: flex; align-items: center; gap: var(--s-2xs); }
-  .tag {
-    padding: 3px 10px; border-radius: 999px;
-    background: color-mix(in oklab, var(--accent) 15%, transparent); color: var(--accent);
-    font-size: var(--f-n2); font-weight: 500;
+  .tile--soon .tile__in {
+    padding: var(--s-2xs) var(--s-xs);
+    border: 1px dashed color-mix(in oklab, var(--border) 80%, transparent);
+    border-radius: var(--radius-sm);
+    align-content: start;
   }
-  .cell__wk { margin-left: auto; font-size: var(--f-n2); color: var(--text-dim); font-variant-numeric: tabular-nums; }
-  .cell h2 { font-size: var(--f-1); }
-  .cell p { color: var(--text-dim); font-size: var(--f-n1); }
-
-  /* Scheduled entries are denser and quieter: the grid reads as progress
-     rather than as one repeated card. */
-  .cell--soon .cell__inner { background: transparent; padding: var(--s-2xs) var(--s-s); gap: 4px; }
-  .cell--soon h2 { font-size: var(--f-0); }
-  .cell--soon p { font-size: var(--f-n2); }
-  .cell--soon h2 { color: var(--text-dim); }
-  .cell__soon {
-    justify-self: start; margin-top: auto; padding-top: 4px;
-    font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim);
-  }
+  .tile--soon h3 { color: var(--text-dim); }
 
   .empty { margin-top: var(--s-l); text-align: center; color: var(--text-dim); }
 
-  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .tile { animation: tile-in linear both; animation-timeline: view(); animation-range: entry 0% cover 18%; }
+      @keyframes tile-in { from { opacity: 0; transform: translateY(14px) } }
+    }
+  }
+
+  @media (max-width: 860px) {
+    .lib { grid-template-columns: 1fr; gap: var(--s-m); }
+    .rail__inner { position: static; }
+    .rail__nav { grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; gap: var(--s-2xs); }
+    .rail__nav a { border-bottom: 0; white-space: nowrap; padding: 5px 11px; border: var(--rule); border-radius: 999px; }
+    .rail__tot { display: none; }
+  }
 </style>
