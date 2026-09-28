@@ -1,30 +1,5 @@
-.bm { display: grid; gap: 8px; }
-.bm__bar { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-.bm__t { margin: 0; font-size: .82rem; font-weight: 500; }
-.bm__dim { color: var(--text-dim); font-weight: 400; }
-.bm__go {
-  font: inherit; font-size: .7rem; cursor: pointer;
-  padding: 5px 10px; border-radius: 6px;
-  border: 1px solid var(--border); background: var(--raised); color: var(--text);
-}
-.bm__go:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-.bm__scroll { overflow-x: auto; }
-.bm__grid { border-collapse: collapse; font-size: .66rem; }
-.bm__grid th {
-  font-weight: 400; color: var(--text-dim); font-family: var(--mono); font-size: .6rem;
-  padding: 3px 5px; text-align: end; white-space: nowrap;
-}
-.bm__grid thead th { text-align: start; writing-mode: vertical-rl; rotate: 180deg; height: 4.6rem; padding: 4px 2px; }
-.bm__grid td { padding: 0; }
-
-/* One cell, one value. Transitions on the cell, so a reorder reads as the
-   pattern migrating rather than the table redrawing. */
-.bm__c {
-  width: 17px; height: 17px; border-radius: 2px;
-  background: color-mix(in oklab, var(--accent) calc(var(--bm-v) * 1%), transparent);
-  outline: 1px solid color-mix(in oklab, var(--border) 40%, transparent);
-  outline-offset: -1px;
-  transition: background-color .35s ease;
-}
-.bm__read { margin: 0; font-family: var(--mono); font-size: .64rem; color: var(--text-dim); }
+.bm-vert { writing-mode: vertical-rl; rotate: 180deg; }
+/* The colour transitions, not the layout, so a reorder reads as the pattern
+   migrating rather than the table blinking. */
+.bm-cell { outline: 1px solid color-mix(in oklab, var(--border) 40%, transparent); outline-offset: -1px; transition: background-color .35s ease; }
+@media (prefers-reduced-motion: reduce) { .bm-cell { transition: none; } }

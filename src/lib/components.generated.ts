@@ -4,6 +4,7 @@
 import type { ComponentType } from 'react';
 
 import C_adjust_last_action from '../../components-src/adjust-last-action/Component.tsx';
+import C_bertin_matrix from '../../components-src/bertin-matrix/Component.tsx';
 import C_bidi_comment_card from '../../components-src/bidi-comment-card/Component.tsx';
 import C_bullet_chart from '../../components-src/bullet-chart/Component.tsx';
 import C_challenge_response_checklist from '../../components-src/challenge-response-checklist/Component.tsx';
@@ -43,9 +44,11 @@ import C_staged_pipeline from '../../components-src/staged-pipeline/Component.ts
 import C_switch_scanning_menu from '../../components-src/switch-scanning-menu/Component.tsx';
 import C_unit_field from '../../components-src/unit-field/Component.tsx';
 import C_weight_shift_button from '../../components-src/weight-shift-button/Component.tsx';
+import C_zone_overlap_ribbon from '../../components-src/zone-overlap-ribbon/Component.tsx';
 
 export const components: Record<string, ComponentType> = {
   "adjust-last-action": C_adjust_last_action,
+  "bertin-matrix": C_bertin_matrix,
   "bidi-comment-card": C_bidi_comment_card,
   "bullet-chart": C_bullet_chart,
   "challenge-response-checklist": C_challenge_response_checklist,
@@ -85,4 +88,5 @@ export const components: Record<string, ComponentType> = {
   "switch-scanning-menu": C_switch_scanning_menu,
   "unit-field": C_unit_field,
   "weight-shift-button": C_weight_shift_button,
+  "zone-overlap-ribbon": C_zone_overlap_ribbon,
 };
