@@ -14,6 +14,7 @@ import C_command_button from '../../components-src/command-button/Component.tsx'
 import C_constraint_solver_form from '../../components-src/constraint-solver-form/Component.tsx';
 import C_convergence_trace from '../../components-src/convergence-trace/Component.tsx';
 import C_copy_receipt from '../../components-src/copy-receipt/Component.tsx';
+import C_country_address_form from '../../components-src/country-address-form/Component.tsx';
 import C_difference_header from '../../components-src/difference-header/Component.tsx';
 import C_duration_field from '../../components-src/duration-field/Component.tsx';
 import C_endless_ledger from '../../components-src/endless-ledger/Component.tsx';
@@ -29,6 +30,7 @@ import C_multiscript_text_column from '../../components-src/multiscript-text-col
 import C_odometer_stat from '../../components-src/odometer-stat/Component.tsx';
 import C_optimistic_row from '../../components-src/optimistic-row/Component.tsx';
 import C_origin_morph_dialog from '../../components-src/origin-morph-dialog/Component.tsx';
+import C_outlier_heatmap from '../../components-src/outlier-heatmap/Component.tsx';
 import C_peel_corner_card from '../../components-src/peel-corner-card/Component.tsx';
 import C_priority_overflow_toolbar from '../../components-src/priority-overflow-toolbar/Component.tsx';
 import C_progressive_blur_sheet from '../../components-src/progressive-blur-sheet/Component.tsx';
@@ -62,6 +64,7 @@ export const components: Record<string, ComponentType> = {
   "constraint-solver-form": C_constraint_solver_form,
   "convergence-trace": C_convergence_trace,
   "copy-receipt": C_copy_receipt,
+  "country-address-form": C_country_address_form,
   "difference-header": C_difference_header,
   "duration-field": C_duration_field,
   "endless-ledger": C_endless_ledger,
@@ -77,6 +80,7 @@ export const components: Record<string, ComponentType> = {
   "odometer-stat": C_odometer_stat,
   "optimistic-row": C_optimistic_row,
   "origin-morph-dialog": C_origin_morph_dialog,
+  "outlier-heatmap": C_outlier_heatmap,
   "peel-corner-card": C_peel_corner_card,
   "priority-overflow-toolbar": C_priority_overflow_toolbar,
   "progressive-blur-sheet": C_progressive_blur_sheet,

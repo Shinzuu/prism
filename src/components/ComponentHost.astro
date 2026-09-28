@@ -11,6 +11,7 @@ import C_command_button from '../../components-src/command-button/Component.tsx'
 import C_constraint_solver_form from '../../components-src/constraint-solver-form/Component.tsx';
 import C_convergence_trace from '../../components-src/convergence-trace/Component.tsx';
 import C_copy_receipt from '../../components-src/copy-receipt/Component.tsx';
+import C_country_address_form from '../../components-src/country-address-form/Component.tsx';
 import C_difference_header from '../../components-src/difference-header/Component.tsx';
 import C_duration_field from '../../components-src/duration-field/Component.tsx';
 import C_endless_ledger from '../../components-src/endless-ledger/Component.tsx';
@@ -26,6 +27,7 @@ import C_multiscript_text_column from '../../components-src/multiscript-text-col
 import C_odometer_stat from '../../components-src/odometer-stat/Component.tsx';
 import C_optimistic_row from '../../components-src/optimistic-row/Component.tsx';
 import C_origin_morph_dialog from '../../components-src/origin-morph-dialog/Component.tsx';
+import C_outlier_heatmap from '../../components-src/outlier-heatmap/Component.tsx';
 import C_peel_corner_card from '../../components-src/peel-corner-card/Component.tsx';
 import C_priority_overflow_toolbar from '../../components-src/priority-overflow-toolbar/Component.tsx';
 import C_progressive_blur_sheet from '../../components-src/progressive-blur-sheet/Component.tsx';
@@ -59,6 +61,7 @@ const { slug } = Astro.props as { slug: string };
 {slug === "constraint-solver-form" && <C_constraint_solver_form client:only="react" />}
 {slug === "convergence-trace" && <C_convergence_trace client:only="react" />}
 {slug === "copy-receipt" && <C_copy_receipt client:only="react" />}
+{slug === "country-address-form" && <C_country_address_form client:only="react" />}
 {slug === "difference-header" && <C_difference_header client:only="react" />}
 {slug === "duration-field" && <C_duration_field client:only="react" />}
 {slug === "endless-ledger" && <C_endless_ledger client:only="react" />}
@@ -74,6 +77,7 @@ const { slug } = Astro.props as { slug: string };
 {slug === "odometer-stat" && <C_odometer_stat client:only="react" />}
 {slug === "optimistic-row" && <C_optimistic_row client:only="react" />}
 {slug === "origin-morph-dialog" && <C_origin_morph_dialog client:only="react" />}
+{slug === "outlier-heatmap" && <C_outlier_heatmap client:only="react" />}
 {slug === "peel-corner-card" && <C_peel_corner_card client:only="react" />}
 {slug === "priority-overflow-toolbar" && <C_priority_overflow_toolbar client:only="react" />}
 {slug === "progressive-blur-sheet" && <C_progressive_blur_sheet client:only="react" />}
