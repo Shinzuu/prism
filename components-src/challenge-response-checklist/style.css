@@ -1,0 +1,43 @@
+.crc { display: grid; gap: 9px; }
+.crc__head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.crc__t { margin: 0; font-size: .82rem; font-weight: 500; }
+.crc__meta { margin: 0; font-family: var(--mono); font-size: .66rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+
+.crc__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; counter-reset: c; }
+.crc__item {
+  counter-increment: c;
+  display: grid; grid-template-columns: 1.5rem 1fr auto; gap: 8px; align-items: center;
+  padding: 8px 10px; font-size: .76rem;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--bg);
+}
+.crc__item::before { content: counter(c); font-family: var(--mono); font-size: .62rem; color: var(--text-dim); }
+.crc__chal { display: grid; gap: 2px; min-width: 0; }
+.crc__q { }
+.crc__a { font-family: var(--mono); font-size: .62rem; color: var(--text-dim); }
+
+.crc__item[data-state="done"] { border-color: color-mix(in oklab, var(--accent) 40%, var(--border)); }
+.crc__item[data-state="done"] .crc__a { color: var(--accent); }
+.crc__item[data-state="held"] { border-color: var(--accent); background: color-mix(in oklab, var(--accent) 7%, var(--bg)); }
+/* An item that is not yet reachable is dimmed but never hidden: the crew must
+   see what is coming, and a hidden step cannot be challenged. */
+.crc__item[data-state="ahead"] { opacity: .5; }
+
+.crc__resp {
+  font: inherit; font-size: .68rem; cursor: pointer; white-space: nowrap;
+  padding: 5px 10px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--raised); color: var(--text);
+}
+.crc__resp:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.crc__resp[disabled] { opacity: .5; cursor: default; }
+
+.crc__foot { display: flex; gap: 8px; }
+.crc__btn {
+  font: inherit; font-size: .76rem; cursor: pointer;
+  padding: 7px 13px; border-radius: 7px;
+  border: 0; background: var(--accent); color: var(--accent-fg);
+}
+.crc__btn--ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.crc__btn[disabled] { opacity: .45; cursor: default; }
+.crc__btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.crc__note { margin: 0; font-size: .72rem; color: var(--text-dim); line-height: 1.5; }

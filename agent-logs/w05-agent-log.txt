@@ -1,0 +1,47 @@
+Week: 05
+Task: Choose a variable font by measurement rather than by its specification
+Agent: Claude (Claude Code, terminal)
+
+Prompt or workflow:
+Two components needed a font with a real width axis — one condenses a wordmark
+as the page scrolls, one thickens and widens a button label on press. The
+obvious pick was Roboto Flex: its width axis spans 25 to 151, the widest range
+on Google Fonts by a distance.
+
+It looked wrong once built. The prompt that settled it:
+
+  "measure the actual rendered width at both ends of the axis before
+   committing to a face — nominal range is not effect size"
+
+The measurement was four lines in a real browser: render one string at each end
+of the axis, compare the widths.
+
+Result:
+Roboto Flex, spanning 25 to 151, narrows the same string to 0.79 of its widest.
+Archivo, spanning only 62 to 125, reaches 0.53.
+
+  font          axis range     narrow/wide
+  Roboto Flex   25 – 151       0.79
+  Encode Sans   75 – 125       0.77
+  Archivo       62 – 125       0.53
+  Saira         50 – 125       0.46
+
+The font with the widest nominal range condensed the least — by a factor of
+two. Roboto Flex distributes its width across several axes that Google's CSS
+endpoint does not expose, so the wdth axis alone does much less than its
+numbers suggest.
+
+Switched both components to Archivo (90KB latin subset, scoped to the two
+components rather than loaded site-wide). The wordmark now goes 135px to 73px
+as you scroll — a ratio of 0.54, matching the bench measurement exactly.
+
+What it saved: the version that shipped first was not broken. It rendered, the
+axis animated, the tests passed, and the effect was nearly invisible — a 5%
+narrowing on a component whose entire premise is condensing. It would have gone
+out as a component that quietly does not do the thing it is named after.
+
+The lesson for prompting: specifications describe what a thing permits, not
+what it does. When an agent picks a library, a font, a codec or an algorithm by
+reading its documentation, ask for the comparison to be run — four candidates,
+one metric, measured in the real environment. It is usually a few minutes, and
+here it changed the answer completely.

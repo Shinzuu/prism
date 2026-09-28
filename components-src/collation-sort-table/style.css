@@ -1,0 +1,24 @@
+.cst { display: grid; gap: 8px; }
+.cst__head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.cst__title { margin: 0; font-size: .82rem; font-weight: 500; }
+.cst__dim { color: var(--text-dim); font-weight: 400; }
+.cst__loc {
+  font: inherit; font-size: .68rem; cursor: pointer;
+  padding: 4px 7px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--raised); color: var(--text);
+}
+.cst__loc:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.cst__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; counter-reset: n; }
+.cst__row {
+  counter-increment: n;
+  display: grid; grid-template-columns: 1.7rem 1fr; gap: 8px; align-items: baseline;
+  padding: 5px 9px; font-size: .78rem;
+  border: 1px solid transparent; border-radius: 6px; background: var(--bg);
+}
+.cst__row::before { content: counter(n); font-family: var(--mono); font-size: .64rem; color: var(--text-dim); }
+.cst__row[data-moved] { border-color: color-mix(in oklab, var(--accent) 45%, transparent); }
+.cst__row[data-moved] .cst__k { color: var(--accent); }
+.cst__k { font-variant-numeric: tabular-nums; }
+
+.cst__note { margin: 0; font-size: .72rem; color: var(--text-dim); line-height: 1.5; }

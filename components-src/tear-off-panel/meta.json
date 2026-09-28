@@ -1,0 +1,20 @@
+{
+  "slug": "tear-off-panel",
+  "name": "Tear-Off Panel",
+  "type": "card",
+  "week": 19,
+  "date": "2026-09-29",
+  "summary": "Tear the panel off and it becomes a real second browser window, still live and in sync in both directions over a BroadcastChannel — and it says so plainly when the popup is blocked.",
+  "attempts": [
+    {
+      "prompt": "Let a panel be popped out into its own window that keeps updating.",
+      "problem": "Synced with window.postMessage against the opener reference. It works until either side reloads: the child's opener handle survives but the listener is gone, and if the parent is closed the child holds a dead reference and silently stops updating. It is also one-directional by construction, so the popped-out window is a mirror rather than a second view of the same state."
+    },
+    {
+      "prompt": "Use a BroadcastChannel so both windows share state.",
+      "problem": "Correct transport, but window.open returning null was ignored. A blocked popup produces no error — the call simply returns null — so the button appeared to do nothing at all, which in a sandboxed frame is exactly what happens every time. The failure was indistinguishable from the feature being broken."
+    }
+  ],
+  "finalPrompt": "Build a panel that can be torn off into a real second browser window, staying live and in sync, in plain HTML, CSS and vanilla JavaScript.\n\nSync with BroadcastChannel, not postMessage to an opener. A channel is addressed by NAME, so any window joining it is connected — including one the user reloaded, and in both directions. An opener reference dies on reload or when the parent closes, leaving the child holding a handle that throws nothing and delivers nothing.\n\nMake the sync genuinely BIDIRECTIONAL: a control in the torn-off window must drive the docked one too. Otherwise it is a mirror, not a second view of shared state, and the distinction is the whole reason to tear a panel off.\n\nCheck the return value of window.open. A blocked popup returns null and raises NOTHING, so a button that ignores it looks broken rather than blocked — and inside a sandboxed frame it is blocked every time. Say which case it is, and say where the feature does work.\n\nHave the torn-off window announce itself on open and on pagehide, so the docked panel can show whether it is currently torn off rather than assuming.\n\nStop the update timer when the component leaves the viewport.\n\nUse tokens only in the docked panel: var(--bg), var(--raised), var(--text), var(--text-dim), var(--border), var(--accent), var(--mono). No literal colours. The torn-off document is a separate document with no access to the page's stylesheet, so its inline styles are the one place literal values are unavoidable — keep them minimal.",
+  "why": "Two distinct lessons about cross-window work. BroadcastChannel versus postMessage is an architectural one: addressing by channel name rather than by window reference means the connection survives reloads and works in both directions for free, whereas an opener handle is a pointer to a specific live object and everything that can invalidate it does so silently. The second is about failure reporting, and it matters more often: window.open returns null when blocked and throws nothing, so the single most common outcome of this feature in the wild — a blocked popup — is indistinguishable from a bug unless you check the return value and say so."
+}

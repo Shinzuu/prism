@@ -1,0 +1,50 @@
+Week: 12
+Task: Keep a long autonomous build session from silently losing work
+Agent: Claude (Claude Code, terminal)
+
+Prompt or workflow:
+A single session built 35 components, deployed roughly thirty times, ran a
+browser test suite repeatedly, and hit the machine's memory limit hard enough
+that four background tasks were killed at once. Nothing was lost, and the
+reasons are worth recording because none of them were obvious in advance.
+
+The instruction was broad — build the remaining components, test properly,
+choose the better option at each decision — so the interesting question was
+what infrastructure makes a long unattended run safe.
+
+Result, in order of how much each mattered:
+
+1. The build refuses to publish an incomplete component. A missing meta.json
+   or a literal colour in a stylesheet fails the build outright. This caught a
+   directory I had created and not filled, at the moment it would otherwise
+   have shipped as a broken page.
+
+2. Progress written through to disk, not buffered. Two test runs were killed
+   after fifteen minutes and reported nothing at all. With per-item progress
+   flushed to a file, the third kill left an exact record of where it stopped,
+   which is what identified the hanging component.
+
+3. Commit early, push often. Ten components, then four, then five — each
+   committed with what was fixed and why. A killed session loses the working
+   tree, not the work.
+
+4. Every component verified in a real browser against the thing it claims,
+   not against the fact that it rendered. Six components were wrong in ways
+   the build could not see, including one whose central feature was
+   structurally unreachable.
+
+The memory failure itself was self-inflicted: a 70-component test sweep running
+while more browsers were being launched to verify batches. Reusing one page
+took the suite from >10 minutes and killed to 90 seconds, and not running
+browsers alongside it removed the pressure entirely.
+
+What it saved: the session produced 21 components and 10 agent logs in one
+sitting with no lost work across four process kills. Without the flush-to-disk
+change, the two killed test runs would have cost half an hour each with nothing
+to show.
+
+The lesson for prompting: for any long unattended run, ask for three things
+before asking for the work — fail the build on incomplete output, write
+progress through to disk as it happens, and commit at every natural boundary.
+They cost minutes and they are the difference between a session that survives
+being killed and one that has to be restarted from memory.

@@ -1,0 +1,25 @@
+<div class="ala" data-ala>
+  <div class="ala__canvas" data-ala-canvas>
+    <div class="ala__shape" data-ala-shape></div>
+  </div>
+
+  <div class="ala__bar">
+    <button class="ala__do" type="button" data-ala-do>Apply blur</button>
+    <span class="ala__state" data-ala-state></span>
+  </div>
+
+  <!-- Appears after the action, showing that action's parameters. Changing one
+       re-runs the action from the state before it, so nothing stacks. -->
+  <div class="ala__panel" data-ala-panel hidden>
+    <p class="ala__h">Adjust last action <span class="ala__dim">— blur</span></p>
+    <label class="ala__f">Radius
+      <input type="range" min="0" max="20" step="1" value="6" data-ala-p="radius">
+      <output data-ala-o="radius"></output>
+    </label>
+    <label class="ala__f">Spread
+      <input type="range" min="0" max="40" step="1" value="12" data-ala-p="spread">
+      <output data-ala-o="spread"></output>
+    </label>
+    <p class="ala__note" data-ala-runs></p>
+  </div>
+</div>

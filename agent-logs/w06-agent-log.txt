@@ -1,0 +1,53 @@
+Week: 06
+Task: Work out why a test suite could not finish, and why nobody had noticed
+Agent: Claude (Claude Code, terminal)
+
+Prompt or workflow:
+The visual QA suite had stopped producing output. Not failing — producing
+nothing at all, twice, after fifteen minutes each time. Both runs ended with
+the background process killed for low memory and an empty result file.
+
+The first instinct was that the machine was too small. The prompt that got
+further:
+
+  "it is writing nothing after fifteen minutes — find out where it is,
+   not why the machine is slow"
+
+The suite collected failures in an array and printed them at the end, so a run
+that never ended printed nothing whatsoever. First change was to write each
+result through to a file as it happened. That single change made the problem
+obvious within a minute:
+
+  checked 35/49 constraint-solver-form
+  (nothing further)
+
+Result:
+Component 36 was a table with 50,000 rows. The overflow check did this:
+
+  [...document.querySelectorAll('#fit-inner *')].filter(el => {
+    const r = el.getBoundingClientRect();   // 250,000 forced layouts
+    ...
+
+It was not slow. It was never going to return.
+
+The fix was to stop measuring elements that cannot possibly overflow: walk only
+into containers whose overflow is visible, because anything inside a clipping
+container is contained by definition. 250,000 elements became 9 candidates,
+and the whole suite went from "never finishes" to 90 seconds.
+
+A second cause was mine. The suite opened a page per component — 49 renderer
+processes' worth of churn — while I had been launching separate browsers to
+verify components in parallel. Reusing one page and not running browsers
+alongside it removed the memory pressure entirely.
+
+  before: >10 min, killed, no output
+  after:  ~90 s, 70 components, 4 widths, clean
+
+What it saved: more than the time. The suite had been unable to test the
+library for an unknown number of days while reporting nothing, which is worse
+than having no suite — a silent test is indistinguishable from a passing one.
+
+The lesson for prompting: when a long job produces no output, the first fix is
+not to make it faster, it is to make it report. Ask for progress written
+through to disk before asking for a diagnosis; the log usually names the
+culprit without anyone having to reason about it.

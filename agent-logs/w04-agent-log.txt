@@ -1,0 +1,48 @@
+Week: 04
+Task: Find out why a component library kept shipping components that demonstrated nothing
+Agent: Claude (Claude Code, terminal)
+
+Prompt or workflow:
+Three components in a row passed every test and taught the reader nothing,
+each in the same way. A locale-aware sort offered German and English as
+separate options that produced identical output. A sliding pane navigation
+whose whole selling point was collapsed "spines" had a one-level menu tree, so
+a third pane — the first one that would ever collapse — was unreachable. A
+peeled card's flap was clipped to exactly the triangle the face cut away, so it
+covered the hole it existed to open.
+
+All three were found the same way, and it was not by reading the code:
+
+  "verify the thing the component claims, not that the component renders"
+
+In practice that meant writing the assertion as the claim itself. Not "the
+select has four options" but "the four options produce four DIFFERENT orders":
+
+  console.log('distinct orders:', new Set(Object.values(seen)).size, 'of', 4)
+
+Result:
+That one line turned a passing component into a failing one. The collation
+table returned 2 of 4 — German was a duplicate of English for the chosen names,
+and Turkish was a duplicate too, because the name list contained no C/Ç pair
+and no dotless ı to separate it. The fix was data, not code: swapping in Cem,
+Çelik, Işık and İnönü made all four orders distinct, verified in the browser.
+
+The pane stack failed the same shape of test — assert a spine exists after two
+clicks, and it never did, because the tree bottomed out at two levels. The peel
+card failed a pixel sample: the reverse layer was never visible at any drag
+position.
+
+None of these would have been caught by "does it render", and all three had
+rendered perfectly for hours.
+
+What it saved: hard to price, because the cost is reputational rather than
+temporal. Each of these would have been published as a teaching example that
+quietly taught nothing, and the failure is invisible to anyone who does not
+already know the subject — which is precisely the audience a component library
+is for.
+
+The lesson for prompting: "test it" gets you a test of the implementation.
+The useful instruction is to state the claim and ask for that to be measured.
+A component that asserts four locales sort differently should have a test that
+counts four distinct orders, and if you cannot express the claim as a number,
+you probably cannot tell whether the component is doing it.

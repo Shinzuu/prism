@@ -1,0 +1,47 @@
+Week: 09
+Task: Avoid a client-account collision when deploying a personal project
+Agent: Claude (Claude Code, terminal)
+
+Prompt or workflow:
+This machine is signed in to several accounts at once — a personal GitHub, a
+second GitHub for contract work, and a Vercel CLI session belonging to a
+client's organisation. The project being deployed was personal and public.
+
+The deploy was stopped before it ran by a single verification step:
+
+  "before deploying, print which account and scope the CLI is authenticated
+   as, and stop if it is not mine"
+
+Result:
+The Vercel CLI was authenticated as a client support account, scoped to that
+client's organisation. A deploy would have created a public project inside a
+paying client's org, under a user that is not the author, with the repository
+name visible in their dashboard.
+
+Nothing had gone wrong yet, and nothing in the deploy command would have
+revealed it — the CLI does not announce whose account it is using, it just
+works.
+
+Switched hosting to Cloudflare Workers under the personal account. Two
+follow-on guards, both now in the project skill:
+
+  gh api user --jq .login          # must print the personal login
+  git config user.email ...        # pinned per-repo, not global
+
+The per-repo git identity matters for the same reason: a global user.email
+follows you into every repository on the machine, so one forgotten `git config
+--global` puts a work address in the commit history of a public personal repo,
+and rewriting that history after a push is a much worse afternoon.
+
+The deploy tool version is pinned too, after an unpinned CLI changed its
+default behaviour mid-project.
+
+What it saved: no time at all — it cost about ten minutes. What it avoided was
+a client-visible artefact in the wrong account, which is not a technical
+problem but a trust one, and is not fixable by deleting the project afterwards.
+
+The lesson for prompting: identity is state, and state on a shared machine is
+never what you assume. For any command that writes somewhere durable — a
+deploy, a push, a publish, a payment — ask the agent to print who it is acting
+as and stop, as its own step, before the command that acts. It reads as
+paranoid until the one time it prints the wrong name.

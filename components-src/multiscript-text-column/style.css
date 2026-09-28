@@ -1,0 +1,28 @@
+.mtc { display: grid; gap: 9px; }
+.mtc__bar { display: flex; align-items: center; gap: 9px; font-size: .7rem; color: var(--text-dim); }
+.mtc__w { display: flex; align-items: center; gap: 7px; flex: 1; }
+.mtc__w input { flex: 1; min-width: 0; accent-color: var(--accent); }
+.mtc__px { font-family: var(--mono); font-size: .66rem; font-variant-numeric: tabular-nums; }
+
+.mtc__cols { display: grid; gap: 9px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); align-items: start; }
+
+.mtc__col {
+  border: 1px solid var(--border); border-radius: 9px; background: var(--bg);
+  padding: 9px 10px; display: grid; gap: 5px;
+  overflow-wrap: break-word;
+}
+.mtc__lab { margin: 0; font-family: var(--mono); font-size: .6rem; color: var(--text-dim); }
+.mtc__p { margin: 0; font-size: .8rem; line-height: 1.85; }
+
+/* line-break: strict applies Japanese kinsoku — the rules that forbid a line
+   starting with a small kana or a closing bracket, or ending with an opening
+   one. word-break: keep-all stops CJK breaking mid-word. */
+.mtc__p[lang^="ja"] { line-break: strict; }
+.mtc__p[lang^="ko"] { word-break: keep-all; }
+/* Thai has no spaces; only the engine's dictionary knows where words end. */
+.mtc__p[lang^="th"] { line-break: auto; word-break: normal; }
+.mtc__p[lang^="ar"], .mtc__p[lang^="he"] { direction: rtl; }
+
+/* The wrong way, shown alongside: this is what English defaults do to them. */
+.mtc__col[data-bad] .mtc__p { word-break: break-all; line-break: auto; }
+.mtc__col[data-bad] { border-color: color-mix(in oklab, var(--accent) 45%, var(--border)); }

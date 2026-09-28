@@ -1,0 +1,27 @@
+<div class="pot" data-pot>
+  <div class="pot__demo">
+    <label class="pot__w">Container width
+      <input type="range" min="190" max="560" value="520" data-pot-w>
+    </label>
+    <span class="pot__px" data-pot-px></span>
+  </div>
+
+  <!-- Measured against its own box, never the viewport. A media query answers
+       "how wide is the screen", which is not the question a toolbar has. -->
+  <div class="pot__host" data-pot-host>
+    <div class="pot__bar" data-pot-bar role="toolbar" aria-label="Document actions">
+      <button class="pot__act" type="button" data-pri="1">Save</button>
+      <button class="pot__act" type="button" data-pri="2">Share</button>
+      <button class="pot__act" type="button" data-pri="3">Export</button>
+      <button class="pot__act" type="button" data-pri="4">Duplicate</button>
+      <button class="pot__act" type="button" data-pri="5">Version history</button>
+      <button class="pot__act" type="button" data-pri="6">Print</button>
+      <div class="pot__more" data-pot-more hidden>
+        <button class="pot__act pot__act--more" type="button"
+                data-pot-toggle aria-expanded="false" aria-haspopup="true">More<span data-pot-n></span></button>
+        <div class="pot__menu" data-pot-menu role="menu" hidden></div>
+      </div>
+    </div>
+  </div>
+  <p class="pot__note" data-pot-note></p>
+</div>

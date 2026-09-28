@@ -1,0 +1,46 @@
+Week: 07
+Task: Diagnose a 5.6 second paint on a component whose only claim was speed
+Agent: Claude (Claude Code, terminal)
+
+Prompt or workflow:
+See week 2 for the profiling itself. This log is about the follow-on: once the
+real cause was known, the same class of error turned up twice more in the same
+afternoon, and the useful artefact was the rule rather than the three fixes.
+
+The rule, written into the project skill after the third instance:
+
+  "measure before fixing — a plausible cause is not a cause"
+
+The three instances:
+
+1. A 50,000-row table painting in 5,638ms. Two reasonable fixes (build the
+   rows as one string, add table-layout: fixed) moved it to 5,383ms and then
+   5,738ms. Profiling showed layout at 3,658ms and JavaScript at 1.2% of total.
+   content-visibility cannot help a <table> at all — the table box walks every
+   row to build its own grid. Measured: table 3,367ms, div rows 434ms.
+
+2. A wordmark that condensed by 5% on a font whose axis spans 25 to 151.
+   Measuring the rendered width at both ends showed the axis only reaches 0.79
+   of its widest. A different font reached 0.53.
+
+3. A QA suite that never finished. Assumed to be machine size; was actually
+   250,000 forced layouts inside one check.
+
+Result:
+All three had a confident, wrong first diagnosis, and in every case the
+measurement took one tool call and the wrong fix took two deploys.
+
+  endless-ledger   5,638ms -> 1,809ms
+  qa.mjs           never finishes -> 90 s
+  wordmark         0.95 ratio -> 0.54 ratio
+
+What it saved: roughly three hours across the three, most of it already spent
+before the rule was written down. The rule is now in the project skill, so the
+next instance costs one measurement instead of two deploys.
+
+The lesson for prompting: the most expensive prompts I write are the ones that
+name a fix. "Build the rows with innerHTML instead of createElement" contains
+a diagnosis I never checked, and the agent will implement it faithfully and
+report success, because the change did what I asked — it just did not do what
+I wanted. "Measure where the time goes, phase by phase" cannot be wrong in
+that way, because it has no theory in it.

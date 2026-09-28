@@ -1,0 +1,20 @@
+{
+  "slug": "zone-overlap-ribbon",
+  "name": "Zone Overlap Ribbon",
+  "type": "chart",
+  "week": 30,
+  "date": "2026-09-29",
+  "summary": "Working-hours bands across four timezones over a week containing a DST transition, so the shared window visibly jogs by an hour mid-week — which a fixed-offset calculation cannot show.",
+  "attempts": [
+    {
+      "prompt": "Build a chart showing when people in different timezones are both working.",
+      "problem": "Stored each person as a UTC offset and added it to the hour. That is the assumption the whole problem is about: an offset is a property of an instant, not of a place. Across 26 October, Europe leaves summer time and the United States does not, so the real overlap moves by an hour mid-week while the chart drew a perfectly straight band."
+    },
+    {
+      "prompt": "Use the IANA timezone database so daylight saving is handled.",
+      "problem": "Used the right zones but resolved the offset ONCE, for the first day, and reused it across the week. That is the same bug wearing a better name — the offset has to be recomputed per instant, because the transition happens in the middle of the range being drawn, and different countries transition on different dates."
+    }
+  ],
+  "finalPrompt": "Build a chart of overlapping working hours across several timezones, in plain HTML, CSS and vanilla JavaScript.\n\nUse IANA zone identifiers (Europe/Lisbon, Europe/Berlin, America/New_York, Asia/Kolkata) and resolve each zone's offset PER INSTANT, not once. Derive it with Intl.DateTimeFormat formatToParts for that moment in that zone and compare against the UTC timestamp — an offset is a property of a moment, not of a place, and caching one for the whole week reintroduces the exact bug the zones were adopted to fix.\n\nChoose a week that CONTAINS a transition — the week of 26 October 2026, when European zones leave summer time and the United States has not yet — so the overlap band visibly jogs by an hour partway through. A week without a transition renders a straight ribbon and demonstrates nothing.\n\nInclude Asia/Kolkata, whose offset is UTC+5:30, so that any code assuming whole-hour offsets is caught.\n\nCompute a per-hour busy array for each person over the week, honouring their local weekday (the weekend is local, not UTC), then derive the all-hands overlap as the intersection.\n\nMark the people whose offset changed during the week, and say in the caption that the overlap moves rather than leaving the reader to notice the jog.\n\nUse logical properties (inset-inline-start) for band positioning so the chart mirrors in RTL. Use tokens only: var(--accent), var(--bg), var(--border), var(--text), var(--text-dim), var(--mono). No literal colours.",
+  "why": "The deep mistake is treating a timezone as a number. An offset is a function of an instant, and every convenient simplification — storing UTC+1, resolving the offset once per user, computing the week from a single reference date — is that same error at a different scale. It is invisible for most of the year, which is what makes it dangerous: the calendar is correct for eleven months and then quietly moves everyone's meeting by an hour in the two weeks when the northern hemisphere transitions on different dates. Choosing a week that straddles a transition is what turns an untestable assumption into something you can see on screen, and India's half-hour offset catches the other common shortcut."
+}

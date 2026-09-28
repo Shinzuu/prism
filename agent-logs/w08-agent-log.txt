@@ -1,0 +1,40 @@
+Week: 08
+Task: Get an agent to find its own visual bugs instead of waiting to be told
+Agent: Claude (Claude Code, terminal)
+
+Prompt or workflow:
+Covered in week 3 from the angle of the skill that came out of it. This log
+records what the skill actually caught afterwards, because a process change is
+only worth logging if it earns its keep.
+
+The skill, in one line: run the checks, then RENDER the page and look at the
+image, then report. The automated half is test/qa.mjs — four rules, each one
+added because a real bug got past a green suite.
+
+Result, over the following weeks:
+
+  - A headline clipped by 12px. Caught on the suite's first run, on a page I
+    had looked at directly and not seen.
+  - A navigation spine at inset: 0, opacity: 0 — invisible, still hit-testable,
+    silently swallowing every click on the pane beneath it. Found because a
+    Playwright click timed out, not because anyone read the CSS.
+  - A component declaring --h for its block height, which shadows the palette's
+    hue token, so every colour derived from it inside that component became
+    invalid. Caught by the token-collision rule, which exists because the same
+    mistake once made a navigation span 35 grid rows and 7,238 pixels.
+  - A flap clipped to exactly the triangle it was meant to uncover.
+
+The token-collision rule is the one I would keep if I could only keep one. It
+is four lines, it has no false positives, and the bug it catches is invisible
+in both the code and the rendering until something far away looks wrong.
+
+What it saved: the measurable part is small — each bug is twenty minutes. The
+part that matters is that none of them reached the point of being reported by
+someone else, which is the failure mode the skill was written to stop.
+
+The lesson for prompting: when the same kind of mistake happens twice, do not
+ask for the fix. Ask what would have caught it, and then ask for that to be
+built. The output of the conversation should be a rule or a test, not a patch —
+a patch closes one bug, and a check closes the ones you have not hit yet. The
+question that produced all of this was six words long: "why are you not finding
+them yourself".

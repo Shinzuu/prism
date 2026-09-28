@@ -1,0 +1,49 @@
+Week: 13
+Task: Review a ninety-day build, and say what actually changed about prompting
+Agent: Claude (Claude Code, terminal)
+
+Prompt or workflow:
+Closing log. The challenge asked for 30 components and 13 agent logs over
+ninety days; the library finished at 70 components, each carrying the prompt
+that produced it, two recorded failed attempts, and a note on why the failure
+was interesting. This log is the summary of what the prompts taught.
+
+Result — the five rules that survived, in the order they were learned:
+
+1. Never name the fix. A prompt that says "build the rows with innerHTML" has
+   a diagnosis in it that nobody checked. Two deploys and forty minutes went
+   into a fix aimed at JavaScript that was 1.2% of the problem. "Measure where
+   the time goes" has no theory in it and cannot be wrong that way.
+
+2. State the claim as a number. "Test it" produces a test of the code. "Four
+   locales must produce four different orders" produces a test of the claim —
+   and returned 2 of 4 on a component that had been passing for hours.
+
+3. Name the adverse condition, not the feature. "Make the toolbar responsive"
+   produces breakpoints. "Make sure it works at 400% zoom" produces a
+   ResizeObserver, because the second rules out the first answer.
+
+4. Ask what would have caught it. When the same class of mistake happens twice,
+   the output of the conversation should be a rule or a test, not a patch. The
+   six-word question "why are you not finding them yourself" produced a skill
+   and a four-rule QA suite that then caught a clipped headline, an invisible
+   click-blocking element, and a token collision.
+
+5. Measure the thing you are choosing, not its specification. The font with
+   the widest nominal width axis condensed half as much as one with a narrower
+   range. Four candidates, one metric, four minutes.
+
+The pattern under all five: the prompts that worked removed an assumption
+rather than adding an instruction. The ones that failed were confident,
+specific, and contained an unverified belief about the cause.
+
+What it saved: the challenge's own framing was that it exists to teach the team
+to prompt LLMs well. The honest answer after ninety days is that prompt length
+and politeness changed nothing measurable, and that the single highest-value
+habit was refusing to state a cause I had not measured. Everything else follows
+from that.
+
+Carrying forward: the build-time gate (missing prompt fails the build), the
+visual QA suite, the flush-to-disk progress rule, and the account verification
+step before any deploy. All four are in the project skill rather than in
+anyone's memory, which is the only reason they will still be there in March.

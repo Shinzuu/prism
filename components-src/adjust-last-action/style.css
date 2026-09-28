@@ -1,0 +1,35 @@
+.ala { display: grid; gap: 9px; }
+.ala__canvas {
+  height: 108px; display: grid; place-items: center;
+  border: 1px solid var(--border); border-radius: 9px; background: var(--bg);
+}
+.ala__shape {
+  width: 74px; height: 56px; border-radius: 10px;
+  background: var(--accent);
+  filter: blur(var(--ala-r, 0px));
+  box-shadow: 0 0 var(--ala-s, 0px) color-mix(in oklab, var(--accent) 60%, transparent);
+  transition: filter .18s ease, box-shadow .18s ease;
+}
+
+.ala__bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ala__do {
+  font: inherit; font-size: .78rem; cursor: pointer;
+  padding: 7px 13px; border-radius: 7px;
+  border: 0; background: var(--accent); color: var(--accent-fg);
+}
+.ala__do:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ala__state { font-family: var(--mono); font-size: .66rem; color: var(--text-dim); }
+
+.ala__panel {
+  display: grid; gap: 7px;
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: 9px; background: var(--raised);
+}
+.ala__panel[hidden] { display: none; }
+.ala__h { margin: 0; font-size: .76rem; font-weight: 500; }
+.ala__dim { color: var(--text-dim); font-weight: 400; }
+.ala__f { display: grid; grid-template-columns: 4.2rem 1fr 2.4rem; gap: 8px; align-items: center; font-size: .72rem; color: var(--text-dim); }
+.ala__f input { min-width: 0; accent-color: var(--accent); }
+.ala__f output { font-family: var(--mono); font-size: .66rem; text-align: end; color: var(--text); font-variant-numeric: tabular-nums; }
+.ala__note { margin: 0; font-family: var(--mono); font-size: .62rem; color: var(--text-dim); }
+
+@media (prefers-reduced-motion: reduce) { .ala__shape { transition: none; } }

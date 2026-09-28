@@ -1,0 +1,20 @@
+.zor { display: grid; gap: 8px; }
+.zor__bar { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.zor__t { margin: 0; font-size: .82rem; font-weight: 500; }
+.zor__dim { color: var(--text-dim); font-weight: 400; }
+.zor__read { margin: 0; font-family: var(--mono); font-size: .66rem; color: var(--text-dim); }
+
+.zor__grid { display: grid; gap: 3px; font-size: .64rem; }
+.zor__row { display: grid; grid-template-columns: 7.2rem 1fr; gap: 8px; align-items: center; }
+.zor__who { color: var(--text-dim); font-family: var(--mono); font-size: .6rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.zor__lane { position: relative; height: 16px; border-radius: 4px; background: color-mix(in oklab, var(--border) 40%, transparent); overflow: hidden; }
+.zor__band {
+  position: absolute; top: 0; bottom: 0;
+  background: color-mix(in oklab, var(--accent) 42%, transparent);
+}
+.zor__band[data-shift] { outline: 1px dashed var(--accent); outline-offset: -1px; }
+.zor__all { background: var(--accent); }
+
+.zor__days { display: grid; grid-template-columns: 7.2rem 1fr; gap: 8px; }
+.zor__ticks { display: grid; grid-template-columns: repeat(7, 1fr); font-family: var(--mono); font-size: .58rem; color: var(--text-dim); }
+.zor__note { margin: 0; font-size: .72rem; color: var(--text-dim); line-height: 1.5; }

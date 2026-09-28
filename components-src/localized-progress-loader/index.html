@@ -1,0 +1,21 @@
+<div class="lpl" data-lpl>
+  <div class="lpl__head">
+    <p class="lpl__sentence" data-lpl-say aria-live="polite">—</p>
+    <select class="lpl__loc" data-lpl-loc aria-label="Language">
+      <option value="en">English</option>
+      <option value="pl">Polski</option>
+      <option value="ru">Русский</option>
+      <option value="ar">العربية</option>
+      <option value="ja">日本語</option>
+    </select>
+  </div>
+
+  <!-- padding-inline-start, not padding-left. In Arabic the bar must fill from
+       the right, and a physical property pins it to the wrong edge. -->
+  <div class="lpl__track" data-lpl-track role="progressbar"
+       aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+    <div class="lpl__fill" data-lpl-fill></div>
+  </div>
+
+  <p class="lpl__meta" data-lpl-meta></p>
+</div>

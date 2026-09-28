@@ -1,0 +1,51 @@
+Week: 11
+Task: Get correct internationalisation out of an agent that defaults to English
+Agent: Claude (Claude Code, terminal)
+
+Prompt or workflow:
+Five components in the library are about text that is not English: a plural-
+aware progress loader, a locale-collated table, a grapheme-counting field, a
+bidirectional comment card, and a multiscript text column. Every one of them
+got a confidently wrong first draft, and the errors were all the same shape —
+English grammar and ASCII assumptions expressed as if they were arithmetic.
+
+The first drafts, unprompted:
+
+  n === 1 ? 'file' : 'files'          // two plural forms, as if universal
+  string.length                        // UTF-16 units, called "characters"
+  names.sort()                         // code-point order, called "alphabetical"
+  dir="rtl" on the container            // direction without isolation
+  word-break: break-all                 // to stop overflow, in any script
+
+The prompt that changed the output was not "support other languages". It was
+naming the thing that must not be assumed:
+
+  "key the messages by CLDR plural category, not by number — Polish has four
+   and Arabic six, and a ternary cannot express either"
+
+Result:
+Each correct version turned out to be roughly the same amount of code as the
+wrong one, and to hinge on a platform API that already exists:
+
+  Intl.PluralRules    selects zero/one/two/few/many/other per locale
+  Intl.Segmenter      counts graphemes — 👨‍👩‍👧‍👦 is 1, not 11 and not 7
+  Intl.Collator       Ö files with O in German, after Z in Swedish
+  <bdi>               isolates a run so its direction cannot leak
+  lang attribute      selects the line-breaking dictionary (Thai has no spaces)
+
+The grapheme one is the sharpest: three different counts of the same string —
+38 UTF-16 units, 32 code points, 25 graphemes — and only the third is what a
+person would call the number of characters. Truncating on the first two can cut
+a surrogate pair in half, and the resulting lone surrogate is not valid in JSON,
+so the bug surfaces as a serialisation failure far from the field that caused it.
+
+What it saved: nothing yet, and potentially a great deal. None of these bugs
+appear in English, so all five would have shipped, and each fails in a way the
+affected user reads as contempt rather than as an oversight.
+
+The lesson for prompting: an agent writes the defaults of its training data,
+and those defaults are Anglophone and ASCII. The fix is not "support i18n",
+which produces translated strings on English structure. It is to name the
+specific assumption to drop — plural forms, character counts, sort order,
+direction, word boundaries — because each one has a different platform API and
+the agent knows all of them once asked.

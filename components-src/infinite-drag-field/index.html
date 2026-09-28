@@ -1,0 +1,13 @@
+<div class="idf" data-idf>
+  <div class="idf__row">
+    <!-- The label is the control. Dragging it scrubs the value; the input
+         stays a real number input you can still type into. -->
+    <label class="idf__lab" for="idf-x" data-idf-scrub tabindex="0"
+           role="slider" aria-valuemin="-9999" aria-valuemax="9999" aria-valuenow="0"
+           aria-label="Offset X, drag to scrub or use arrow keys">Offset X</label>
+    <input class="idf__in" id="idf-x" type="number" value="0" step="1" data-idf-in>
+    <span class="idf__unit">px</span>
+  </div>
+  <p class="idf__hint">Drag the label sideways. The pointer is captured and hidden, wraps at the screen edge, and never runs out of room.</p>
+  <p class="idf__read" data-idf-read></p>
+</div>

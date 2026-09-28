@@ -1,0 +1,49 @@
+Week: 10
+Task: Stop an agent from mistaking "renders" for "works" on a 400% zoom layout
+Agent: Claude (Claude Code, terminal)
+
+Prompt or workflow:
+A toolbar was built to move its actions into an overflow menu when space runs
+out. The first version used media queries, which is the standard answer and is
+wrong for a reason that only shows up in one situation.
+
+The prompt that produced the right version named the situation:
+
+  "the toolbar is not the viewport — make it measure its own box, and make
+   sure it still works at 400% browser zoom"
+
+Result:
+At 400% zoom the viewport still reports a comfortable CSS pixel width while
+every glyph is four times its normal size. A media query therefore never fires,
+and the buttons simply overflow and clip. This is a WCAG reflow requirement,
+not a nicety, and it cannot be reproduced by dragging a window — which is why
+it survives review.
+
+ResizeObserver on the toolbar itself fixes it, and introduced a genuine
+feedback loop on the way:
+
+  measure button widths -> hide one -> layout changes -> observer fires
+  -> measure again (now reading the layout the hide caused) -> hide another
+
+The toolbar walked itself down to one button. The fix is to measure every
+width ONCE with everything visible and cache it, so the fitting loop never
+reads a layout it is in the middle of changing.
+
+Verified across three container widths:
+
+  520px -> 6 actions shown, 0 in menu
+  260px -> 2 actions shown, 4 in menu
+  520px -> 6 actions shown, 0 in menu   (restored, no drift)
+
+The restore matters: an oscillating implementation gets the narrow case right
+and never comes back.
+
+What it saved: the media-query version passed every test I had. It rendered,
+it collapsed when the window was narrow, and it was broken for exactly the
+users who most need a toolbar that reflows — people running large text.
+
+The lesson for prompting: name the adverse condition, not the feature. "Make
+the toolbar responsive" produces breakpoints. "Make sure it works at 400% zoom"
+produces a ResizeObserver, because the second sentence rules out the first
+answer. Adverse conditions are also where an agent's defaults are weakest, and
+they are cheap to state.

@@ -1,0 +1,27 @@
+.idf { display: grid; gap: 8px; }
+.idf__row { display: flex; align-items: center; gap: 8px; }
+
+.idf__lab {
+  font-size: .74rem; color: var(--text-dim);
+  cursor: ew-resize; user-select: none; touch-action: none;
+  padding: 5px 8px; border-radius: 6px;
+  border: 1px dashed var(--border); background: var(--raised);
+  white-space: nowrap;
+}
+.idf__lab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.idf[data-scrubbing] .idf__lab { border-style: solid; border-color: var(--accent); color: var(--accent); }
+
+.idf__in {
+  font: inherit; font-size: .84rem; width: 7rem; min-width: 0;
+  padding: 6px 9px; border-radius: 7px;
+  border: 1px solid var(--border); background: var(--bg); color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.idf__in:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.idf__unit { font-family: var(--mono); font-size: .68rem; color: var(--text-dim); }
+
+.idf__hint, .idf__read { margin: 0; font-size: .72rem; color: var(--text-dim); line-height: 1.5; }
+.idf__read { font-family: var(--mono); font-size: .66rem; }
+
+/* While scrubbing, nothing on the page should show a text caret or selection. */
+.idf[data-scrubbing] { cursor: ew-resize; }

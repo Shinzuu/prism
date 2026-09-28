@@ -1,0 +1,54 @@
+.frs { display: grid; gap: 8px; }
+.frs__scroll {
+  height: 250px; overflow-y: auto;
+  border: 1px solid var(--border); border-radius: 9px; background: var(--bg);
+  padding: 12px;
+  /* The 3D has to live on the scroller, not each panel: a per-element
+     perspective gives every panel its own vanishing point, so they fold in
+     five different directions instead of one. */
+  perspective: 800px;
+  perspective-origin: 50% 0%;
+}
+.frs__lead, .frs__tail { margin: 0 0 12px; font-size: .74rem; color: var(--text-dim); line-height: 1.55; max-width: 44ch; }
+.frs__tail { margin: 12px 0 0; }
+
+.frs__map { display: grid; gap: 4px; transform-style: preserve-3d; }
+
+.frs__panel {
+  display: flex; align-items: baseline; gap: 10px;
+  padding: 16px 14px; border-radius: 7px;
+  border: 1px solid var(--border);
+  /* Each panel catches the light differently because the gradient angle is a
+     function of its index — a flat fill makes a fold look like a slide. */
+  background: linear-gradient(calc(150deg + var(--frs-i) * 14deg),
+    color-mix(in oklab, var(--raised) 96%, var(--text)) 0%,
+    var(--raised) 55%,
+    color-mix(in oklab, var(--raised) 88%, var(--text)) 100%);
+  transform-origin: 50% 0%;     /* the hinge: this panel's own top edge */
+  backface-visibility: hidden;
+
+  opacity: .25;
+  transform: rotateX(-82deg);
+  animation: frs-open linear both;
+  animation-timeline: view(block);
+  /* Opens across the first half of its pass, so it is flat well before it
+     leaves — a panel still folding as it exits reads as broken, not animated. */
+  animation-range: entry 8% cover 42%;
+}
+.frs__n { font-family: var(--mono); font-size: .62rem; color: var(--text-dim); }
+.frs__panel p { margin: 0; font-size: .86rem; }
+
+@keyframes frs-open {
+  to { transform: rotateX(0deg); opacity: 1; }
+}
+
+/* No scroll-driven animation support: show the panels open rather than
+   collapsed, because the folded state is the decoration, not the content. */
+@supports not (animation-timeline: view()) {
+  .frs__panel { opacity: 1; transform: none; animation: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .frs__panel { opacity: 1; transform: none; animation: none; }
+}
+
+.frs__note { margin: 0; font-family: var(--mono); font-size: .64rem; color: var(--text-dim); }
