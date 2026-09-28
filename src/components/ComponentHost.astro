@@ -29,8 +29,10 @@ import C_optimistic_row from '../../components-src/optimistic-row/Component.tsx'
 import C_origin_morph_dialog from '../../components-src/origin-morph-dialog/Component.tsx';
 import C_outlier_heatmap from '../../components-src/outlier-heatmap/Component.tsx';
 import C_peel_corner_card from '../../components-src/peel-corner-card/Component.tsx';
+import C_pressure_signature_pad from '../../components-src/pressure-signature-pad/Component.tsx';
 import C_priority_overflow_toolbar from '../../components-src/priority-overflow-toolbar/Component.tsx';
 import C_progressive_blur_sheet from '../../components-src/progressive-blur-sheet/Component.tsx';
+import C_quantile_dots from '../../components-src/quantile-dots/Component.tsx';
 import C_queue_position from '../../components-src/queue-position/Component.tsx';
 import C_safe_triangle_hover from '../../components-src/safe-triangle-hover/Component.tsx';
 import C_scroll_condense_wordmark from '../../components-src/scroll-condense-wordmark/Component.tsx';
@@ -45,6 +47,7 @@ import C_sort_morph_table from '../../components-src/sort-morph-table/Component.
 import C_spotlight_card from '../../components-src/spotlight-card/Component.tsx';
 import C_staged_pipeline from '../../components-src/staged-pipeline/Component.tsx';
 import C_switch_scanning_menu from '../../components-src/switch-scanning-menu/Component.tsx';
+import C_tear_off_panel from '../../components-src/tear-off-panel/Component.tsx';
 import C_unit_field from '../../components-src/unit-field/Component.tsx';
 import C_weight_shift_button from '../../components-src/weight-shift-button/Component.tsx';
 import C_zone_overlap_ribbon from '../../components-src/zone-overlap-ribbon/Component.tsx';
@@ -79,8 +82,10 @@ const { slug } = Astro.props as { slug: string };
 {slug === "origin-morph-dialog" && <C_origin_morph_dialog client:only="react" />}
 {slug === "outlier-heatmap" && <C_outlier_heatmap client:only="react" />}
 {slug === "peel-corner-card" && <C_peel_corner_card client:only="react" />}
+{slug === "pressure-signature-pad" && <C_pressure_signature_pad client:only="react" />}
 {slug === "priority-overflow-toolbar" && <C_priority_overflow_toolbar client:only="react" />}
 {slug === "progressive-blur-sheet" && <C_progressive_blur_sheet client:only="react" />}
+{slug === "quantile-dots" && <C_quantile_dots client:only="react" />}
 {slug === "queue-position" && <C_queue_position client:only="react" />}
 {slug === "safe-triangle-hover" && <C_safe_triangle_hover client:only="react" />}
 {slug === "scroll-condense-wordmark" && <C_scroll_condense_wordmark client:only="react" />}
@@ -95,6 +100,7 @@ const { slug } = Astro.props as { slug: string };
 {slug === "spotlight-card" && <C_spotlight_card client:only="react" />}
 {slug === "staged-pipeline" && <C_staged_pipeline client:only="react" />}
 {slug === "switch-scanning-menu" && <C_switch_scanning_menu client:only="react" />}
+{slug === "tear-off-panel" && <C_tear_off_panel client:only="react" />}
 {slug === "unit-field" && <C_unit_field client:only="react" />}
 {slug === "weight-shift-button" && <C_weight_shift_button client:only="react" />}
 {slug === "zone-overlap-ribbon" && <C_zone_overlap_ribbon client:only="react" />}

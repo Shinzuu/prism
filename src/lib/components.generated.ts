@@ -32,8 +32,10 @@ import C_optimistic_row from '../../components-src/optimistic-row/Component.tsx'
 import C_origin_morph_dialog from '../../components-src/origin-morph-dialog/Component.tsx';
 import C_outlier_heatmap from '../../components-src/outlier-heatmap/Component.tsx';
 import C_peel_corner_card from '../../components-src/peel-corner-card/Component.tsx';
+import C_pressure_signature_pad from '../../components-src/pressure-signature-pad/Component.tsx';
 import C_priority_overflow_toolbar from '../../components-src/priority-overflow-toolbar/Component.tsx';
 import C_progressive_blur_sheet from '../../components-src/progressive-blur-sheet/Component.tsx';
+import C_quantile_dots from '../../components-src/quantile-dots/Component.tsx';
 import C_queue_position from '../../components-src/queue-position/Component.tsx';
 import C_safe_triangle_hover from '../../components-src/safe-triangle-hover/Component.tsx';
 import C_scroll_condense_wordmark from '../../components-src/scroll-condense-wordmark/Component.tsx';
@@ -48,6 +50,7 @@ import C_sort_morph_table from '../../components-src/sort-morph-table/Component.
 import C_spotlight_card from '../../components-src/spotlight-card/Component.tsx';
 import C_staged_pipeline from '../../components-src/staged-pipeline/Component.tsx';
 import C_switch_scanning_menu from '../../components-src/switch-scanning-menu/Component.tsx';
+import C_tear_off_panel from '../../components-src/tear-off-panel/Component.tsx';
 import C_unit_field from '../../components-src/unit-field/Component.tsx';
 import C_weight_shift_button from '../../components-src/weight-shift-button/Component.tsx';
 import C_zone_overlap_ribbon from '../../components-src/zone-overlap-ribbon/Component.tsx';
@@ -82,8 +85,10 @@ export const components: Record<string, ComponentType> = {
   "origin-morph-dialog": C_origin_morph_dialog,
   "outlier-heatmap": C_outlier_heatmap,
   "peel-corner-card": C_peel_corner_card,
+  "pressure-signature-pad": C_pressure_signature_pad,
   "priority-overflow-toolbar": C_priority_overflow_toolbar,
   "progressive-blur-sheet": C_progressive_blur_sheet,
+  "quantile-dots": C_quantile_dots,
   "queue-position": C_queue_position,
   "safe-triangle-hover": C_safe_triangle_hover,
   "scroll-condense-wordmark": C_scroll_condense_wordmark,
@@ -98,6 +103,7 @@ export const components: Record<string, ComponentType> = {
   "spotlight-card": C_spotlight_card,
   "staged-pipeline": C_staged_pipeline,
   "switch-scanning-menu": C_switch_scanning_menu,
+  "tear-off-panel": C_tear_off_panel,
   "unit-field": C_unit_field,
   "weight-shift-button": C_weight_shift_button,
   "zone-overlap-ribbon": C_zone_overlap_ribbon,
