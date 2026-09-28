@@ -54,6 +54,7 @@ import C_sliding_pane_stack from '../../components-src/sliding-pane-stack/Compon
 import C_snap_guide_canvas from '../../components-src/snap-guide-canvas/Component.tsx';
 import C_sort_morph_table from '../../components-src/sort-morph-table/Component.tsx';
 import C_sparkline_table from '../../components-src/sparkline-table/Component.tsx';
+import C_spatial_grid_nav from '../../components-src/spatial-grid-nav/Component.tsx';
 import C_spotlight_card from '../../components-src/spotlight-card/Component.tsx';
 import C_staged_pipeline from '../../components-src/staged-pipeline/Component.tsx';
 import C_switch_scanning_menu from '../../components-src/switch-scanning-menu/Component.tsx';
@@ -115,6 +116,7 @@ export const components: Record<string, ComponentType> = {
   "snap-guide-canvas": C_snap_guide_canvas,
   "sort-morph-table": C_sort_morph_table,
   "sparkline-table": C_sparkline_table,
+  "spatial-grid-nav": C_spatial_grid_nav,
   "spotlight-card": C_spotlight_card,
   "staged-pipeline": C_staged_pipeline,
   "switch-scanning-menu": C_switch_scanning_menu,
