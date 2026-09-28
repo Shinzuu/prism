@@ -1,44 +1,26 @@
-.el { display: grid; gap: 8px; }
-.el__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.el__title { margin: 0; font-size: .86rem; font-weight: 500; }
-.el__meta { margin: 0; font-family: var(--mono); font-size: .7rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+/* One column track, shared by the sticky header and every body row. */
+.el-row {
+  display: grid;
+  grid-template-columns: 4.2rem 1fr 3.4rem 4.6rem 4.6rem;
+  align-items: center;
+  font-size: .78rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 45%, transparent);
 
-.el__scroll {
-  height: 210px; overflow-y: auto;
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  background: var(--bg);
-}
-.el__scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-
-/* One column track shared by the header row and every body row, so the two stay
-   locked together without a table's all-rows layout pass. */
-.el__grid { --el-cols: 4.2rem 1fr 3.4rem 4.6rem 4.6rem; font-size: .78rem; }
-.el__row { display: grid; grid-template-columns: var(--el-cols); align-items: center; }
-.el__row > * { padding: 5px 10px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-.el__row--head {
-  position: sticky; top: 0; z-index: 1;
-  background: var(--raised);
-  border-bottom: 1px solid var(--border);
-  font-size: .7rem; color: var(--text-dim);
-}
-.el__row--head > * { padding-block: 7px; }
-
-.el__body-row { border-bottom: 1px solid color-mix(in oklab, var(--border) 45%, transparent); }
-.el__row > :first-child { color: var(--text-dim); font-family: var(--mono); font-size: .68rem; }
-.el__row > :nth-child(4), .el__row > :nth-child(5) { text-align: right; font-variant-numeric: tabular-nums; }
-.el__body-row[data-side="sell"] > :nth-child(3) { color: var(--accent); }
-
-/* The whole component. The browser skips layout and paint for rows that are
-   off-screen, and contain-intrinsic-size gives it a placeholder height so the
-   scrollbar is honest and stops jittering as real heights are measured. A
-   <table> cannot do this: measured at 50,000 rows, the table box spent 3,367ms
-   in layout against 434ms here, because table layout visits every row to build
-   its row/column grid no matter what each row declares. */
-.el__body-row {
+  /* The whole component. The browser skips layout and paint for off-screen
+     rows, and contain-intrinsic-size gives a placeholder height so the
+     scrollbar is honest. A <table> cannot do this at all — table layout visits
+     every row to build its row/column grid whatever each row declares:
+     measured at 50,000 rows, 3,367ms in layout as a table against 434ms here. */
   content-visibility: auto;
   contain-intrinsic-size: auto 25px;
 }
-
-.el__note { margin: 0; font-size: .72rem; color: var(--text-dim); }
+.el-row > span {
+  padding: 5px 10px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.el-n   { font-family: var(--mono); font-size: .68rem; color: var(--text-dim); }
+.el-num { text-align: end; font-variant-numeric: tabular-nums; }
+.el-sell { color: var(--accent); }

@@ -1,29 +1,8 @@
-.ct { display: grid; gap: 6px; --ct-stall: var(--text-dim); }
-.ct__head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-.ct__title { margin: 0; font-size: .82rem; font-weight: 500; }
-.ct__dim { color: var(--text-dim); font-weight: 400; }
-.ct__read { margin: 0; font-family: var(--mono); font-size: .7rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
-.ct__sep { margin: 0 6px; opacity: .5; }
-
-.ct__svg {
-  width: 100%; height: 96px; display: block;
-  border: 1px solid var(--border); border-radius: 8px;
-  background: var(--bg);
-}
-.ct__grid line { stroke: var(--border); stroke-width: 1; vector-effect: non-scaling-stroke; }
-.ct__line { stroke: var(--accent); stroke-width: 1.6; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
-.ct__fit { stroke: var(--text-dim); stroke-width: 1; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; opacity: .75; }
-.ct__dot { fill: var(--accent); }
-
-.ct[data-ct-state="stalled"] .ct__line { stroke: var(--text-dim); }
-.ct[data-ct-state="stalled"] .ct__dot { fill: var(--text-dim); }
-.ct[data-ct-state="done"] .ct__dot { fill: var(--accent); }
-
-.ct__plot { display: grid; grid-template-columns: 2.4rem 1fr; gap: 4px; align-items: stretch; }
-.ct__yaxis {
-  display: flex; flex-direction: column; justify-content: space-between;
-  padding-block: 2px; text-align: right;
-  font-family: var(--mono); font-size: .58rem; color: var(--text-dim);
-}
-.ct__xaxis { margin: 0 0 0 2.8rem; font-family: var(--mono); font-size: .58rem; color: var(--text-dim); }
-.ct__note { margin: 0; font-size: .72rem; color: var(--text-dim); line-height: 1.5; }
+.ct-grid { stroke: var(--border); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.ct-line { stroke: var(--accent); stroke-width: 1.6; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.ct-fit  { stroke: var(--text-dim); stroke-width: 1; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; opacity: .75; }
+.ct-dot  { fill: var(--accent); }
+/* Being able to show "stalled" honestly is the reason to build this rather
+   than a spinner. */
+.ct-dim { stroke: var(--text-dim); }
+.ct-dim-fill { fill: var(--text-dim); }

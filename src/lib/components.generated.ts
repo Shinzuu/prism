@@ -12,9 +12,11 @@ import C_code_input from '../../components-src/code-input/Component.tsx';
 import C_collation_sort_table from '../../components-src/collation-sort-table/Component.tsx';
 import C_command_button from '../../components-src/command-button/Component.tsx';
 import C_constraint_solver_form from '../../components-src/constraint-solver-form/Component.tsx';
+import C_convergence_trace from '../../components-src/convergence-trace/Component.tsx';
 import C_copy_receipt from '../../components-src/copy-receipt/Component.tsx';
 import C_difference_header from '../../components-src/difference-header/Component.tsx';
 import C_duration_field from '../../components-src/duration-field/Component.tsx';
+import C_endless_ledger from '../../components-src/endless-ledger/Component.tsx';
 import C_fold_reveal_section from '../../components-src/fold-reveal-section/Component.tsx';
 import C_forced_colors_chart from '../../components-src/forced-colors-chart/Component.tsx';
 import C_grapheme_budget_field from '../../components-src/grapheme-budget-field/Component.tsx';
@@ -56,9 +58,11 @@ export const components: Record<string, ComponentType> = {
   "collation-sort-table": C_collation_sort_table,
   "command-button": C_command_button,
   "constraint-solver-form": C_constraint_solver_form,
+  "convergence-trace": C_convergence_trace,
   "copy-receipt": C_copy_receipt,
   "difference-header": C_difference_header,
   "duration-field": C_duration_field,
+  "endless-ledger": C_endless_ledger,
   "fold-reveal-section": C_fold_reveal_section,
   "forced-colors-chart": C_forced_colors_chart,
   "grapheme-budget-field": C_grapheme_budget_field,
