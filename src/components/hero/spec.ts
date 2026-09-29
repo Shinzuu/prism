@@ -35,30 +35,49 @@ export function spanAt(sweepDeg: number): number {
   return 2 * halfSpanAt(sweepDeg);
 }
 
-/* Longitudinal stations, nose at -Z. Each is a cross-section of the central
-   body: half width, and the top and bottom of the section at the centreline.
-   The body is lofted through these rather than modelled as a primitive. */
-export const STATIONS: Array<{ z: number; w: number; top: number; bot: number; flat: number }> = [
-  { z: -9.55, w: 0.05, top: 0.04, bot: -0.04, flat: 2.0 },
-  { z: -8.70, w: 0.42, top: 0.30, bot: -0.36, flat: 2.2 },
-  { z: -7.60, w: 0.72, top: 0.58, bot: -0.62, flat: 2.4 },
-  { z: -6.40, w: 0.92, top: 0.86, bot: -0.78, flat: 2.6 },
-  { z: -5.10, w: 1.04, top: 0.98, bot: -0.84, flat: 2.8 },
-  { z: -3.80, w: 1.34, top: 0.82, bot: -0.92, flat: 3.4 },
-  { z: -2.40, w: 2.20, top: 0.70, bot: -0.98, flat: 4.4 },
-  { z: -1.10, w: 2.95, top: 0.64, bot: -1.00, flat: 5.4 },
-  { z: 0.60, w: 3.15, top: 0.60, bot: -0.98, flat: 6.0 },
-  { z: 2.60, w: 3.10, top: 0.56, bot: -0.94, flat: 6.0 },
-  { z: 4.60, w: 2.85, top: 0.52, bot: -0.88, flat: 5.4 },
-  { z: 6.60, w: 2.45, top: 0.48, bot: -0.80, flat: 4.6 },
-  { z: 8.20, w: 2.10, top: 0.44, bot: -0.66, flat: 4.0 },
-  { z: 9.55, w: 1.85, top: 0.38, bot: -0.52, flat: 3.6 },
+/* Forward fuselage only: nose to the intakes. The wide part of this aircraft
+   is two engine nacelles with a flat deck between them, not a fat tube, and
+   modelling it as one lofted body was what made the first version unreadable. */
+export const NOSE: Array<{ z: number; w: number; top: number; bot: number; flat: number }> = [
+  { z: -9.55, w: 0.04, top: 0.03, bot: -0.03, flat: 2.0 },
+  { z: -8.90, w: 0.34, top: 0.24, bot: -0.28, flat: 2.2 },
+  { z: -8.00, w: 0.58, top: 0.46, bot: -0.52, flat: 2.4 },
+  { z: -7.00, w: 0.76, top: 0.66, bot: -0.66, flat: 2.6 },
+  { z: -6.00, w: 0.88, top: 0.80, bot: -0.74, flat: 2.8 },
+  { z: -4.80, w: 0.98, top: 0.86, bot: -0.80, flat: 3.0 },
+  { z: -3.60, w: 1.10, top: 0.70, bot: -0.84, flat: 3.6 },
+  /* Widening to the deck's half-width so the two meet flush instead of
+     leaving a step you can see from any angle. */
+  { z: -2.40, w: 1.30, top: 0.48, bot: -0.76, flat: 4.4 },
+  { z: -1.00, w: 1.44, top: 0.34, bot: -0.64, flat: 5.2 },
+  { z: 0.60, w: 1.46, top: 0.28, bot: -0.58, flat: 5.6 },
 ];
 
-export const NACELLE = { x: 1.42, r: 0.78, z0: -3.20, z1: 9.30 };
-export const FIN = { x: 1.95, cant: 12, root: 4.30, tip: 7.40, height: 2.90, chordTip: 1.55 };
-export const STAB = { x0: 1.15, z0: 6.40, span: 3.55, chordRoot: 2.30, chordTip: 0.95, sweep: 42 };
-export const CANOPY = { z0: -6.60, z1: -4.20, w: 0.78, h: 0.52 };
+/** The two engine nacelles: long tubes either side of the deck. */
+export const NACELLE = { x: 1.46, r: 0.82, z0: -3.60, z1: 9.30 };
+
+/** The flat deck between the nacelles — this aircraft's defining plan shape. */
+export const DECK = { halfW: 1.46, z0: -3.40, z1: 7.90, top: 0.28, bot: -0.58 };
+
+/** Fixed leading-edge extensions, fuselage side out to the wing pivot. */
+export const GLOVE = { xIn: 1.30, xOut: PIVOT_X, zLE: -4.60, zTE: -0.10, y: 0.06, thick: 0.26 };
+
+/** Twin fins, standing on the nacelles and canted outward. */
+export const FIN = {
+  x: 1.50, base: 0.58, height: 2.55, cant: 12,
+  rootLE: 3.70, rootTE: 7.10, tipLE: 5.55, tipTE: 7.15, thick: 0.15,
+};
+
+/** All-moving tailplanes, below and behind the fins. */
+export const STAB = {
+  xIn: 1.30, xOut: 4.95, y: -0.20, thick: 0.15,
+  rootLE: 6.30, rootTE: 8.70, tipLE: 8.05, tipTE: 9.05,
+};
+
+/** Small stabilising fins under the aft nacelles. */
+export const VENTRAL = { x: 1.40, top: -0.52, drop: 0.86, z0: 6.40, z1: 8.10, thick: 0.10, cant: 22 };
+
+export const CANOPY = { z0: -7.10, z1: -4.10, w: 0.74, h: 0.62, y: 0.70 };
 
 /* The five callouts, anchored to a point on the airframe in model space so the
    labels follow the aircraft rather than sitting at fixed screen positions. */

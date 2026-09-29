@@ -7,7 +7,8 @@
 import type * as THREE_NS from 'three';
 import type * as ThreeMin from './three-min';
 import {
-  STATIONS, NACELLE, FIN, STAB, CANOPY, PANEL, PIVOT_X, PIVOT_Z, LENGTH,
+  NOSE, NACELLE, DECK, GLOVE, FIN, STAB, VENTRAL, CANOPY,
+  PANEL, PIVOT_X, PIVOT_Z, LENGTH,
 } from './spec';
 
 type T = typeof ThreeMin;
@@ -88,6 +89,30 @@ function plate(THREE: T, outline: Array<[number, number]>, thick: number | ((i: 
   return g;
 }
 
+/** Extrude an outline given in (y, z) to a thickness in x: a vertical surface. */
+function plateYZ(THREE: T, outline: Array<[number, number]>, thick: number) {
+  const n = outline.length;
+  const t = thick / 2;
+  const pos: number[] = [];
+  const push = (a: number[], b: number[], c: number[]) => pos.push(...a, ...b, ...c);
+  const out = (i: number) => [t, outline[i]![0], outline[i]![1]];
+  const inn = (i: number) => [-t, outline[i]![0], outline[i]![1]];
+
+  for (let i = 1; i < n - 1; i++) {
+    push(out(0), out(i), out(i + 1));
+    push(inn(0), inn(i + 1), inn(i));
+  }
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    push(out(i), inn(i), inn(j));
+    push(out(i), inn(j), out(j));
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.computeVertexNormals();
+  return g;
+}
+
 export interface Airframe {
   root: THREE_NS.Group;
   /** Every solid, for the depth prepass and for edge extraction. */
@@ -108,95 +133,100 @@ export function buildAirframe(THREE: T): Airframe {
     return m;
   };
 
-  /* Body ------------------------------------------------------------------ */
+  /* Every part is placed at the coordinates it belongs at. The first version
+     built one plate and then rotated it into position twice over, and the fins
+     ended up in front of the cockpit — a transform you cannot read is a
+     transform you cannot check. */
+
+  /* Forward fuselage: nose to the intakes -------------------------------- */
   add(loft(
     THREE,
-    STATIONS.map((s) => section(s.w, s.top, s.bot, s.flat)),
-    STATIONS.map((s) => s.z),
+    NOSE.map((s) => section(s.w, s.top, s.bot, s.flat)),
+    NOSE.map((s) => s.z),
   ));
 
-  /* Nacelles -------------------------------------------------------------- */
+  /* Nacelles: two long tubes either side of the deck ---------------------- */
   for (const sx of [-1, 1]) {
-    const zs = [NACELLE.z0, NACELLE.z0 + 2, 0, 4, 7, NACELLE.z1];
-    const rs = [0.62, 0.74, NACELLE.r, NACELLE.r, 0.72, 0.58];
-    const g = loft(THREE, rs.map((r) => section(r, r, -r, 2.2, 16)), zs);
-    const m = add(g);
-    m.position.x = sx * NACELLE.x;
+    const zs = [NACELLE.z0, NACELLE.z0 + 1.6, -0.5, 4.0, 7.6, NACELLE.z1];
+    const rs = [0.70, 0.80, NACELLE.r, NACELLE.r, 0.76, 0.62];
+    const m = add(loft(THREE, rs.map((r) => section(r, r * 0.92, -r * 0.92, 2.3, 16)), zs));
+    m.position.set(sx * NACELLE.x, -0.10, 0);
   }
 
-  /* Gloves: fixed leading-edge extensions out to the pivot ---------------- */
+  /* The deck between them, which is what gives the plan view its shape ---- */
+  {
+    const m = add(plate(THREE, [
+      [-DECK.halfW, DECK.z0], [DECK.halfW, DECK.z0],
+      [DECK.halfW, DECK.z1], [-DECK.halfW, DECK.z1],
+    ], DECK.top - DECK.bot));
+    m.position.y = (DECK.top + DECK.bot) / 2;
+  }
+
+  /* Gloves: fuselage side out to the pivot -------------------------------- */
   for (const sx of [-1, 1]) {
-    const g = plate(THREE, [
-      [1.20, -3.90], [PIVOT_X, PIVOT_Z - 1.55], [PIVOT_X, PIVOT_Z + 1.90], [1.20, -0.60],
-    ], 0.30);
-    const m = add(g);
+    const m = add(plate(THREE, [
+      [GLOVE.xIn, GLOVE.zLE - 0.5], [GLOVE.xOut, PIVOT_Z - 1.55],
+      [GLOVE.xOut, PIVOT_Z + 1.90], [GLOVE.xIn, GLOVE.zTE],
+    ], GLOVE.thick));
     m.scale.x = sx;
+    m.position.y = GLOVE.y;
   }
 
-  /* Wings: separate groups pivoting at the solved pivot station ------------ */
+  /* Wings ----------------------------------------------------------------- */
   const wings: THREE_NS.Group[] = [];
   for (const sx of [-1, 1]) {
     const pivot = new THREE.Group();
-    pivot.position.set(sx * PIVOT_X, 0, PIVOT_Z);
+    pivot.position.set(sx * PIVOT_X, GLOVE.y, PIVOT_Z);
     root.add(pivot);
     const le = (x: number) => -1.45 + x * 0.10;
     const te = (x: number) => 1.90 - x * 0.18;
-    const g = plate(THREE, [
+    const m = new THREE.Mesh(plate(THREE, [
       [0, le(0)], [PANEL, le(PANEL)], [PANEL, te(PANEL)], [0, te(0)],
-    ], (i) => (i === 1 || i === 2 ? 0.07 : 0.17));
-    const m = new THREE.Mesh(g, mat);
+    ], (i) => (i === 1 || i === 2 ? 0.07 : 0.17)), mat);
     m.scale.x = sx;
     pivot.add(m);
     solids.push(m);
     wings.push(pivot);
   }
 
-  /* Fins: canted outward, twin ------------------------------------------- */
+  /* Fins: vertical plates standing on the nacelles ------------------------ */
   for (const sx of [-1, 1]) {
-    const g = plate(THREE, [
-      [0, FIN.root], [FIN.height, FIN.root + 1.35],
-      [FIN.height, FIN.root + 1.35 + FIN.chordTip], [0, FIN.tip],
-    ], 0.16);
-    const m = add(g);
-    m.rotation.z = Math.PI / 2;
-    m.rotation.y = 0;
-    m.position.set(sx * FIN.x, 0.35, 0);
-    m.rotation.x = 0;
-    m.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), 0);
-    m.scale.set(1, sx, 1);
-    m.rotation.z = sx * (Math.PI / 2 - (FIN.cant * Math.PI) / 180);
+    const m = add(plateYZ(THREE, [
+      [0, FIN.rootLE], [FIN.height, FIN.tipLE],
+      [FIN.height, FIN.tipTE], [0, FIN.rootTE],
+    ], FIN.thick));
+    m.position.set(sx * FIN.x, FIN.base, 0);
+    /* Cant is a tilt in the span plane, which is one rotation about Z. */
+    m.rotation.z = -sx * (FIN.cant * Math.PI) / 180;
   }
 
   /* Stabilators ----------------------------------------------------------- */
   for (const sx of [-1, 1]) {
-    const tipX = STAB.x0 + STAB.span;
-    const off = Math.tan((STAB.sweep * Math.PI) / 180) * STAB.span;
-    const g = plate(THREE, [
-      [STAB.x0, STAB.z0], [tipX, STAB.z0 + off],
-      [tipX, STAB.z0 + off + STAB.chordTip], [STAB.x0, STAB.z0 + STAB.chordRoot],
-    ], 0.14);
-    const m = add(g);
+    const m = add(plate(THREE, [
+      [STAB.xIn, STAB.rootLE], [STAB.xOut, STAB.tipLE],
+      [STAB.xOut, STAB.tipTE], [STAB.xIn, STAB.rootTE],
+    ], STAB.thick));
     m.scale.x = sx;
-    m.position.y = -0.25;
-  }
-
-  /* Canopy ---------------------------------------------------------------- */
-  {
-    const zs = [CANOPY.z0, CANOPY.z0 + 0.7, (CANOPY.z0 + CANOPY.z1) / 2, CANOPY.z1 - 0.4, CANOPY.z1];
-    const ws = [0.30, 0.68, CANOPY.w, 0.70, 0.36];
-    const hs = [0.14, 0.42, CANOPY.h, 0.40, 0.12];
-    const g = loft(THREE, ws.map((w, i) => section(w, hs[i]!, -0.02, 2.4, 16)), zs);
-    const m = add(g);
-    m.position.y = 0.82;
+    m.position.y = STAB.y;
   }
 
   /* Ventral fins ---------------------------------------------------------- */
   for (const sx of [-1, 1]) {
-    const g = plate(THREE, [[0, 7.10], [0.95, 7.70], [0.95, 8.60], [0, 8.60]], 0.10);
-    const m = add(g);
-    m.rotation.z = sx * (Math.PI / 2 + 0.35);
-    m.position.set(sx * 1.35, -0.75, 0);
-    m.scale.set(1, sx, 1);
+    const m = add(plateYZ(THREE, [
+      [0, VENTRAL.z0], [-VENTRAL.drop, VENTRAL.z0 + 0.7],
+      [-VENTRAL.drop, VENTRAL.z1], [0, VENTRAL.z1],
+    ], VENTRAL.thick));
+    m.position.set(sx * VENTRAL.x, VENTRAL.top, 0);
+    m.rotation.z = sx * (VENTRAL.cant * Math.PI) / 180;
+  }
+
+  /* Canopy ---------------------------------------------------------------- */
+  {
+    const zs = [CANOPY.z0, CANOPY.z0 + 0.8, (CANOPY.z0 + CANOPY.z1) / 2, CANOPY.z1 - 0.5, CANOPY.z1];
+    const ws = [0.26, 0.62, CANOPY.w, 0.64, 0.30];
+    const hs = [0.10, 0.40, CANOPY.h, 0.38, 0.10];
+    const m = add(loft(THREE, ws.map((w, i) => section(w, hs[i]!, -0.02, 2.4, 16)), zs));
+    m.position.y = CANOPY.y;
   }
 
   return { root, solids, wings };

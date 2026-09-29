@@ -140,8 +140,8 @@ export default function Airframe() {
         const b = state.blend;
         const yaw = (state.yaw + state.px * PARALLAX_DEG) * (Math.PI / 180);
         const dist = state.dist;
-        const el0 = THREE.MathUtils.lerp(89, 21 + state.py * PARALLAX_DEG, b) * (Math.PI / 180);
-        const az = THREE.MathUtils.lerp(0, -26, b) * (Math.PI / 180) + yaw;
+        const el0 = THREE.MathUtils.lerp(89, 30 + state.py * PARALLAX_DEG, b) * (Math.PI / 180);
+        const az = THREE.MathUtils.lerp(0, -40, b) * (Math.PI / 180) + yaw;
         cam.position.set(
           Math.cos(el0) * Math.sin(az) * dist,
           Math.sin(el0) * dist,

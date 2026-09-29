@@ -87,7 +87,7 @@ export async function makeInk(
   visible.depthTest = true;
   drawOn(visible);
 
-  const hidden = new LineMaterial({ ...base, opacity: 0.18, dashed: true, dashSize: 0.1, gapSize: 0.14 });
+  const hidden = new LineMaterial({ ...base, opacity: 0.13, dashed: true, dashSize: 0.08, gapSize: 0.26 });
   hidden.depthTest = true;
   /* Only where something is already in front: this is what makes it a hidden
      line rather than a second copy of the visible one. */
