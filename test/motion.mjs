@@ -100,7 +100,7 @@ ck('no smooth-scroll library loaded', !done.lenis, 'native scrolling');
    no longer exists. Search narrowing is covered by test/library.mjs. */
 
 // component page reveals
-await pg.goto(`${BASE}/components/command-palette`, { waitUntil: 'networkidle' });
+await pg.goto(`${BASE}/components/command-palette`, { waitUntil: 'load' });
 await pg.waitForTimeout(1200);
 await pg.evaluate(() => window.scrollTo(0, 1400));
 await pg.waitForTimeout(1400);
@@ -112,7 +112,7 @@ ck('doc: scroll reveals settle visible', revealed > .9, `opacity ${revealed}`);
 
 // reduced motion must skip everything but land in final state
 const rm = await b.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: 'reduce' });
-await rm.goto(BASE, { waitUntil: 'networkidle' });
+await rm.goto(BASE, { waitUntil: 'load' });
 await rm.waitForTimeout(900);
 const rmState = await rm.evaluate(() => {
   const parts = [...document.querySelectorAll('.craft .ln')];

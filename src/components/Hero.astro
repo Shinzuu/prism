@@ -1,4 +1,5 @@
 ---
+import Airframe from './hero/Airframe.tsx';
 const { count, total } = Astro.props;
 ---
 <section class="hero" aria-labelledby="hero-title">
@@ -19,6 +20,11 @@ const { count, total } = Astro.props;
   </div>
 
   <figure class="hero__plate">
+    {/* The 3D sheet draws itself over the SVG and hides it once it is running.
+        The SVG stays in the document as the no-JS and no-WebGL drawing — it is
+        the same aircraft, to the same dimensions, so nothing is lost. */}
+    <Airframe client:visible />
+
     <svg viewBox="0 0 760 620" role="img" aria-label="Three-view general arrangement drawing of a variable-geometry fighter: side elevation, plan view and front elevation, with dimensions and a title block">
       <g class="rules" aria-hidden="true">
         <line x1="60" y1="330" x2="700" y2="330" />
@@ -203,7 +209,10 @@ const { count, total } = Astro.props;
   .hero__plate { margin: 0; justify-self: end; width: 100%; max-width: 660px; }
   /* The viewBox contains the callout labels, so nothing needs to overflow.
      overflow: visible here let SVG text push the document wider on a phone. */
-  .hero__plate svg { width: 100%; height: auto; overflow: hidden; display: block; }
+  .hero__plate { position: relative; }
+  .hero__plate > svg { width: 100%; height: auto; overflow: hidden; display: block; }
+
+
 
   /* A blueprint is line work. Fills are there to separate one view's parts
      from the view behind it, never to shade the drawing, so they stay at the
@@ -281,5 +290,43 @@ const { count, total } = Astro.props;
   @media (max-width: 900px) {
     .hero { grid-template-columns: 1fr; }
     .hero__plate { justify-self: center; max-width: 480px; }
+  }
+</style>
+
+<style is:global>
+  /* These rules belong to the React island. Astro scopes a component's styles
+     by stamping an attribute on the elements IN ITS OWN TEMPLATE, and the
+     island's nodes are created by React at runtime, so a scoped rule misses
+     every one of them — which is why the canvas first sized itself to the
+     document instead of to the plate. Every selector here starts with .af. */
+  .hero__plate { position: relative; }
+
+  .af {
+    position: absolute; inset: 0; z-index: 1;
+    opacity: 0; transition: opacity 420ms ease;
+    pointer-events: none;
+  }
+  .af--live { opacity: 1; }
+  /* Hidden, not removed: it is still the printable drawing and the fallback. */
+  .hero__plate:has(.af--live) > svg { opacity: 0; transition: opacity 420ms ease; }
+  .af__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .af__over { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .af__lead { stroke: var(--text); stroke-width: 1; }
+  .af__dim line { stroke: var(--accent); stroke-width: 1; stroke-dasharray: 5 3; }
+  .af__dim circle { fill: var(--accent); }
+
+  .af__note, .af__span {
+    position: absolute; margin: 0; transform: translate(0, -50%);
+    white-space: nowrap; font-size: var(--f-n1); font-weight: 500; line-height: 1.2;
+  }
+  .af__note { max-width: 46%; overflow: hidden; text-overflow: ellipsis; }
+  .af__note i { font-style: normal; font-family: var(--mono); font-size: var(--f-n2); color: var(--accent); }
+  .af__note--end { transform: translate(-100%, -50%); }
+  .af__span { left: 50%; bottom: 2px; top: auto; transform: translate(-50%, 0); text-align: center; }
+  .af__span b { font-family: var(--mono); color: var(--accent); font-weight: 500; }
+  .af__span span { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .af, .hero__plate:has(.af--live) > svg { transition: none; }
   }
 </style>

@@ -2,10 +2,16 @@
 import Base from '../layouts/Base.astro';
 import { allPatterns } from '../lib/patterns.js';
 import { allComponents } from '../lib/registry.js';
+import { workedExample } from '../lib/worked-example.js';
 
 const lessons = allPatterns();
 const built = allComponents();
 const attempts = built.reduce((n, c) => n + c.attempts.length, 0);
+const ex = workedExample();
+const byId = new Map(lessons.map((l, i) => [l.id, { n: i + 1, title: l.title }]));
+/* The plain text, so the whole prompt can be copied without the annotations. */
+const cited = new Set(ex.blocks.map((b) => b.lesson)).size;
+const plain = [ex.brief, '', ...ex.blocks.flatMap((b) => [`${b.heading}:`, ...b.lines, ''])].join('\n').trim();
 ---
 <Base title="Patterns" description="What ten recurring prompting mistakes cost across seventy components.">
   <article class="pt">
@@ -27,6 +33,7 @@ const attempts = built.reduce((n, c) => n + c.attempts.length, 0);
         {lessons.map((l, i) => (
           <li><a href={`#${l.id}`}><i>{String(i + 1).padStart(2, '0')}</i> {l.title}</a></li>
         ))}
+        <li><a href="#worked-example"><i>{String(lessons.length + 1).padStart(2, '0')}</i> {ex.titleFor(cited)}</a></li>
       </ol>
     </nav>
 
@@ -47,8 +54,63 @@ const attempts = built.reduce((n, c) => n + c.attempts.length, 0);
         </ul>
       </section>
     ))}
+
+    <section class="ex" id="worked-example">
+      <p class="pt__n">{String(lessons.length + 1).padStart(2, '0')}</p>
+      <h2>{ex.titleFor(cited)}</h2>
+      <p class="pt__p">{ex.standfirst}</p>
+
+      <div class="ex__head">
+        <p class="ex__brief">{ex.brief}</p>
+        <button class="link" type="button" data-copy-prompt>copy the whole prompt</button>
+      </div>
+
+      {ex.blocks.map((b) => {
+        const l = byId.get(b.lesson);
+        return (
+          <div class="ex__block">
+            <div class="ex__side">
+              <a href={`#${b.lesson}`}>
+                <i>{String(l.n).padStart(2, '0')}</i> {l.title}
+              </a>
+              <p>{b.why}</p>
+            </div>
+            <div class="ex__body">
+              <p class="ex__h">{b.heading}</p>
+              <pre>{b.lines.join('\n')}</pre>
+            </div>
+          </div>
+        );
+      })}
+
+      <textarea class="ex__src" data-prompt-src readonly aria-hidden="true" tabindex="-1">{plain}</textarea>
+    </section>
   </article>
 </Base>
+
+<script>
+  /* Copy the prompt without its annotations: the annotations are the page's
+     reading of it, not part of what you would paste into a model. */
+  const btn = document.querySelector('[data-copy-prompt]');
+  const src = document.querySelector('[data-prompt-src]');
+  btn?.addEventListener('click', async () => {
+    const said = btn.textContent;
+    try {
+      await navigator.clipboard.writeText(src.value);
+      btn.textContent = 'copied';
+    } catch {
+      /* A denied clipboard is the common case in a locked-down browser, and a
+         button that silently does nothing is worse than one that tells you to
+         select it yourself. */
+      src.removeAttribute('aria-hidden');
+      src.removeAttribute('tabindex');
+      src.hidden = false;
+      src.select();
+      btn.textContent = 'select and copy';
+    }
+    setTimeout(() => { btn.textContent = said; }, 2400);
+  });
+</script>
 
 <style>
   .pt { max-width: var(--measure); }
@@ -79,4 +141,59 @@ const attempts = built.reduce((n, c) => n + c.attempts.length, 0);
     font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim);
   }
   .pt__ev p { margin: 2px 0 0; color: var(--text-dim); font-size: var(--f-n1); }
+
+  /* The worked example is wider than the measure: it is a prompt, and a prompt
+     wrapped to 66 characters stops being the thing it is. */
+  .ex { margin-top: var(--s-2xl); width: min(100%, 62rem); scroll-margin-top: calc(var(--s-2xl) + var(--s-s)); }
+  .ex h2 { margin-top: var(--s-3xs); font-size: var(--f-2); }
+  .ex .pt__p { max-width: var(--measure); }
+
+  .ex__head {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s-2xs);
+    margin-top: var(--s-s); padding: var(--s-2xs) var(--s-s);
+    border-inline-start: 2px solid var(--accent);
+    background: color-mix(in oklab, var(--accent) 5%, transparent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .ex__brief { margin: 0; flex: 1 1 28ch; font-size: var(--f-n1); }
+
+  .link {
+    background: none; border: 0; padding: 0; cursor: pointer;
+    font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim);
+    text-decoration: underline; text-underline-offset: 3px;
+  }
+  .link:hover { color: var(--accent); }
+
+  .ex__block {
+    display: grid; gap: var(--s-s);
+    grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+    padding: var(--s-s) 0; border-bottom: var(--rule);
+  }
+  .ex__block:first-of-type { border-top: var(--rule); }
+  .ex__side a {
+    display: block; font-size: var(--f-n1);
+    text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px;
+  }
+  .ex__side a:hover { text-decoration-color: var(--accent); }
+  .ex__side i { font-family: var(--mono); font-style: normal; font-size: var(--f-n2); color: var(--accent); }
+  .ex__side p { margin: var(--s-3xs) 0 0; font-size: var(--f-n2); color: var(--text-dim); }
+
+  .ex__h { margin: 0 0 var(--s-3xs); font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); letter-spacing: .06em; }
+  .ex__body pre {
+    margin: 0; white-space: pre-wrap; overflow-wrap: break-word;
+    font-family: var(--mono); font-size: var(--f-n1); line-height: 1.55;
+  }
+
+  /* Only shown if the clipboard is refused, so the text can be selected. */
+  .ex__src[aria-hidden] { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .ex__src:not([aria-hidden]) {
+    display: block; width: 100%; height: 18rem; margin-top: var(--s-s);
+    font-family: var(--mono); font-size: var(--f-n1);
+    background: var(--surface); color: var(--text);
+    border: var(--rule); border-radius: var(--radius); padding: var(--s-2xs);
+  }
+
+  @media (max-width: 720px) {
+    .ex__block { grid-template-columns: 1fr; gap: var(--s-2xs); }
+  }
 </style>
