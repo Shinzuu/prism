@@ -1,0 +1,59 @@
+Week: 18
+Task: Work several accounts from one laptop without one leaking into another
+Agent: Claude (Claude Code, terminal)
+
+Prompt or workflow:
+This machine is signed in to a personal account and to several work accounts at
+once — different Google logins, two GitHub accounts, separate CLI sessions for
+hosting. Every one of those tools picks an account silently. None of them
+announce which one they are about to use.
+
+Week 9 in this series is the near miss: a deploy was about to publish a public
+personal project into an organisation it did not belong to, and nothing in the
+command would have shown it. That log's conclusion was a check. This one is
+what the check turned into once it was applied everywhere.
+
+The instruction was written as a standing rule rather than a request:
+
+  "before anything that touches a remote account — deploy, push, publish, open
+   a browser profile — print which account you are acting as, and stop if it is
+   not the one this folder belongs to"
+
+And for the browser side, where the failure is worse because a session cookie
+outlives the command:
+
+  "one browser profile per account, never a shared one. the profile directory
+   is a credential — treat it like a key"
+
+Result:
+Each account has its own browser profile directory and its own automation
+server pointed at it, so a logged-in session for one account is not reachable
+from work done for another. Profiles are mode 700, never committed, and backed
+up separately, because a profile directory is a live credential and restoring
+the wrong one silently signs you in as someone else.
+
+Git identity is pinned per repository rather than left global, so switching
+accounts in one place cannot hijack a push somewhere else.
+
+The rule earned itself again while this very submission was being finished. A
+push to the project repository failed:
+
+  remote: Permission to <owner>/<repo>.git denied to <other-account>.
+  fatal: ... The requested URL returned error: 403
+
+The CLI had become active as the second GitHub account. The 403 is the good
+outcome — the remote refused. The bad outcome is the same mistake on a remote
+where the wrong account does have permission, which is exactly what the deploy
+in week 9 would have been.
+
+What it saved: no time at all; it costs a few seconds per operation. What it
+prevents is a category — work published under the wrong identity, a session
+used on the wrong account, a credential restored into the wrong profile. None
+of those announce themselves, and all of them are embarrassing to explain
+afterwards rather than expensive to fix.
+
+The lesson for prompting: identity is state, and state on a shared machine is
+never what you assume. Make the agent print the identity before the action
+rather than asking it to be careful. "Be careful" is not a check. "Print the
+account and stop if it is wrong" is one, and it fires on the day you have
+forgotten why you wrote it.

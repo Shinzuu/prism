@@ -1,0 +1,60 @@
+Week: 17
+Task: Make an agent's writing stop sounding like an agent wrote it
+Agent: Claude (Claude Code, terminal)
+
+Prompt or workflow:
+Anything an agent writes that a client will read carries a particular sound.
+It is not incorrect, it is padded — it announces what it is about to say,
+balances every clause against another, and recaps itself at the end. Readers
+notice before they can name it, and once a client names it the work is
+finished as a piece of writing.
+
+"Make it sound more human" does not fix it. That produces the same prose with
+contractions in it. What worked was refusing to accept the instruction in that
+form:
+
+  "don't tell me to make it natural. give me the specific phrases and
+   constructions that give it away, as a list I can delete on sight"
+
+That turns a taste problem into a checklist. The list that came back, shortened:
+
+  - Throat-clearing openers: "In today's fast-paced world", "It's worth noting
+    that", "Let's dive in".
+  - The balanced-clause tic, which is the loudest single tell: "It's not just
+    X, it's Y". One idea. State it. Move.
+  - Empty intensifiers: seamlessly, robust, powerful, cutting-edge, leverage,
+    unlock, elevate, delve.
+  - Triads — three adjectives where one is true and provable.
+  - Closing summaries. If the piece is short enough to follow, it needs no
+    recap.
+  - Hedge stacking: "may potentially", "could possibly".
+  - Em-dash asides stacked three to a paragraph. One is fine.
+
+Then the positive half, which is the part that actually changes the writing:
+
+  - One idea per sentence.
+  - Concrete over abstract. Not "improves efficiency" — "turns four days into
+    eleven minutes". If you cannot name the number, say that you cannot.
+  - Verbs, not nominalisations: "we verify every write", not "verification is
+    performed on each write operation".
+  - No claim without evidence in frame. If you say it is fast, the timer is on
+    screen.
+  - Vary sentence length deliberately. Three medium sentences in a row is a
+    drone.
+
+Result:
+A skill that loads for anything a person will read or hear — narration,
+captions, READMEs, release notes, commit bodies, client email. The prose it
+produces is shorter and makes fewer claims, because the rule about evidence
+deletes the sentences that were only there to sound confident.
+
+Every prompt write-up on this site went through it, and so did this log.
+
+What it saved: not time — it costs a pass. What it avoids is the specific
+outcome where a client reads something and can tell. That is not recoverable by
+editing afterwards.
+
+The lesson for prompting: when you want a quality you can only recognise by
+feel, ask for the list of things to delete rather than the quality itself. A
+banned list is checkable. "Sound human" is not, and an agent asked for an
+unmeasurable quality will produce a performance of it.

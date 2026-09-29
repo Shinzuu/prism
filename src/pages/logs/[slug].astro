@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { allLogs } from '../../lib/logs.js';
+import { figureFor } from '../../lib/log-figures.js';
 
 export function getStaticPaths() {
   return allLogs().map((l) => ({ params: { slug: l.slug }, props: { log: l } }));
@@ -14,6 +15,11 @@ const next = logs[i + 1];
 /* The text carries its own indentation: prompts are indented two spaces, prose
    is not. Rendering it verbatim in a pre keeps that distinction rather than
    inventing a markup layer the author would have to maintain. */
+/* Only the logs that measured something carry a figure. */
+const fig = figureFor(log.week);
+const fmt = new Intl.NumberFormat('en');
+const maxOf = (ns) => Math.max(...ns);
+
 const sections = [
   ['Prompt or workflow', log.prompt],
   ['Result', log.result],
@@ -25,6 +31,57 @@ const sections = [
     <p class="al__eyebrow"><a href="/logs">Agent logs</a> · Week {log.week}</p>
     <h1>{log.task}</h1>
     <p class="al__agent">{log.agent}</p>
+
+    {fig && (
+      <figure class="fig" data-fig>
+        <figcaption class="fig__cap">{fig.title}</figcaption>
+
+        {fig.kind === 'bars' && (
+          <div class="fig__bars">
+            {fig.bars.map((b) => (
+              <div class="fig__bar" data-mark={b.mark ? '' : undefined}>
+                <span class="fig__lab">{b.label}</span>
+                <span class="fig__track">
+                  <i style={`--to:${(b.value / maxOf(fig.bars.map((x) => x.value))) * 100}%`} />
+                </span>
+                <span class="fig__val">{fig.scale === 1 ? b.value.toFixed(2) : fmt.format(b.value)}{fig.unit}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {fig.kind === 'pairs' && (
+          <div class="fig__pairs">
+            <p class="fig__key"><i data-side="before" /> before <i data-side="after" /> after</p>
+            {fig.rows.map((r) => {
+              const unit = r.unit ?? fig.unit ?? '';
+              const top = maxOf([r.before, r.after]);
+              const num = (v) => (v < 10 && !Number.isInteger(v) ? v.toFixed(2) : fmt.format(v));
+              return (
+                <div class="fig__pair">
+                  <span class="fig__lab">{r.label}</span>
+                  <span class="fig__two">
+                    <span class="fig__track">
+                      <i data-side="before" style={`--to:${(r.before / top) * 100}%`} />
+                    </span>
+                    <span class="fig__track">
+                      <i data-side="after" style={`--to:${(r.after / top) * 100}%`} />
+                    </span>
+                  </span>
+                  <span class="fig__val">
+                    <b>{r.beforeLabel ?? `${num(r.before)}${unit}`}</b>
+                    <s>→</s>
+                    <em>{num(r.after)}{unit}</em>
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {fig.note && <p class="fig__note">{fig.note}</p>}
+      </figure>
+    )}
 
     {sections.map(([heading, body]) => (
       <section class="al__sec">
@@ -44,8 +101,72 @@ const sections = [
   </article>
 </Base>
 
+<script>
+  import '../../scripts/log-figures.js';
+</script>
+
 <style>
   .al { max-width: var(--measure); }
+
+  /* The bars start at zero width and are grown by GSAP once the figure is on
+     screen. If the script never runs, the fallback below leaves them at their
+     final width, so the figure is readable without JavaScript rather than
+     being an empty frame. */
+  .fig {
+    margin: var(--s-l) 0 0;
+    padding: var(--s-s) 0 var(--s-2xs);
+    border-block: var(--rule);
+  }
+  .fig__cap { font-size: var(--f-0); font-weight: 500; }
+  .fig__note { margin: var(--s-2xs) 0 0; font-size: var(--f-n1); color: var(--text-dim); max-width: var(--measure); }
+
+  .fig__bars, .fig__pairs { margin-top: var(--s-2xs); display: grid; gap: var(--s-3xs); }
+  .fig__bar, .fig__pair {
+    display: grid; align-items: center; gap: var(--s-2xs);
+    grid-template-columns: minmax(0, 13rem) minmax(0, 1fr) auto;
+  }
+  .fig__lab { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
+  .fig__val { font-family: var(--mono); font-size: var(--f-n2); white-space: nowrap; }
+  .fig__val b { font-weight: 400; color: var(--text-dim); }
+  .fig__val s { text-decoration: none; color: var(--text-dim); padding: 0 .35em; }
+  .fig__val em { font-style: normal; color: var(--accent); }
+
+  .fig__track {
+    display: block; height: 11px; border-radius: 3px;
+    background: color-mix(in oklab, var(--border) 45%, transparent);
+    overflow: hidden;
+  }
+  .fig__track i {
+    display: block; height: 100%; width: var(--to); border-radius: 3px;
+    background: color-mix(in oklab, var(--accent) 45%, var(--border));
+    /* 5MB against 1,478MB is a fifth of one pixel. A value that is not zero
+       has to be visible, or the chart reads as a missing bar. */
+    min-width: 3px;
+  }
+
+  .fig__key {
+    grid-column: 1 / -1; margin: 0 0 2px;
+    display: flex; align-items: center; gap: 5px;
+    font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim);
+  }
+  .fig__key i { display: inline-block; width: 16px; height: 8px; border-radius: 2px; }
+  .fig__key i[data-side='before'] { background: color-mix(in oklab, var(--text) 30%, transparent); }
+  .fig__key i[data-side='after'] { background: var(--accent); }
+  .fig__key i + i { margin-left: var(--s-2xs); }
+  .fig__bar[data-mark] .fig__track i { background: var(--accent); }
+  .fig__two { display: grid; gap: 3px; }
+  .fig__two i[data-side='before'] { background: color-mix(in oklab, var(--text) 30%, transparent); }
+  .fig__two i[data-side='after'] { background: var(--accent); }
+
+  /* One column on a phone: a 13rem label column and a bar do not both fit. */
+  @media (max-width: 560px) {
+    .fig__bar, .fig__pair { grid-template-columns: 1fr; gap: 2px; }
+    .fig__val { justify-self: start; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fig__track i { width: var(--to) !important; }
+  }
   .al__eyebrow { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
   .al__eyebrow a { color: inherit; }
   .al h1 { margin-top: var(--s-2xs); font-size: var(--f-3); }

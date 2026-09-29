@@ -4,6 +4,7 @@
 import { chromium } from 'playwright';
 import { allLogs } from '../src/lib/logs.js';
 import { allPatterns } from '../src/lib/patterns.js';
+import { figureFor } from '../src/lib/log-figures.js';
 
 const SITE = process.env.BASE || 'https://prism.shinzuu-dev.workers.dev';
 const logs = allLogs();
@@ -69,6 +70,38 @@ for (const l of logs) {
     bad.push(`${l.slug}: sections are [${got.heads}], expected [${expected}]`);
   }
   if (got.bodies.some((n) => n < 60)) bad.push(`${l.slug}: a section body is nearly empty`);
+
+  /* A figure is a claim. It has to exist exactly where the data exists, carry
+     every row, and end up with a drawn bar — a chart whose bars never grow is
+     worse than no chart, and it looks fine in the markup. */
+  const fig = figureFor(l.week);
+  if (fig) {
+    /* The bars are grown when the figure reaches the reader, so the test has
+       to behave like a reader: scroll to it, then let the tween finish. */
+    await page.evaluate(() => document.querySelector('[data-fig]')?.scrollIntoView({ block: 'center' }));
+    await page.waitForTimeout(1400);
+  }
+  const drawn = await page.evaluate(() => {
+    const f = document.querySelector('[data-fig]');
+    if (!f) return null;
+    const bars = [...f.querySelectorAll('.fig__track i')];
+    return {
+      cap: f.querySelector('.fig__cap')?.textContent?.trim() ?? '',
+      bars: bars.length,
+      widest: Math.max(0, ...bars.map((b) => b.getBoundingClientRect().width)),
+      zero: bars.filter((b) => b.getBoundingClientRect().width < 1).length,
+    };
+  });
+
+  if (fig && !drawn) bad.push(`${l.slug}: has figure data but no figure rendered`);
+  if (!fig && drawn) bad.push(`${l.slug}: renders a figure with no data behind it`);
+  if (fig && drawn) {
+    const want = fig.kind === 'bars' ? fig.bars.length : fig.rows.length * 2;
+    if (drawn.bars !== want) bad.push(`${l.slug}: figure drew ${drawn.bars} bars, data has ${want}`);
+    if (drawn.cap !== fig.title) bad.push(`${l.slug}: figure caption is "${drawn.cap}"`);
+    if (drawn.widest < 40) bad.push(`${l.slug}: figure bars never grew (widest ${Math.round(drawn.widest)}px)`);
+    if (drawn.zero) bad.push(`${l.slug}: ${drawn.zero} figure bars have no width`);
+  }
   /* The prompt is the part of a log that cannot be missing. */
   if (!got.heads.includes('Prompt or workflow')) bad.push(`${l.slug}: no prompt section rendered`);
 }
@@ -88,4 +121,5 @@ if (bad.length) {
   console.error(`prose: ${bad.length} problems\n  ` + bad.join('\n  '));
   process.exit(1);
 }
-console.log(`prose clean — ${patterns.length} lessons with ${cited.length} live citations, ${logs.length} agent logs`);
+const figures = logs.filter((l) => figureFor(l.week)).length;
+console.log(`prose clean — ${patterns.length} lessons with ${cited.length} live citations, ${logs.length} agent logs, ${figures} measured figures`);

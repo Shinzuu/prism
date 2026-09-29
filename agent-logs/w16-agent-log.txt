@@ -1,0 +1,58 @@
+Week: 16
+Task: Turn "the app just disappeared" into a named cause, repeatably
+Agent: Claude (Claude Code, terminal)
+
+Prompt or workflow:
+A desktop application vanishing with no window and no error is the least
+actionable bug report there is, and it is the one everybody files. The machine
+was producing them often enough that answering each one from scratch was the
+real cost.
+
+The first attempts asked the wrong question — "why did X crash" — and got a
+plausible story built out of the backtrace's top frame. Plausible is the
+problem. A symbolized frame 0 in a graphics library reads like an answer and is
+usually just where the process happened to be standing.
+
+The prompt that produced something reusable asked for a procedure, not a
+diagnosis:
+
+  "write this up as a skill so the next crash gets the same treatment. work
+   from evidence only. if you cannot symbolize it, say so instead of guessing"
+
+The procedure it produced, in the order it runs:
+
+  1. coredumpctl info — and read the COMMAND LINE, not just the backtrace. What
+     the process was working on when it died is frequently the whole answer.
+  2. coredumpctl list — is this one crash or a pattern? Several programs dying
+     together is a different problem than one program dying.
+  3. Rule out the boring cause first: free -h and the journal for OOM kills. A
+     process killed by the OOM killer is not a bug in that process, and every
+     minute spent reading its backtrace is wasted.
+  4. Correlate the crash timestamp against filesystem mtimes, the journal
+     either side of that second, and recent package updates. A directory whose
+     mtime lands on the same second as the crash is a strong lead and costs one
+     command to check.
+  5. Read every thread, not the crashing one. The other stacks show the work in
+     flight — thumbnailers, image decoders, IPC readers — which often explains
+     the trigger even when the crashing frame cannot be symbolized at all.
+  6. Symbolize properly against the distribution's public debuginfod rather
+     than reading raw addresses.
+  7. Note third-party code in the address space — extensions, plugins,
+     out-of-tree drivers — and explicitly do not blame it without evidence.
+
+Result:
+A crash now produces a report with a cause or an honest "cannot be determined
+from this core, here is what was ruled out". Step 3 alone has ended several
+investigations in under a minute that would otherwise have been an hour of
+backtrace reading, because the process had been killed for memory rather than
+having crashed at all.
+
+What it saved: the time is real but the accuracy matters more. The failure mode
+this replaced was not slowness, it was confident wrong answers — a story about
+a graphics driver that sends you reinstalling drivers for an afternoon when the
+process was out of memory.
+
+The lesson for prompting: when the same question keeps arriving, do not ask for
+the answer. Ask for the procedure, and make "I could not determine this" a
+permitted outcome. Without that permission an agent will always produce a
+cause, because producing a cause is what it was asked for.

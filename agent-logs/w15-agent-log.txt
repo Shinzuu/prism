@@ -1,0 +1,59 @@
+Week: 15
+Task: Keep a laptop usable after its space bar died mid-contract
+Agent: Claude (Claude Code, terminal)
+
+Prompt or workflow:
+The physical space bar on this ThinkPad stopped registering on 2026-09-05. A
+laptop keyboard is not a part you swap in an afternoon, and the machine was in
+daily use. The problem is worse than one missing letter: a space is roughly one
+keystroke in six, so the keyboard is not degraded, it is unusable.
+
+The first prompt was the wrong shape and worth recording:
+
+  "can you remap a key to space"
+
+That gets an answer about whichever remapping tool the model happens to reach
+for, in whatever layer it happens to know. The one that worked named the
+constraint instead of the feature:
+
+  "the space bar is physically dead. I need a replacement space key that works
+   everywhere — terminal, browser, display manager, before I log in — and that
+   cannot be broken by the thing that is providing it"
+
+That rules out most of the obvious answers. A desktop-environment shortcut does
+not exist at the login screen. A tool that remaps inside one compositor leaves
+every other surface without a space key. The requirement is a remap below all
+of it.
+
+Result:
+keyd, which remaps at the kernel input layer, so every application on the
+machine sees a real space key with no idea anything was substituted:
+
+  [main]
+  rightalt = space
+
+Right Alt is the right donor: it sits next to the thumb that used to hit space,
+it is rarely used on its own, and giving it up costs only AltGr, which this
+layout does not need.
+
+The part that mattered more than the remap was the failure planning, which the
+agent raised rather than me:
+
+  - If keyd is ever stopped or uninstalled, the machine has no space key at
+    all, and no way to type the command that would bring it back.
+  - keyd's own panic chord — backspace + escape + enter — kills keyd, and
+    therefore kills the space key with it.
+
+Both of those are now written at the top of the config file and in the
+machine's instructions file, because the dangerous moment is six months later
+when someone is tidying up services they do not recognise.
+
+What it saved: a laptop. The alternative was an external keyboard permanently
+attached to a machine whose whole point is that it is portable, or a repair
+that meant giving up the machine for a week in the middle of contract work.
+Total time to working was about twenty minutes.
+
+The lesson for prompting: describe the situation, not the fix you have in mind.
+"Remap a key" invites the first tool that can remap a key. "It must work before
+I log in, and it must not be breakable by the thing providing it" selects the
+layer, and the layer was the entire answer.

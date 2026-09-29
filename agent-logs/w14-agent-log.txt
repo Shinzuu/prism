@@ -1,0 +1,57 @@
+Week: 14
+Task: Build a toolkit that lets an agent create CRM assets the public API cannot
+Agent: Claude (Claude Code, terminal + Claude in Chrome)
+
+Prompt or workflow:
+A CRM platform's public API covers maybe half of what a build actually needs.
+The other half — workflows, AI agents, knowledge bases, account-wide settings —
+exists only in the web app. The usual answer is to click it by hand, which is
+where most of the hours in a build go.
+
+The instruction that shaped the whole toolkit was a refusal, not a feature:
+
+  "never handle logins. I sign in, you drive the tab I already opened. If you
+   are not sure which account the tab is in, stop and ask"
+
+Everything else followed from that. An agent that cannot authenticate cannot
+act on the wrong account by accident, and it cannot leak a credential it never
+had. The second instruction was about trust in the output:
+
+  "after every write, read it back from the platform and show me what it says.
+   if the read-back does not match what you were asked to build, say so"
+
+The third was about scale. Provisioning an account means dozens of assets with
+real dependencies — a workflow cannot reference a tag that does not exist yet:
+
+  "build in dependency order and make it idempotent. running it twice must
+   update or skip, never duplicate"
+
+Result:
+A skill toolkit with a front door and seven workers. The front door classifies
+the request, runs a preflight that confirms the browser tool is up and the
+right account is open, picks exactly one worker from a route table, shows the
+plan, and waits for a go or no-go before anything is written.
+
+The provisioner turns a build spec — or a raw brief — into a whole sub-account:
+custom fields, tags, pipelines, snippets, email templates, knowledge-base
+entries, AI agents, calendars, workflows and triggers, in dependency order,
+each one verified after it is written, and a build manifest at the end that can
+be handed to whoever asked for the build.
+
+Idempotence is what made it usable rather than impressive. A build that cannot
+be re-run has to be right first time, which means a human has to watch it. A
+build that can be re-run can be interrupted, corrected and resumed.
+
+What it saved: the honest number is the one I cannot fully separate from the
+learning curve, so here is what I can defend. A sub-account built by hand is a
+day of clicking, and the clicking is where the mistakes live — a tag named
+slightly differently in two places is invisible until a workflow silently does
+nothing. The toolkit does not make the build faster so much as it makes the
+build checkable: every asset was written, read back, and recorded in a manifest
+that can be diffed against the spec.
+
+The lesson for prompting: the most valuable instruction in this whole toolkit
+was a thing the agent must never do. Handing it credentials would have been
+easier to build and would have made every later question — which account is
+this, who authorised this write, what happens if the session is stale — into a
+problem I would have had to solve. Removing the capability removed the class.
