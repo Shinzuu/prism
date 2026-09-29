@@ -6,7 +6,7 @@
    group. They are completed here to the obvious reading; everything else is
    verbatim. */
 
-export const WORKED_EXAMPLE = {
+const MECHANISM = {
   /* The title counts the lessons the prompt actually cites, computed from
      the blocks below so it cannot drift from them. */
   titleFor: (n) => `One prompt, ${n} of these lessons`,
@@ -100,6 +100,110 @@ export const WORKED_EXAMPLE = {
   ],
 };
 
-export function workedExample() {
-  return WORKED_EXAMPLE;
+
+/* The second is the brief that produced the drawing at the top of this site.
+   It is here because its outcome is checkable: the thing it asked for exists,
+   and the three ways it went wrong are recorded rather than described.
+
+   Four clauses arrived truncated in the paste and are completed to the obvious
+   reading: the timeline's idle state, the draw-on mechanism, the camera blend,
+   and the last two deliverables. */
+const HERO = {
+  titleFor: (n) => `A second prompt, ${n} of these lessons`,
+  standfirst:
+    'This one produced the drawing at the top of this page, so what it got right and wrong is on the record rather than asserted. Note how much of it is refusal: no literal colours, no orbit controls, no triangle-soup wireframe, no build step.',
+  brief: 'Build a hero-section animation: a 3D wireframe of a variable-geometry fighter, drawn like an engineering general-arrangement sheet coming to life. It replaces the current static SVG hero (side elevation, plan view, front elevation, 19.10 m length, 11.65 m swept span, sweep 20° MIN / 68° MAX, SCALE 1:96, THIRD ANGLE, callouts 01 radar, 02 cockpit, 03 engines, 04 hardpoints, 05 wing).',
+  blocks: [
+    {
+      heading: 'Stack and constraints',
+      lesson: 'forbid-the-shortcut',
+      why: 'Every line here removes an option rather than adding one. The colour rule is the sharpest: forbidding literal colours and naming where they must come from instead is what made a theme switch work without a second pass.',
+      lines: [
+        'Astro site, React + TypeScript island, Tailwind. GSAP is already in the bundle (use it',
+        'for the timeline + ScrollTrigger); three.js for the 3D.',
+        'Colour rule: no literal colours anywhere. Read every colour from existing CSS custom',
+        'properties at runtime (getComputedStyle) and re-read when the theme toggles.',
+        'Render only on the client (client:visible), and lazy-load three.js.',
+        'Performance budget: under 150 KB gzipped of extra JS, 60 fps on a mid laptop. Cap DPR',
+        'at 2. Pause the render loop when off-screen (IntersectionObserver) and when the tab is',
+        'hidden.',
+      ],
+    },
+    {
+      heading: 'Model',
+      lesson: 'state-the-invariant',
+      why: '"The wings MUST be separate meshes that pivot at the real pivot points so the sweep is animated, not faked" is an invariant, and it rules out the cheap version that looks the same in a still.',
+      lines: [
+        'Source a CC-licensed glTF/GLB (credit it in the page footer). If none fits, build a',
+        'clean low-poly model in code from lofted cross-sections. The wings MUST be separate',
+        'meshes that pivot at the real glove pivot points so the sweep is animated, not faked.',
+        'Real proportions: length 19.10 m, span 19.54 m at 20° sweep, 11.65 m at 68°.',
+      ],
+    },
+    {
+      heading: 'Line work',
+      lesson: 'name-the-pattern',
+      why: 'Naming EdgesGeometry, a crease angle and LineSegments2 transfers a whole rendering approach in one line. "Make it look like a wireframe" gets triangle soup, which is what the clause explicitly forbids.',
+      lines: [
+        'Use EdgesGeometry (crease angle ~15–25°) for clean panel/outline lines. No',
+        'triangle-soup wireframe. Use LineSegments2 / LineMaterial for consistent pixel widths.',
+        'Hidden-line look: a depth-only prepass of the solid mesh. Visible edges get full ink;',
+        'occluded edges get a faint dashed line, like hidden lines on a drawing.',
+      ],
+    },
+    {
+      heading: 'Animation',
+      lesson: 'measurement-is-about-when',
+      why: 'The draw-on clause specifies the mechanism, not the look: a progress uniform against a per-vertex distance, "so strokes grow nose-to-tail rather than fading in". Asked for the look alone, a model tweens opacity and the result dissolves.',
+      lines: [
+        'One GSAP master timeline, about 6 s, then an idle loop.',
+        '1. Blueprint grid + title block draw in (the existing sheet furniture).',
+        '2. The aircraft draws itself: a per-vertex distance-along-body attribute against a',
+        '   progress uniform in the line shader, so strokes grow nose-to-tail rather than',
+        '   fading in.',
+        '3. The camera eases from an orthographic plan view to a three-quarter view, blending',
+        '   orthographic and perspective with a matrix lerp, so there is no jump.',
+        '4. The wings sweep 20° -> 68° -> 20°, with the dimension staying live',
+        '   (11.65 m <-> 19.54 m) as an HTML/SVG label projected from 3D points.',
+        '5. Callouts 01–05 appear one by one with leader lines anchored to 3D points',
+        '   (reprojected each frame), each ticking a counter.',
+        '6. Idle: a slow turntable of a few degrees plus a subtle drift. The wing sweep',
+        '   responds to scroll progress via ScrollTrigger (scroll down = sweep back).',
+      ],
+    },
+    {
+      heading: 'Interaction and accessibility',
+      lesson: 'invisible-behaviour',
+      why: 'The reduced-motion state and the fallback are both invisible in a screenshot, so neither is ever volunteered. Naming what the finished drawing looks like when nothing moves is what makes the page work with the animation switched off.',
+      lines: [
+        'Pointer parallax of a few degrees max. No orbit controls.',
+        'prefers-reduced-motion: render the finished drawing statically, no sweep, no drift.',
+        'Keep the key text as real HTML (not in the canvas); the existing SVG remains as the',
+        'no-JS / no-WebGL fallback.',
+      ],
+    },
+    {
+      heading: 'Deliverables',
+      lesson: 'say-what-it-does-when-it-does-not-know',
+      why: 'Asking for the tuning knobs and how each colour token is used turns a delivery into something a second person can change. Without it the numbers that matter stay buried in whichever line first needed them.',
+      lines: [
+        'The React component, the shader(s), and the model-building code.',
+        'A short note of the tuning knobs (crease angle, line widths, timeline durations) and',
+        'how each colour token is used.',
+      ],
+    },
+  ],
+  /* What the prompt did not prevent. Kept because a worked example that only
+     shows the wins is an advertisement. */
+  cost: [
+    'Every line came out invisible. The palette is OKLCH, and three\u2019s Color.set() parses hex, rgb(), hsl() and the named colours and nothing else \u2014 an oklch() string leaves the material white, with no error. The colour rule was right and still needed a resolver that paints one pixel and reads it back.',
+    'The canvas sized itself to the whole document. Astro scopes a component\u2019s styles onto the elements in its own template, and the island\u2019s nodes are made by React at runtime, so none of the scoped rules reached them.',
+    'The bundle came in at 166 KB gzipped against a 150 KB budget, because a namespace import is opaque to the bundler and nothing can be dropped. Re-exporting the fifteen symbols actually used brought it to 115 KB. The budget was worth stating: without the number, nobody measures.',
+  ],
+};
+
+export const WORKED_EXAMPLES = [MECHANISM, HERO];
+
+export function workedExamples() {
+  return WORKED_EXAMPLES;
 }

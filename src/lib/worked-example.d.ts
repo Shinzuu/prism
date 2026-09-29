@@ -10,6 +10,8 @@ export interface WorkedExample {
   standfirst: string;
   brief: string;
   blocks: WorkedBlock[];
+  /** What the prompt did not prevent, where that is on the record. */
+  cost?: string[];
 }
-export const WORKED_EXAMPLE: WorkedExample;
-export function workedExample(): WorkedExample;
+export const WORKED_EXAMPLES: WorkedExample[];
+export function workedExamples(): WorkedExample[];

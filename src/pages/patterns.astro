@@ -2,16 +2,21 @@
 import Base from '../layouts/Base.astro';
 import { allPatterns } from '../lib/patterns.js';
 import { allComponents } from '../lib/registry.js';
-import { workedExample } from '../lib/worked-example.js';
+import { workedExamples } from '../lib/worked-example.js';
 
 const lessons = allPatterns();
 const built = allComponents();
 const attempts = built.reduce((n, c) => n + c.attempts.length, 0);
-const ex = workedExample();
 const byId = new Map(lessons.map((l, i) => [l.id, { n: i + 1, title: l.title }]));
-/* The plain text, so the whole prompt can be copied without the annotations. */
-const cited = new Set(ex.blocks.map((b) => b.lesson)).size;
-const plain = [ex.brief, '', ...ex.blocks.flatMap((b) => [`${b.heading}:`, ...b.lines, ''])].join('\n').trim();
+/* Each example carries its own plain text, so the whole prompt can be copied
+   without the annotations this page wraps around it. */
+const examples = workedExamples().map((ex, i) => ({
+  ex,
+  n: lessons.length + 1 + i,
+  id: i === 0 ? 'worked-example' : `worked-example-${i + 1}`,
+  cited: new Set(ex.blocks.map((b) => b.lesson)).size,
+  plain: [ex.brief, '', ...ex.blocks.flatMap((b) => [`${b.heading}:`, ...b.lines, ''])].join('\n').trim(),
+}));
 ---
 <Base title="Patterns" description="What ten recurring prompting mistakes cost across seventy components.">
   <article class="pt">
@@ -33,7 +38,9 @@ const plain = [ex.brief, '', ...ex.blocks.flatMap((b) => [`${b.heading}:`, ...b.
         {lessons.map((l, i) => (
           <li><a href={`#${l.id}`}><i>{String(i + 1).padStart(2, '0')}</i> {l.title}</a></li>
         ))}
-        <li><a href="#worked-example"><i>{String(lessons.length + 1).padStart(2, '0')}</i> {ex.titleFor(cited)}</a></li>
+        {examples.map(({ ex, n, id, cited }) => (
+          <li><a href={`#${id}`}><i>{String(n).padStart(2, '0')}</i> {ex.titleFor(cited)}</a></li>
+        ))}
       </ol>
     </nav>
 
@@ -55,45 +62,54 @@ const plain = [ex.brief, '', ...ex.blocks.flatMap((b) => [`${b.heading}:`, ...b.
       </section>
     ))}
 
-    <section class="ex" id="worked-example">
-      <p class="pt__n">{String(lessons.length + 1).padStart(2, '0')}</p>
-      <h2>{ex.titleFor(cited)}</h2>
-      <p class="pt__p">{ex.standfirst}</p>
+    {examples.map(({ ex, n, id, cited, plain }) => (
+      <section class="ex" id={id}>
+        <p class="pt__n">{String(n).padStart(2, '0')}</p>
+        <h2>{ex.titleFor(cited)}</h2>
+        <p class="pt__p">{ex.standfirst}</p>
 
-      <div class="ex__head">
-        <p class="ex__brief">{ex.brief}</p>
-        <button class="link" type="button" data-copy-prompt>copy the whole prompt</button>
-      </div>
+        <div class="ex__head">
+          <p class="ex__brief">{ex.brief}</p>
+          <button class="link" type="button" data-copy-prompt={id}>copy the whole prompt</button>
+        </div>
 
-      {ex.blocks.map((b) => {
-        const l = byId.get(b.lesson);
-        return (
-          <div class="ex__block">
-            <div class="ex__side">
-              <a href={`#${b.lesson}`}>
-                <i>{String(l.n).padStart(2, '0')}</i> {l.title}
-              </a>
-              <p>{b.why}</p>
+        {ex.blocks.map((b) => {
+          const l = byId.get(b.lesson);
+          return (
+            <div class="ex__block">
+              <div class="ex__side">
+                <a href={`#${b.lesson}`}><i>{String(l.n).padStart(2, '0')}</i> {l.title}</a>
+                <p>{b.why}</p>
+              </div>
+              <div class="ex__body">
+                <p class="ex__h">{b.heading}</p>
+                <pre>{b.lines.join('\n')}</pre>
+              </div>
             </div>
-            <div class="ex__body">
-              <p class="ex__h">{b.heading}</p>
-              <pre>{b.lines.join('\n')}</pre>
-            </div>
+          );
+        })}
+
+        {ex.cost && (
+          <div class="ex__cost">
+            <p class="ex__h">What the prompt did not prevent</p>
+            <ol>{ex.cost.map((c) => <li>{c}</li>)}</ol>
           </div>
-        );
-      })}
+        )}
 
-      <textarea class="ex__src" data-prompt-src readonly aria-hidden="true" tabindex="-1">{plain}</textarea>
-    </section>
+        <textarea class="ex__src" data-prompt-src={id} readonly aria-hidden="true" tabindex="-1">{plain}</textarea>
+      </section>
+    ))}
+
   </article>
 </Base>
 
 <script>
   /* Copy the prompt without its annotations: the annotations are the page's
      reading of it, not part of what you would paste into a model. */
-  const btn = document.querySelector('[data-copy-prompt]');
-  const src = document.querySelector('[data-prompt-src]');
-  btn?.addEventListener('click', async () => {
+  for (const btn of document.querySelectorAll('[data-copy-prompt]')) {
+    const src = document.querySelector(`[data-prompt-src="${btn.dataset.copyPrompt}"]`);
+    if (!src) continue;
+    btn.addEventListener('click', async () => {
     const said = btn.textContent;
     try {
       await navigator.clipboard.writeText(src.value);
@@ -108,8 +124,9 @@ const plain = [ex.brief, '', ...ex.blocks.flatMap((b) => [`${b.heading}:`, ...b.
       src.select();
       btn.textContent = 'select and copy';
     }
-    setTimeout(() => { btn.textContent = said; }, 2400);
-  });
+      setTimeout(() => { btn.textContent = said; }, 2400);
+    });
+  }
 </script>
 
 <style>
@@ -177,6 +194,10 @@ const plain = [ex.brief, '', ...ex.blocks.flatMap((b) => [`${b.heading}:`, ...b.
   .ex__side a:hover { text-decoration-color: var(--accent); }
   .ex__side i { font-family: var(--mono); font-style: normal; font-size: var(--f-n2); color: var(--accent); }
   .ex__side p { margin: var(--s-3xs) 0 0; font-size: var(--f-n2); color: var(--text-dim); }
+
+  .ex__cost { padding: var(--s-s) 0 0; }
+  .ex__cost ol { margin: var(--s-2xs) 0 0; padding-left: 1.3em; max-width: var(--measure); }
+  .ex__cost li { margin-top: var(--s-2xs); color: var(--text-dim); font-size: var(--f-n1); }
 
   .ex__h { margin: 0 0 var(--s-3xs); font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); letter-spacing: .06em; }
   .ex__body pre {
