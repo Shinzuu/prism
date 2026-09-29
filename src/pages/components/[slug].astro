@@ -30,8 +30,10 @@ const files = [
 
       <div class="use" data-use>
         <p class="use__lab">Element ID</p>
-        <code class="use__id" data-use-id>{c.slug}</code>
-        <button class="link" type="button" data-use-copy={`Use the "${c.slug}" element from ${site}/components/${c.slug}`}>copy reference</button>
+        <p class="use__row">
+          <code class="use__id" data-use-id>{c.slug}</code>
+          <button class="link" type="button" data-use-copy={`Use the "${c.slug}" element from ${site}/components/${c.slug}`}>copy reference</button>
+        </p>
         <p class="use__hint">Ask for it by ID: <em>use the <code>{c.slug}</code> element</em>. The
           full source and props are at <code>/elements/{c.slug}.json</code>.</p>
       </div>
@@ -125,6 +127,26 @@ const files = [
   .doc__meta { display: flex; gap: var(--s-s); margin-top: var(--s-2xs); font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
   .doc__meta a { color: var(--text-dim); }
   .doc__meta a:hover { color: var(--accent); }
+
+  /* The element id is the one thing on this page a model is told to quote, so
+     it gets a frame of its own rather than sitting in the run of the header. */
+  .use {
+    margin-top: var(--s-s);
+    padding: var(--s-2xs) var(--s-s);
+    border-inline-start: 2px solid var(--accent);
+    background: color-mix(in oklab, var(--accent) 5%, transparent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .use__lab {
+    margin: 0;
+    font-family: var(--mono); font-size: var(--f-n2);
+    letter-spacing: .06em; color: var(--text-dim);
+  }
+  .use__row { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s-2xs); margin: 2px 0 0; }
+  .use__id { font-family: var(--mono); font-size: var(--f-1); color: var(--text); }
+  .use__hint { margin: var(--s-3xs) 0 0; font-size: var(--f-n1); color: var(--text-dim); }
+  .use__hint code { font-family: var(--mono); color: var(--text); }
+  .use__hint em { font-style: normal; color: var(--text); }
 
   .stage, .src { grid-column: wide; }
   .stage { margin: var(--s-s) 0 0; border: var(--rule); border-radius: var(--radius); overflow: hidden; }

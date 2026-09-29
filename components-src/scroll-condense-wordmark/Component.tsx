@@ -67,7 +67,7 @@ export default function ScrollCondenseWordmark() {
         </nav>
       </header>
 
-      <div ref={scrollRef} className="-mt-2 grid h-[170px] content-start gap-[10px] overflow-y-auto rounded-b-[9px] border border-t-0 border-border bg-bg px-[13px] py-[11px]">
+      <div ref={scrollRef} tabIndex={0} role="region" aria-label="Page content below the wordmark" className="-mt-2 grid h-[170px] content-start gap-[10px] overflow-y-auto rounded-b-[9px] border border-t-0 border-border bg-bg px-[13px] py-[11px]">
         {COPY.map((c, i) => (
           <p key={i} className="m-0 max-w-[46ch] text-[.76rem] leading-relaxed text-text-dim">{c}</p>
         ))}

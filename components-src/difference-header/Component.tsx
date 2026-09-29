@@ -32,7 +32,7 @@ export default function DifferenceHeader() {
         </nav>
       </header>
 
-      <div className="h-full snap-y snap-mandatory overflow-y-auto scroll-smooth motion-reduce:scroll-auto">
+      <div tabIndex={0} role="region" aria-label="Scrolling page behind the header" className="h-full snap-y snap-mandatory overflow-y-auto scroll-smooth motion-reduce:scroll-auto">
         {PANELS.map((p) => (
           <section
             key={p.id}

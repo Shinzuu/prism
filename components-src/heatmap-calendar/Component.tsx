@@ -54,18 +54,30 @@ export default function HeatmapCalendar() {
           focusAt(i + map[e.key]!);
         }}
       >
-        {cells.map((c, i) => (
-          <button
-            key={i}
-            type="button"
-            role="gridcell"
-            ref={(el) => { cellRefs.current[i] = el; }}
-            tabIndex={i === focused ? 0 : -1}
-            aria-label={c.label}
-            onClick={() => focusAt(i)}
-            data-lvl={c.lvl}
-            className="hc-cell h-[13px] w-[13px] cursor-pointer rounded-[3px] border-0 p-0 focus-visible:outline-2 focus-visible:outline-text focus-visible:outline-offset-2"
-          />
+        {/* A gridcell must sit inside a row, and the cells are a flat list laid
+            out by grid-flow-col. display: contents keeps the visual layout
+            exactly as it is — the cells stay items of the outer grid — while
+            giving the accessibility tree the rows it requires. The rows are
+            weeks, which is what a column is here. */}
+        {Array.from({ length: WEEKS }, (_, w) => (
+          <div key={w} role="row" className="contents">
+            {cells.slice(w * DAYS, w * DAYS + DAYS).map((c, d) => {
+              const i = w * DAYS + d;
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  role="gridcell"
+                  ref={(el) => { cellRefs.current[i] = el; }}
+                  tabIndex={i === focused ? 0 : -1}
+                  aria-label={c.label}
+                  onClick={() => focusAt(i)}
+                  data-lvl={c.lvl}
+                  className="hc-cell h-[13px] w-[13px] cursor-pointer rounded-[3px] border-0 p-0 focus-visible:outline-2 focus-visible:outline-text focus-visible:outline-offset-2"
+                />
+              );
+            })}
+          </div>
         ))}
       </div>
 

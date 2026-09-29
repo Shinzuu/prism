@@ -98,8 +98,11 @@ export default function InfiniteDragField() {
         >
           Offset X
         </span>
+        {/* The scrub label carries the name for the drag affordance; the number
+            field is a separate control and needs its own. */}
         <input
           type="number" step={1} value={Math.round(value)}
+          aria-label="Offset X in pixels"
           onChange={(e) => setValue(Number(e.target.value))}
           className="w-28 min-w-0 rounded-[7px] border border-border bg-bg px-[9px] py-1.5 font-sans text-[.84rem] tabular-nums text-text focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-1"
         />

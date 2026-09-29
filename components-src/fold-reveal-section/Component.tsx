@@ -23,7 +23,7 @@ export default function FoldRevealSection() {
       {/* perspective lives on the SCROLLER, not the panels: per-element
           perspective gives each panel its own vanishing point, so five panels
           fold toward five centres instead of one map opening. */}
-      <div className="frs-scroll h-[250px] overflow-y-auto rounded-[9px] border border-border bg-bg p-3">
+      <div tabIndex={0} role="region" aria-label="Folding panels" className="frs-scroll h-[250px] overflow-y-auto rounded-[9px] border border-border bg-bg p-3">
         <p className="m-0 mb-3 max-w-[44ch] text-[.74rem] leading-relaxed text-text-dim">
           Scroll. Each panel rotates open on the hinge it shares with the one before it, so the fold
           travels down the stack like a map opening.

@@ -58,8 +58,13 @@ export default function SpatialGridNav() {
         Arrow keys move by geometry, not by DOM order. Tab enters and leaves the grid once.
       </p>
 
-      <div
-        role="grid"
+      {/* Not role="grid". A grid promises rows of cells, and the tiles here
+          span arbitrary rows and columns and reflow at 480px — which is the
+          component's whole point. Claiming a structure that does not exist is
+          worse than claiming none: it makes a screen reader announce row and
+          column positions that are invented. The roving tabindex and the
+          geometric arrow keys work the same either way. */}
+      <nav
         aria-label="Airframe tiles"
         className="grid auto-rows-[62px] grid-cols-4 gap-[7px] max-[480px]:grid-cols-2"
         onKeyDown={(e) => {
@@ -85,7 +90,7 @@ export default function SpatialGridNav() {
             <small className="font-mono text-[.66rem] text-text-dim">{t.code}</small>
           </a>
         ))}
-      </div>
+      </nav>
 
       <p role="status" aria-live="polite" className="m-0 min-h-[1.2em] text-[.78rem] text-text-dim">{now}</p>
     </div>

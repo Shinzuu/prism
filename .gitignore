@@ -42,3 +42,6 @@ test/hero.png
 test-results/
 test/*.png
 .qa-stamp
+
+# Screenshot sweeps are for looking at, not for keeping.
+test/shots*/

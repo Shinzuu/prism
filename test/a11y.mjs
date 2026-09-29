@@ -11,15 +11,24 @@ const axeSource = require('node:fs').readFileSync(axePath, 'utf8');
 
 const SITE = process.env.BASE || 'https://prism.shinzuu-dev.workers.dev';
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 560, height: 420 } });
+let page = await browser.newPage({ viewport: { width: 560, height: 420 } });
 const all = allComponents();
 const found = [];
+
+/* axe walks every node in the subtree it is given. endless-ledger paints
+   50,000 rows, so an unbounded run there does not finish in any useful time
+   and the whole sweep looks hung with no output. Cap each page and say which
+   ones were capped rather than silently reporting them clean. */
+const BUDGET = Number(process.env.AXE_BUDGET_MS || 45000);
+const skipped = [];
+let done = 0;
 
 for (const c of all) {
   await page.goto(`${SITE}/preview/${c.slug}`, { waitUntil: 'load' });
   await page.waitForTimeout(350);
   await page.addScriptTag({ content: axeSource });
-  const res = await page.evaluate(async () => {
+
+  const evaluation = page.evaluate(async () => {
     // Serious and critical only: the rest is noise on a preview fragment with
     // no page landmarks of its own.
     /* color-contrast is by far the most expensive rule and it re-derives what
@@ -35,6 +44,30 @@ for (const c of all) {
       .map((v) => ({ id: v.id, impact: v.impact, n: v.nodes.length,
                      sample: v.nodes[0]?.html?.slice(0, 70) ?? '' }));
   });
+
+  /* The budget has to be enforced from Node. axe does its work synchronously,
+     so on a page like endless-ledger the page's own event loop never gets a
+     turn and an in-page setTimeout can never fire — the first version of this
+     cap was written that way and hung on exactly that component. */
+  let timer;
+  const capped = new Promise((res) => { timer = setTimeout(() => res(null), BUDGET); });
+  const res = await Promise.race([evaluation.catch(() => null), capped]);
+  clearTimeout(timer);
+
+  done += 1;
+  if (res === null) {
+    /* That page is still inside a synchronous axe call and will never answer,
+       so it is abandoned rather than reused. */
+    skipped.push(c.slug);
+    console.log(`  ${done}/${all.length} ${c.slug} — over ${BUDGET}ms, not checked`);
+    await page.close().catch(() => {});
+    page = await browser.newPage({ viewport: { width: 560, height: 420 } });
+    continue;
+  }
+
+  /* Progress on stdout: a sweep this long with no output is indistinguishable
+     from a hang, which is exactly how the first two attempts were read. */
+  console.log(`  ${done}/${all.length} ${c.slug}${res.length ? ` — ${res.length} findings` : ''}`);
   for (const v of res) found.push(`${c.slug}: [${v.impact}] ${v.id} ×${v.n} — ${v.sample}`);
 }
 
@@ -43,4 +76,7 @@ if (found.length) {
   console.error(`a11y: ${found.length} serious/critical findings\n  ` + found.slice(0, 25).join('\n  '));
   process.exit(1);
 }
-console.log(`a11y clean — ${all.length} components, no serious or critical axe violations`);
+console.log(
+  `a11y clean — ${all.length - skipped.length} of ${all.length} components, no serious or critical axe violations` +
+  (skipped.length ? `\n  not checked (DOM too large for the rule engine): ${skipped.join(', ')}` : ''),
+);

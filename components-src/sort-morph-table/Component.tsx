@@ -76,10 +76,17 @@ export default function SortMorphTable() {
         <thead>
           <tr>
             {COLS.map((c) => (
-              <th key={c.key} scope="col" className="border-b border-border pb-[5px] text-left">
+              /* aria-sort belongs on the columnheader, not on the control
+                 inside it: a button has no sort state to report, and putting
+                 it there is an attribute the role does not allow. */
+              <th
+                key={c.key}
+                scope="col"
+                aria-sort={sort.key === c.key ? (sort.dir === 1 ? 'ascending' : 'descending') : undefined}
+                className="border-b border-border pb-[5px] text-left"
+              >
                 <button
                   type="button"
-                  aria-sort={sort.key === c.key ? (sort.dir === 1 ? 'ascending' : 'descending') : undefined}
                   onClick={() => click(c.key, c.label)}
                   className={`cursor-pointer rounded border-0 bg-transparent px-1 py-[3px] font-sans text-[.68rem] font-medium focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-1 ${
                     sort.key === c.key ? 'text-accent' : 'text-text-dim hover:text-text'

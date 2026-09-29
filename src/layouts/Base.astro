@@ -1,7 +1,7 @@
 ---
 import '../styles/tokens.css';
 import '../styles/scale.css';
-const { title, wide = false, description = 'Thirty components that read their palette out of an image.' } = Astro.props;
+const { title, wide = false, description = 'Seventy React components that read their palette out of an image.' } = Astro.props;
 ---
 <!doctype html>
 <html lang="en">
@@ -81,7 +81,11 @@ const { title, wide = false, description = 'Thirty components that read their pa
     .rig__read b { font-weight: 450; font-size: var(--f-n2); }
     .rig__read span { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
 
-    main { max-width: var(--well); margin: 0 auto; padding: 0 var(--gutter) var(--s-3xl); }
+    /* The masthead is sticky and paints its own background over whatever is
+       under it. Display type is set tighter than its own font size, so the
+       first line's ascenders overflow its line box and were being painted
+       over. A gap the size of that overflow is all this needs. */
+    main { max-width: var(--well); margin: 0 auto; padding: var(--s-2xs) var(--gutter) var(--s-3xl); }
 
     /* A narrow phone is a real device, not an edge case. Tighten the gutter and
        let the masthead give up its padding before the document widens. */

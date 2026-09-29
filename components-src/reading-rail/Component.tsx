@@ -80,7 +80,7 @@ export default function ReadingRail() {
         </ol>
       </nav>
 
-      <article ref={docRef} className="max-h-[260px] overflow-y-auto pr-2">
+      <article ref={docRef} tabIndex={0} role="region" aria-label="Article body" className="max-h-[260px] overflow-y-auto pr-2">
         {SECTIONS.map((s, i) => (
           <section key={s.id}>
             <h3 id={s.id} className={`mb-[5px] text-[.94rem] scroll-mt-2 ${i ? 'mt-[18px]' : 'mt-0'}`}>{s.title}</h3>

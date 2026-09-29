@@ -60,7 +60,7 @@ export default function LocalizedProgressLoader() {
   return (
     <div ref={rootRef} dir={m.dir} className="grid gap-2">
       <div className="flex items-baseline justify-between gap-[10px]">
-        <p className="m-0 text-[.82rem]" lang={locale} dir={m.dir} aria-live="polite">
+        <p id="lpl-label" className="m-0 text-[.82rem]" lang={locale} dir={m.dir} aria-live="polite">
           {template.replace('{n}', nf.format(n))}
         </p>
         <select
@@ -77,6 +77,10 @@ export default function LocalizedProgressLoader() {
           instead of always running left to right. */}
       <div
         role="progressbar"
+        /* The status line already says what is being counted, in the chosen
+           language. Pointing at it names the bar without adding a second,
+           English-only string beside a localised one. */
+        aria-labelledby="lpl-label"
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={pct}

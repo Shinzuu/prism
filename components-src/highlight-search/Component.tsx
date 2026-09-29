@@ -84,7 +84,7 @@ export default function HighlightSearch() {
         <button type="button" aria-label="Next match" disabled={!count} onClick={() => step(1)} className={nav}>↓</button>
       </div>
 
-      <div ref={docRef} className="grid max-h-[190px] gap-[9px] overflow-y-auto text-[.86rem] leading-relaxed">
+      <div ref={docRef} tabIndex={0} role="region" aria-label="Searchable text" className="grid max-h-[190px] gap-[9px] overflow-y-auto text-[.86rem] leading-relaxed">
         {PARAS.map((t, i) => <p key={i} className="m-0 text-text-dim">{t}</p>)}
       </div>
     </div>
