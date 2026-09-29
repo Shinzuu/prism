@@ -65,11 +65,16 @@ export default function EndlessLedger() {
       {/* ARIA grid roles, not a <table>. A table box builds its own row grid by
           walking every row, so per-row containment cannot save it: measured at
           50,000 rows, 3,367ms in layout as a table against 434ms as div rows. */}
-      <div role="table" aria-rowcount={ROWS} aria-label="Trade ledger" className="text-[.78rem]">
-        <div tabIndex={0} aria-label="Ledger rows"
-             className="h-[210px] overflow-y-auto rounded-[9px] border border-border bg-bg focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent">
-          {/* The header lives inside the scroller and sticks: outside it, the
-              scrollbar narrows the rows but not the header and columns drift. */}
+      {/* The scroller wraps the table rather than sitting inside it. A table's
+          children must be rows or rowgroups, and an intervening scroll box is
+          neither — it breaks the chain between the table and its rows, and a
+          role="presentation" cannot repair it because this element is
+          focusable and labelled, which makes that role be ignored. The header
+          still sticks: sticky resolves against the nearest scrolling ancestor,
+          which is this element either way. */}
+      <div tabIndex={0} role="region" aria-label="Ledger rows"
+           className="h-[210px] overflow-y-auto rounded-[9px] border border-border bg-bg focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent">
+        <div role="table" aria-rowcount={ROWS} aria-label="Trade ledger" className="text-[.78rem]">
           <div role="row" className="el-row sticky top-0 z-10 !border-b-border bg-raised text-[.7rem] text-text-dim">
             {['#', 'Instrument', 'Side', 'Qty', 'Price'].map((h, i) => (
               <span key={h} role="columnheader" className={i >= 3 ? 'el-num' : undefined}>{h}</span>

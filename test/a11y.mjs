@@ -15,18 +15,50 @@ let page = await browser.newPage({ viewport: { width: 560, height: 420 } });
 const all = allComponents();
 const found = [];
 
-/* axe walks every node in the subtree it is given. endless-ledger paints
-   50,000 rows, so an unbounded run there does not finish in any useful time
-   and the whole sweep looks hung with no output. Cap each page and say which
-   ones were capped rather than silently reporting them clean. */
+/* axe walks every node in the subtree it is given, and endless-ledger paints
+   50,000 rows, so an unbounded run there does not finish in any useful time.
+
+   Those rows are emitted by one template, so every one of them is the same
+   markup with different numbers in it. Checking 50,000 copies of a shape tells
+   you nothing that checking 200 does not — so a very long run of siblings is
+   trimmed to a sample before axe runs, and the page is reported as sampled
+   rather than silently skipped. The budget below is the backstop for anything
+   this does not catch. */
 const BUDGET = Number(process.env.AXE_BUDGET_MS || 45000);
+const SAMPLE_OVER = 400;   // a sibling run longer than this is repetition
+const SAMPLE_KEEP = 200;   // enough to cover first, last and the middle
 const skipped = [];
+const sampled = [];
 let done = 0;
 
 for (const c of all) {
   await page.goto(`${SITE}/preview/${c.slug}`, { waitUntil: 'load' });
   await page.waitForTimeout(350);
   await page.addScriptTag({ content: axeSource });
+
+  /* Trim before axe is loaded with the page, not after it has started. */
+  const trimmed = await page.evaluate(({ over, keep }) => {
+    const root = document.querySelector('#fit-inner');
+    if (!root) return null;
+    let cut = 0, from = 0, where = '';
+    for (const parent of root.querySelectorAll('*')) {
+      const n = parent.childElementCount;
+      if (n <= over) continue;
+      /* Only trim a run that really is repetition: same tag and same class on
+         every child. A long list of different elements is not a template. */
+      const kids = [...parent.children];
+      const sig = (el) => el.tagName + '|' + el.className;
+      const first = sig(kids[0]);
+      if (!kids.every((el) => sig(el) === first)) continue;
+      for (const el of kids.slice(keep)) el.remove();
+      cut += n - keep;
+      from = n;
+      where = parent.getAttribute('role') || parent.tagName.toLowerCase();
+    }
+    return cut ? { cut, from, where } : null;
+  }, { over: SAMPLE_OVER, keep: SAMPLE_KEEP });
+
+  if (trimmed) sampled.push(`${c.slug} (${SAMPLE_KEEP} of ${trimmed.from} ${trimmed.where} children)`);
 
   const evaluation = page.evaluate(async () => {
     // Serious and critical only: the rest is noise on a preview fragment with
@@ -67,7 +99,7 @@ for (const c of all) {
 
   /* Progress on stdout: a sweep this long with no output is indistinguishable
      from a hang, which is exactly how the first two attempts were read. */
-  console.log(`  ${done}/${all.length} ${c.slug}${res.length ? ` — ${res.length} findings` : ''}`);
+  console.log(`  ${done}/${all.length} ${c.slug}${trimmed ? ` — sampled ${SAMPLE_KEEP}/${trimmed.from}` : ''}${res.length ? ` — ${res.length} findings` : ''}`);
   for (const v of res) found.push(`${c.slug}: [${v.impact}] ${v.id} ×${v.n} — ${v.sample}`);
 }
 
@@ -78,5 +110,6 @@ if (found.length) {
 }
 console.log(
   `a11y clean — ${all.length - skipped.length} of ${all.length} components, no serious or critical axe violations` +
+  (sampled.length ? `\n  repeated rows sampled: ${sampled.join(', ')}` : '') +
   (skipped.length ? `\n  not checked (DOM too large for the rule engine): ${skipped.join(', ')}` : ''),
 );
