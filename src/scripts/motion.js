@@ -17,8 +17,9 @@ function hero() {
 
   const lines = document.querySelectorAll('.hero__say h1 i');
   /* Every painted class must appear here or it never draws. */
-  const order = ['.hull', '.radome', '.glove', '.nacelle', '.wing .ln', '.fin',
-                 '.stab', '.pylon', '.nozzle', '.canopy', '.detail'];
+  const order = ['.hull', '.radome', '.glove', '.nacelle', '.wing .ln', '.wingf',
+                 '.fin', '.stab', '.pylon', '.nozzle', '.canopy', '.detail',
+                 '.dim', '.frame'];
 
   if (REDUCED) {
     gsap.set('.craft .ln, .rules line, .rules circle, .marks path, .note__lead', { opacity: 1, drawSVG: '100%' });

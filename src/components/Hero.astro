@@ -19,82 +19,150 @@ const { count, total } = Astro.props;
   </div>
 
   <figure class="hero__plate">
-    <svg viewBox="-56 0 776 566" role="img" aria-label="Annotated plan view of a variable-geometry fighter with its major subsystems called out">
+    <svg viewBox="0 0 760 620" role="img" aria-label="Three-view general arrangement drawing of a variable-geometry fighter: side elevation, plan view and front elevation, with dimensions and a title block">
       <g class="rules" aria-hidden="true">
-        <line x1="320" y1="14" x2="320" y2="548" />
-        <circle cx="320" cy="286" r="212" />
+        <line x1="60" y1="330" x2="700" y2="330" />
+        <line x1="150" y1="500" x2="150" y2="596" />
       </g>
 
-      <g class="craft" transform="translate(-130, 28) scale(1.0)">
-        <path class="ln glove" d="M472 206 L560 236 L566 262 L472 272 Z" />
-        <path class="ln glove" d="M428 206 L340 236 L334 262 L428 272 Z" />
-        <g class="wing wing--stbd">
-          <path class="ln" d="M556 234 L806 262 L826 276 L810 284 L560 276 Z" />
-          <path class="ln slat" d="M566 240 L792 264" />
+      <g class="craft">
+        <!-- ─── SIDE ELEVATION ─────────────────────────────────────────── -->
+        <g class="view view--side">
+          <path class="ln hull" d="M70 150
+            C104 138 142 130 196 124 L238 118
+            C258 106 292 100 326 102 L382 110 L470 116 L566 122 L640 128 L688 134
+            L688 148 L640 154 L560 159 L470 163 L360 165 L258 161
+            C196 157 126 154 70 150 Z" />
+          <path class="ln radome" d="M70 150 C92 145 112 141 132 138 L136 152 L108 154 Z" />
+          <path class="ln canopy" d="M244 116 C262 102 292 96 322 98 L360 104 L362 112 L246 118 Z" />
+          <path class="ln fin" d="M498 116 L568 50 L598 50 L586 116 Z" />
+          <path class="ln fin" d="M472 116 L540 58 L560 58 L552 116 Z" />
+          <path class="ln stab" d="M602 134 L692 124 L716 132 L690 142 L604 148 Z" />
+          <path class="ln nacelle" d="M276 160 L474 162 L474 184 L286 182 Z" />
+          <path class="ln nozzle" d="M672 130 L714 128 L718 142 L714 154 L672 152 Z" />
+          <path class="ln pylon" d="M330 182 L346 182 L344 196 L332 196 Z" />
+          <path class="ln pylon" d="M406 182 L422 182 L420 196 L408 196 Z" />
+          <path class="ln detail" d="M196 124 L196 158 M382 110 L382 162 M470 116 L470 163" />
+          <path class="ln detail" d="M136 144 L470 130" />
+          <text class="cap" x="70" y="216">SIDE ELEVATION</text>
         </g>
-        <g class="wing wing--port">
-          <path class="ln" d="M344 234 L94 262 L74 276 L90 284 L340 276 Z" />
-          <path class="ln slat" d="M334 240 L108 264" />
+
+        <!-- ─── PLAN VIEW ──────────────────────────────────────────────── -->
+        <g class="view view--plan">
+          <!-- Painted back to front: the surfaces that pass under the airframe
+               are drawn first, so the fuselage occludes them the way it does in
+               a real plan view rather than sitting under a stack of sheets. -->
+          <path class="ln stab" d="M600 316 L700 284 L720 290 L702 304 L612 326 Z" />
+          <path class="ln stab" d="M600 364 L700 396 L720 390 L702 376 L612 354 Z" />
+
+          <g class="wing wing--stbd">
+            <path class="ln" d="M396 296 L616 248 L650 254 L626 268 L432 312 Z" />
+            <path class="ln slat" d="M408 298 L612 254" />
+          </g>
+          <g class="wing wing--port">
+            <path class="ln" d="M396 384 L616 432 L650 426 L626 412 L432 368 Z" />
+            <path class="ln slat" d="M408 382 L612 426" />
+          </g>
+
+          <path class="ln glove" d="M286 318 L400 294 L436 300 L340 320 Z" />
+          <path class="ln glove" d="M286 362 L400 386 L436 380 L340 360 Z" />
+
+          <path class="ln nacelle" d="M320 314 L570 313 L600 320 L600 330 L320 330 Z" />
+          <path class="ln nacelle" d="M320 366 L570 367 L600 360 L600 350 L320 350 Z" />
+
+          <path class="ln hull" d="M70 340
+            C104 334 142 329 196 325 L246 320 L330 314 L470 310 L600 314 L660 320
+            L660 360 L600 366 L470 370 L330 366 L246 360 L196 355
+            C142 351 104 346 70 340 Z" />
+          <path class="ln radome" d="M70 340 C92 337 112 334 132 332 L134 348 L108 350 Z" />
+          <path class="ln canopy" d="M250 324 C270 318 296 315 318 316 L348 318 L348 362 L318 364 C296 365 270 362 250 356 Z" />
+
+          <path class="ln fin" d="M516 312 L568 276 L582 278 L554 314 Z" />
+          <path class="ln fin" d="M516 368 L568 404 L582 402 L554 366 Z" />
+          <path class="ln nozzle" d="M602 322 L650 320 L654 332 L604 332 Z" />
+          <path class="ln nozzle" d="M602 358 L650 360 L654 348 L604 348 Z" />
+          <path class="ln pylon" d="M432 304 L444 301 L448 314 L436 317 Z" />
+          <path class="ln pylon" d="M432 376 L444 379 L448 366 L436 363 Z" />
+          <path class="ln detail" d="M196 325 L196 355 M330 314 L330 366 M470 310 L470 370" />
+          <text class="cap" x="86" y="452">PLAN VIEW</text>
         </g>
-        <path class="ln hull" d="M450 22
-          C459 46 464 78 466 112 L469 160 L471 200
-          L472 236 L474 286 L476 330
-          L470 356 L466 392 L458 414 L452 438 L450 452
-          L448 438 L442 414 L434 392 L430 356 L424 330
-          L426 286 L428 236 L429 200 L431 160 L434 112
-          C436 78 441 46 450 22 Z" />
-        <path class="ln radome" d="M450 22 C456 44 460 70 462 96 L438 96 C440 70 444 44 450 22 Z" />
-        <path class="ln nacelle" d="M478 240 L512 250 L516 330 L508 392 L490 400 L476 330 Z" />
-        <path class="ln nacelle" d="M422 240 L388 250 L384 330 L392 392 L410 400 L424 330 Z" />
-        <path class="ln fin" d="M486 300 L534 232 L548 238 L512 318 Z" />
-        <path class="ln fin" d="M414 300 L366 232 L352 238 L388 318 Z" />
-        <path class="ln stab" d="M492 356 L590 388 L600 400 L574 402 L490 378 Z" />
-        <path class="ln stab" d="M408 356 L310 388 L300 400 L326 402 L410 378 Z" />
-        <path class="ln nozzle" d="M482 392 L506 392 L500 416 L484 414 Z" />
-        <path class="ln nozzle" d="M418 392 L394 392 L400 416 L416 414 Z" />
-        <path class="ln canopy" d="M450 50 C461 62 465 88 464 120 L450 128 L436 120 C435 88 439 62 450 50 Z" />
-        <path class="ln pylon" d="M520 256 L528 254 L530 300 L522 300 Z" />
-        <path class="ln pylon" d="M380 256 L372 254 L370 300 L378 300 Z" />
-        <path class="ln detail" d="M450 128 L450 200 M450 286 L450 392" />
-        <path class="ln detail" d="M472 236 L560 250 M428 236 L340 250" />
+
+        <!-- ─── FRONT ELEVATION ────────────────────────────────────────── -->
+        <g class="view view--front">
+          <path class="ln hull" d="M128 548 C128 530 138 520 152 520 C166 520 176 530 176 548
+            L174 572 L130 572 Z" />
+          <path class="ln canopy" d="M138 522 C142 511 162 511 166 522 Z" />
+          <path class="ln wingf" d="M176 544 L268 538 L282 550 L266 560 L176 558 Z" />
+          <path class="ln wingf" d="M128 544 L36 538 L22 550 L38 560 L128 558 Z" />
+          <path class="ln nacelle" d="M110 542 L128 542 L130 574 L112 574 Z" />
+          <path class="ln nacelle" d="M194 542 L176 542 L174 574 L192 574 Z" />
+          <path class="ln fin" d="M164 520 L178 486 L188 486 L176 520 Z" />
+          <path class="ln fin" d="M140 520 L126 486 L116 486 L128 520 Z" />
+          <text class="cap" x="22" y="600">FRONT ELEVATION</text>
+        </g>
+
+        <!-- ─── DIMENSIONS ─────────────────────────────────────────────── -->
+        <g class="dims" aria-hidden="true">
+          <path class="ln dim" d="M70 440 L70 478 M718 440 L718 478
+                                   M74 470 L714 470
+                                   M74 470 l9 -4 v8 z M714 470 l-9 -4 v8 z" />
+          <text class="dim__t" x="394" y="464">19.10 m</text>
+          <path class="ln dim" d="M726 246 L744 246 M726 434 L744 434
+                                   M736 250 L736 430
+                                   M736 250 l-4 9 h8 z M736 430 l-4 -9 h8 z" />
+          <text class="dim__t" x="710" y="344" text-anchor="end">11.65 m</text>
+        </g>
+
+        <!-- ─── TITLE BLOCK ────────────────────────────────────────────── -->
+        <g class="block">
+          <path class="ln frame" d="M402 496 h344 v106 h-344 z M402 522 h344 M402 549 h344
+                                     M402 576 h344 M596 522 v80" />
+          <text class="block__k" x="412" y="514">GENERAL ARRANGEMENT · VARIABLE GEOMETRY</text>
+          <text class="block__k" x="412" y="541">SWEEP  20° MIN / 68° MAX</text>
+          <text class="block__v" x="606" y="541">SHEET 1 OF 1</text>
+          <text class="block__k" x="412" y="568">SCALE  1:96</text>
+          <text class="block__v" x="606" y="568">THIRD ANGLE</text>
+          <text class="block__k" x="412" y="595">PRISM · COMPONENT LIBRARY</text>
+          <text class="block__v" x="606" y="595">REV 70</text>
+        </g>
       </g>
 
       <g class="notes">
         <g class="note" data-note="1">
-          <path class="note__lead" d="M322 86 L470 58" />
-          <circle class="note__dot" cx="322" cy="86" r="3.2" />
-          <text class="note__n" x="478" y="54">01</text>
-          <text class="note__t" x="478" y="70">radar · pulse-doppler</text>
+          <path class="note__lead" d="M96 148 L100 96" />
+          <circle class="note__dot" cx="96" cy="148" r="3.2" />
+          <text class="note__n" x="108" y="78">01</text>
+          <text class="note__t" x="108" y="94">radar · pulse-doppler</text>
         </g>
         <g class="note" data-note="2">
-          <path class="note__lead" d="M322 156 L488 140" />
-          <circle class="note__dot" cx="322" cy="156" r="3.2" />
-          <text class="note__n" x="496" y="136">02</text>
-          <text class="note__t" x="496" y="152">cockpit · tandem</text>
+          <path class="note__lead" d="M296 104 L330 58" />
+          <circle class="note__dot" cx="296" cy="104" r="3.2" />
+          <text class="note__n" x="338" y="46">02</text>
+          <text class="note__t" x="338" y="62">cockpit · tandem</text>
         </g>
         <g class="note" data-note="3">
-          <path class="note__lead" d="M252 300 L118 330" />
-          <circle class="note__dot" cx="252" cy="300" r="3.2" />
-          <text class="note__n" x="110" y="326" text-anchor="end">03</text>
-          <text class="note__t" x="110" y="342" text-anchor="end">hardpoint · 4 stations</text>
+          <path class="note__lead" d="M702 150 L716 190" />
+          <circle class="note__dot" cx="702" cy="150" r="3.2" />
+          <text class="note__n" x="746" y="188" text-anchor="end">03</text>
+          <text class="note__t" x="746" y="204" text-anchor="end">engine · 2 × afterburning</text>
         </g>
         <g class="note" data-note="4">
-          <path class="note__lead" d="M390 380 L508 404" />
-          <circle class="note__dot" cx="390" cy="380" r="3.2" />
-          <text class="note__n" x="516" y="400">04</text>
-          <text class="note__t" x="516" y="416">engine · 2 × afterburning</text>
+          <path class="note__lead" d="M414 196 L470 232" />
+          <circle class="note__dot" cx="414" cy="196" r="3.2" />
+          <text class="note__n" x="478" y="230">04</text>
+          <text class="note__t" x="478" y="246">hardpoint · 4 stations</text>
         </g>
         <g class="note" data-note="5">
-          <path class="note__lead" d="M268 262 L128 226" />
-          <circle class="note__dot" cx="268" cy="262" r="3.2" />
-          <text class="note__n" x="120" y="222" text-anchor="end">05</text>
-          <text class="note__t" x="120" y="238" text-anchor="end">wing · 20°–68° sweep</text>
+          <path class="note__lead" d="M470 268 L360 232" />
+          <circle class="note__dot" cx="470" cy="268" r="3.2" />
+          <text class="note__n" x="352" y="220" text-anchor="end">05</text>
+          <text class="note__t" x="352" y="236" text-anchor="end">wing · 20°–68° sweep</text>
         </g>
       </g>
 
       <g class="marks" aria-hidden="true">
-        <path d="M14 14 h20 M14 14 v20 M626 14 h-20 M626 14 v20
-                 M14 546 h20 M14 546 v-20 M626 546 h-20 M626 546 v-20" />
+        <path d="M14 14 h20 M14 14 v20 M746 14 h-20 M746 14 v20
+                 M14 606 h20 M14 606 v-20 M746 606 h-20 M746 606 v-20" />
       </g>
     </svg>
   </figure>
@@ -132,39 +200,50 @@ const { count, total } = Astro.props;
 
   /* The drawing is the hero. It spans the full well and the headline overlaps it,
      so the type sits on the plate rather than beside it. */
-  .hero__plate { margin: 0; justify-self: end; width: 100%; max-width: 620px; }
+  .hero__plate { margin: 0; justify-self: end; width: 100%; max-width: 660px; }
   /* The viewBox contains the callout labels, so nothing needs to overflow.
      overflow: visible here let SVG text push the document wider on a phone. */
   .hero__plate svg { width: 100%; height: auto; overflow: hidden; display: block; }
 
-  .rules line, .rules circle { stroke: color-mix(in oklab, var(--accent) 38%, transparent); stroke-width: 1; fill: none; }
-  .radome { fill: color-mix(in oklab, var(--accent) 30%, var(--bg)); }
-  .pylon  { fill: var(--raised); }
+  /* A blueprint is line work. Fills are there to separate one view's parts
+     from the view behind it, never to shade the drawing, so they stay at the
+     page or surface colour and the line carries the form. */
+  .rules line { stroke: color-mix(in oklab, var(--accent) 38%, transparent); stroke-width: 1; fill: none; stroke-dasharray: 14 4 3 4; }
+
+  .ln { fill: none; stroke: var(--text); stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; }
+  .hull    { fill: var(--bg); stroke-width: 1.9; }
+  .glove,
+  .nacelle { fill: var(--raised); }
+  .wing .ln,
+  .wingf   { fill: var(--surface); }
+  .slat    { stroke: color-mix(in oklab, var(--accent) 55%, transparent); stroke-width: .8; fill: none; }
+  .fin     { fill: color-mix(in oklab, var(--accent) 12%, var(--bg)); }
+  .stab    { fill: var(--surface); }
+  .nozzle  { fill: var(--accent); stroke: var(--accent); }
+  .canopy  { fill: color-mix(in oklab, var(--accent) 20%, var(--bg)); }
+  .radome  { fill: color-mix(in oklab, var(--accent) 20%, var(--bg)); }
+  .pylon   { fill: var(--raised); }
+  .detail  { stroke: color-mix(in oklab, var(--text) 42%, transparent); stroke-width: .9; }
+
+  /* Dimension lines and the title block are drawn, not typeset, so they draw
+     in with the rest of the sheet rather than appearing fully formed. */
+  .dim     { stroke: color-mix(in oklab, var(--accent) 70%, transparent); stroke-width: 1; fill: color-mix(in oklab, var(--accent) 70%, transparent); }
+  .dim__t  { fill: var(--accent); font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-anchor: middle; }
+  .frame   { stroke: color-mix(in oklab, var(--text) 55%, transparent); stroke-width: 1; }
+  .block__k, .block__v { font-family: var(--mono); font-size: 9.5px; letter-spacing: .1em; fill: var(--text-dim); }
+  .block__k { fill: var(--text); }
+  .cap     { font-family: var(--mono); font-size: 10px; letter-spacing: .18em; fill: var(--text-dim); }
 
   .note__lead { stroke: var(--text); stroke-width: 1; fill: none; }
   .note__dot  { fill: var(--accent); stroke: none; }
   .note__n    { fill: var(--accent); font-family: var(--mono); font-size: 11px; font-weight: 500; }
   .note__t    { fill: var(--text); font-size: 12.5px; font-weight: 500; }
-  .rules circle { stroke-dasharray: 2 9; }
-
-  .ln { fill: none; stroke: var(--text); stroke-width: 2.1; stroke-linejoin: round; stroke-linecap: round; }
-  .hull    { fill: var(--bg); stroke-width: 2.8; }
-  .glove,
-  .nacelle { fill: var(--raised); }
-  .wing .ln { fill: var(--surface); }
-  .slat    { stroke: color-mix(in oklab, var(--accent) 55%, transparent); stroke-width: .9; fill: none; }
-  .fin     { fill: color-mix(in oklab, var(--accent) 22%, var(--bg)); stroke: var(--text); }
-  .stab    { fill: var(--surface); }
-  .nozzle  { fill: var(--accent); stroke: var(--accent); }
-  .canopy  { fill: color-mix(in oklab, var(--accent) 34%, var(--bg)); stroke: var(--text); }
-  .detail  { stroke: color-mix(in oklab, var(--text) 50%, transparent); stroke-width: 1.1; }
   .marks path { stroke: var(--accent); stroke-width: 1.4; fill: none; }
-  .sweepline__t { fill: var(--text-dim); font-family: var(--mono); font-size: 11px; letter-spacing: .06em; }
 
   /* The wings pivot at their glove. Sweep is the aircraft's defining trait,
      so it is the animation rather than decoration on top of one. */
-  .wing--stbd { transform-origin: 560px 252px; }
-  .wing--port { transform-origin: 340px 252px; }
+  .wing--stbd { transform-origin: 330px 308px; }
+  .wing--port { transform-origin: 330px 352px; }
 
   .hero__say { display: grid; gap: var(--s-2xs); }
 
