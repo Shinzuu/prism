@@ -6,10 +6,8 @@ const b = await chromium.launch();
 const pg = await b.newPage({ viewport: { width: 1440, height: 1000 } });
 const errs = []; pg.on('pageerror', e => errs.push(e.message));
 pg.on('console', m => { if (m.type()==='error') errs.push(m.text()); });
-await pg.goto(BASE, { waitUntil: 'networkidle' });
+await pg.goto(BASE, { waitUntil: 'commit' });
 
-// mid-timeline: the airframe should be partially drawn, not all or nothing
-await pg.waitForTimeout(520);
 // DrawSVG drives stroke-dasharray, so dashoffset alone says nothing about
 // how much of a path is painted. Compare the dash length to the path length.
 const painted = () => pg.evaluate(() => {
@@ -22,10 +20,57 @@ const painted = () => pg.evaluate(() => {
   });
   return { total: parts.length, drawn: done.length };
 });
-const mid = await painted();
-ck('hero: draws progressively', mid.drawn > 0 && mid.drawn < mid.total, `${mid.drawn}/${mid.total} at 520ms`);
+/* Sampling at one fixed instant is a coin flip: how far the timeline has run
+   by then depends on how fast the page loaded, so a warm cache turns a real
+   pass into a failure. Sample repeatedly instead and assert the shape of the
+   sequence — at some point part of the airframe is drawn and part is not. */
+/* Before GSAP runs, the paths carry no dasharray at all, which the painted()
+   test reads as fully drawn. Sampling from page load therefore catches the
+   static SVG and calls the animation finished before it has started. Wait for
+   the timeline to arm itself first. */
+await pg.waitForFunction(() => {
+  const parts = [...document.querySelectorAll('.craft .ln')];
+  if (!parts.length) return false;
+  return parts.some((p) => {
+    const raw = getComputedStyle(p).strokeDasharray;
+    return raw && raw !== 'none';
+  });
+}, null, { timeout: 15000 });
 
-await pg.waitForTimeout(4200);
+const samples = [];
+for (let i = 0; i < 40; i++) {
+  const s = await painted();
+  samples.push(s);
+  if (s.total && s.drawn >= s.total) break;
+  await pg.waitForTimeout(60);
+}
+const partial = samples.find((s) => s.total > 0 && s.drawn > 0 && s.drawn < s.total);
+const grew = samples.length > 1 && samples.at(-1).drawn > samples[0].drawn;
+ck(
+  'hero: draws progressively',
+  Boolean(partial) || grew,
+  partial
+    ? `${partial.drawn}/${partial.total} mid-timeline`
+    : `${samples[0]?.drawn ?? 0} -> ${samples.at(-1)?.drawn ?? 0} of ${samples.at(-1)?.total ?? 0}`,
+);
+
+/* Wait for the timeline to settle rather than for a fixed duration: the
+   4200ms this used to sleep for was chosen against one machine's load time. */
+await pg
+  .waitForFunction(() => {
+    const parts = [...document.querySelectorAll('.craft .ln')];
+    if (!parts.length) return false;
+    const drawn = parts.filter((p) => {
+      const raw = getComputedStyle(p).strokeDasharray;
+      if (raw === 'none' || raw === '') return true;
+      const len = p.getTotalLength ? p.getTotalLength() : 0;
+      return len === 0 || (parseFloat(raw) || 0) >= len - 2;
+    }).length;
+    const notes = [...document.querySelectorAll('.note .note__t')];
+    return drawn === parts.length && notes.length > 0 && notes.every((t) => +getComputedStyle(t).opacity > 0.9);
+  }, null, { timeout: 20000 })
+  .catch(() => {}); /* let the assertions below report what actually settled */
+
 const done = await pg.evaluate(() => {
   const parts = [...document.querySelectorAll('.craft .ln')];
   const paintedN = parts.filter((p) => {

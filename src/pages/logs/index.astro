@@ -1,0 +1,61 @@
+---
+import Base from '../../layouts/Base.astro';
+import { allLogs } from '../../lib/logs.js';
+
+const logs = allLogs();
+---
+<Base title="Agent logs">
+  <article class="lg">
+    <header class="lg__top">
+      <h1>Agent logs</h1>
+      <p class="lg__lead">
+        One log a week for thirteen weeks. Each one is a real task given to an agent, the
+        prompt or sequence of prompts that did the work, and what came back — including the
+        runs that found nothing and the ones that were wrong first.
+      </p>
+      <p class="lg__note">
+        These are kept as plain text in <a href="https://github.com/Shinzuu/prism/tree/main/agent-logs">agent-logs/</a>
+        so they can be read without the site.
+      </p>
+    </header>
+
+    <ol class="lg__list">
+      {logs.map((l) => (
+        <li class="lg__row">
+          <a href={`/logs/${l.slug}`}>
+            <span class="lg__wk">Week {l.week}</span>
+            <span class="lg__task">{l.task}</span>
+          </a>
+          <p class="lg__saved">{l.saved.split('\n').join(' ').slice(0, 180)}…</p>
+        </li>
+      ))}
+    </ol>
+  </article>
+</Base>
+
+<style>
+  .lg { max-width: var(--measure); }
+  .lg h1 { font-size: var(--f-4); }
+  .lg__lead { margin-top: var(--s-s); font-family: var(--serif); font-size: var(--f-1); line-height: var(--lh-lead); }
+  .lg__note { margin-top: var(--s-2xs); color: var(--text-dim); font-size: var(--f-n1); }
+
+  .lg__list { list-style: none; margin: var(--s-xl) 0 0; padding: 0; border-top: var(--rule); }
+  .lg__row { border-bottom: var(--rule); padding: var(--s-s) 0; }
+  .lg__row a {
+    display: flex; gap: var(--s-s); align-items: baseline;
+    text-decoration: none; color: inherit;
+  }
+  .lg__wk {
+    flex: none; width: 5.5rem;
+    font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim);
+  }
+  .lg__task { font-size: var(--f-0); text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px; }
+  .lg__row a:hover .lg__task { text-decoration-color: var(--accent); }
+  .lg__saved { margin: var(--s-3xs) 0 0 5.5rem; color: var(--text-dim); font-size: var(--f-n1); }
+
+  @media (max-width: 560px) {
+    .lg__row a { display: block; }
+    .lg__wk { width: auto; display: block; margin-bottom: 2px; }
+    .lg__saved { margin-left: 0; }
+  }
+</style>

@@ -1,0 +1,82 @@
+---
+import Base from '../layouts/Base.astro';
+import { allPatterns } from '../lib/patterns.js';
+import { allComponents } from '../lib/registry.js';
+
+const lessons = allPatterns();
+const built = allComponents();
+const attempts = built.reduce((n, c) => n + c.attempts.length, 0);
+---
+<Base title="Patterns" description="What ten recurring prompting mistakes cost across seventy components.">
+  <article class="pt">
+    <header>
+      <h1>Patterns</h1>
+      <p class="pt__lead">
+        Every component here records the prompts that failed before the one that worked.
+        Across {built.length} components that is {attempts} failed attempts, and they are not
+        {attempts} different mistakes — they are ten, repeated.
+      </p>
+      <p class="pt__note">
+        Each lesson below is stated as a rule and then evidenced. A lesson with only one
+        example is an anecdote, so it is not here.
+      </p>
+    </header>
+
+    <nav class="pt__toc" aria-label="Lessons">
+      <ol>
+        {lessons.map((l, i) => (
+          <li><a href={`#${l.id}`}><i>{String(i + 1).padStart(2, '0')}</i> {l.title}</a></li>
+        ))}
+      </ol>
+    </nav>
+
+    {lessons.map((l, i) => (
+      <section class="pt__sec" id={l.id}>
+        <p class="pt__n">{String(i + 1).padStart(2, '0')}</p>
+        <h2>{l.title}</h2>
+        {l.claim.map((p) => <p class="pt__p">{p}</p>)}
+
+        <ul class="pt__ev">
+          {l.evidence.map((e) => (
+            <li>
+              <a href={`/components/${e.slug}`}>{e.name}</a>
+              <span class="pt__type">{e.type}</span>
+              <p>{e.note}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </article>
+</Base>
+
+<style>
+  .pt { max-width: var(--measure); }
+  .pt h1 { font-size: var(--f-4); }
+  .pt__lead { margin-top: var(--s-s); font-family: var(--serif); font-size: var(--f-1); line-height: var(--lh-lead); }
+  .pt__note { margin-top: var(--s-2xs); color: var(--text-dim); font-size: var(--f-n1); }
+
+  .pt__toc { margin-top: var(--s-xl); padding-top: var(--s-s); border-top: var(--rule); }
+  .pt__toc ol { list-style: none; margin: 0; padding: 0; }
+  .pt__toc li + li { margin-top: 2px; }
+  .pt__toc a { display: flex; gap: var(--s-2xs); color: var(--text-dim); text-decoration: none; font-size: var(--f-n1); }
+  .pt__toc a:hover { color: var(--text); }
+  .pt__toc i { font-family: var(--mono); font-style: normal; font-size: var(--f-n2); }
+
+  .pt__sec { margin-top: var(--s-2xl); scroll-margin-top: calc(var(--s-2xl) + var(--s-s)); }
+  .pt__n { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
+  .pt__sec h2 { margin-top: var(--s-3xs); font-size: var(--f-2); }
+  .pt__p { margin-top: var(--s-2xs); color: var(--text-dim); }
+
+  /* The evidence is the argument, so it is set as a list of claims rather than
+     a row of chips — each one has to carry what it proves. */
+  .pt__ev { list-style: none; margin: var(--s-s) 0 0; padding: 0; border-top: var(--rule); }
+  .pt__ev li { padding: var(--s-2xs) 0; border-bottom: var(--rule); }
+  .pt__ev a { text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px; }
+  .pt__ev a:hover { text-decoration-color: var(--accent); }
+  .pt__type {
+    margin-left: var(--s-2xs);
+    font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim);
+  }
+  .pt__ev p { margin: 2px 0 0; color: var(--text-dim); font-size: var(--f-n1); }
+</style>

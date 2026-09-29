@@ -1,0 +1,77 @@
+---
+import Base from '../../layouts/Base.astro';
+import { allLogs } from '../../lib/logs.js';
+
+export function getStaticPaths() {
+  return allLogs().map((l) => ({ params: { slug: l.slug }, props: { log: l } }));
+}
+const { log } = Astro.props;
+const logs = allLogs();
+const i = logs.findIndex((l) => l.slug === log.slug);
+const prev = logs[i - 1];
+const next = logs[i + 1];
+
+/* The text carries its own indentation: prompts are indented two spaces, prose
+   is not. Rendering it verbatim in a pre keeps that distinction rather than
+   inventing a markup layer the author would have to maintain. */
+const sections = [
+  ['Prompt or workflow', log.prompt],
+  ['Result', log.result],
+  ['What it saved', log.saved],
+].filter(([, body]) => body);
+---
+<Base title={`Agent log ${log.week}`} description={log.task}>
+  <article class="al">
+    <p class="al__eyebrow"><a href="/logs">Agent logs</a> · Week {log.week}</p>
+    <h1>{log.task}</h1>
+    <p class="al__agent">{log.agent}</p>
+
+    {sections.map(([heading, body]) => (
+      <section class="al__sec">
+        <h2>{heading}</h2>
+        <pre class="al__body">{body}</pre>
+      </section>
+    ))}
+
+    <p class="al__src">
+      Plain text: <a href={`https://github.com/Shinzuu/prism/blob/main/agent-logs/${log.file}`}>agent-logs/{log.file}</a>
+    </p>
+
+    <nav class="al__nav">
+      {prev ? <a href={`/logs/${prev.slug}`}>← Week {prev.week}</a> : <span />}
+      {next ? <a class="al__next" href={`/logs/${next.slug}`}>Week {next.week} →</a> : <span />}
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .al { max-width: var(--measure); }
+  .al__eyebrow { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
+  .al__eyebrow a { color: inherit; }
+  .al h1 { margin-top: var(--s-2xs); font-size: var(--f-3); }
+  .al__agent { margin-top: var(--s-3xs); color: var(--text-dim); font-size: var(--f-n1); }
+
+  .al__sec { margin-top: var(--s-l); }
+  .al__sec h2 { font-size: var(--f-0); }
+  /* The logs are written to a fixed measure in plain text. Keeping them in a
+     pre preserves the indented prompts; wrapping keeps them readable on a
+     phone, where a fixed measure would force a horizontal scroll. */
+  .al__body {
+    margin: var(--s-2xs) 0 0;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    font-family: var(--mono);
+    font-size: var(--f-n1);
+    line-height: 1.6;
+    color: var(--text-dim);
+  }
+
+  .al__src { margin-top: var(--s-l); font-size: var(--f-n1); color: var(--text-dim); }
+
+  .al__nav {
+    display: flex; justify-content: space-between; gap: var(--s-s);
+    margin-top: var(--s-xl); padding-top: var(--s-s); border-top: var(--rule);
+    font-size: var(--f-n1);
+  }
+  .al__next { margin-left: auto; }
+</style>
