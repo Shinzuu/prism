@@ -11,7 +11,8 @@ The skill, in one line: run the checks, then RENDER the page and look at the
 image, then report. The automated half is test/qa.mjs — four rules, each one
 added because a real bug got past a green suite.
 
-Result, over the following weeks:
+Result:
+Over the following weeks:
 
   - A headline clipped by 12px. Caught on the suite's first run, on a page I
     had looked at directly and not seen.

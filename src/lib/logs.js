@@ -45,6 +45,11 @@ function parse(file, text) {
   if (!out.task) throw new Error(`\n\n  prism: ${file} has no "Task:" line.\n`);
   /* A log without its prompt is the same void as a component without its prompt. */
   if (!out.prompt) throw new Error(`\n\n  prism: ${file} has no "Prompt or workflow:" section.\n`);
+  /* The submission format asks for Result — what it produced, what it saved.
+     Three of these logs opened the section as a sentence ("Result, over the
+     following weeks:") rather than as the field, which reads fine and is not
+     the template. Only a field at the start of a line counts. */
+  if (!out.result) throw new Error(`\n\n  prism: ${file} has no "Result:" section. The submission format requires one.\n`);
 
   out.n = Number.parseInt(out.week, 10);
   out.slug = `week-${out.week}`;

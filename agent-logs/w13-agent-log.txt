@@ -8,7 +8,8 @@ ninety days; the library finished at 70 components, each carrying the prompt
 that produced it, two recorded failed attempts, and a note on why the failure
 was interesting. This log is the summary of what the prompts taught.
 
-Result — the five rules that survived, in the order they were learned:
+Result:
+The five rules that survived, in the order they were learned:
 
 1. Never name the fix. A prompt that says "build the rows with innerHTML" has
    a diagnosis in it that nobody checked. Two deploys and forty minutes went

@@ -12,7 +12,8 @@ The instruction was broad — build the remaining components, test properly,
 choose the better option at each decision — so the interesting question was
 what infrastructure makes a long unattended run safe.
 
-Result, in order of how much each mattered:
+Result:
+In order of how much each mattered:
 
 1. The build refuses to publish an incomplete component. A missing meta.json
    or a literal colour in a stylesheet fails the build outright. This caught a
