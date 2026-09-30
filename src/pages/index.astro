@@ -43,6 +43,13 @@ const sections = COMPONENT_TYPES
         <div class="find">
           <input id="q" type="search" placeholder="Search" autocomplete="off" aria-label="Search components" />
           <span class="find__n" id="count" aria-live="polite"></span>
+          <!-- Escape clears it on a keyboard. A phone has no Escape. -->
+          <button class="find__x" id="qx" type="button" aria-label="Clear search" hidden>
+            <svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true" fill="none"
+              stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+              <path d="m3.5 3.5 7 7m0-7-7 7" />
+            </svg>
+          </button>
         </div>
         <nav class="rail__nav" aria-label="Component types">
           {sections.map((s) => (
@@ -100,6 +107,7 @@ const sections = COMPONENT_TYPES
 <script is:inline>
   (() => {
     const q = document.getElementById('q');
+    const qx = document.getElementById('qx');
     const count = document.getElementById('count');
     const empty = document.getElementById('empty');
     const tiles = [...document.querySelectorAll('.tile')];
@@ -132,9 +140,16 @@ const sections = COMPONENT_TYPES
       }
       count.textContent = term ? `${shown} of ${tiles.length}` : `${tiles.length}`;
       empty.hidden = shown > 0;
+      qx.hidden = !term;
     }
 
     q.addEventListener('input', apply);
+    qx.addEventListener('click', () => {
+      q.value = '';
+      // nav.js listens for input to drop ?q= from the URL.
+      q.dispatchEvent(new Event('input', { bubbles: true }));
+      q.focus();
+    });
     addEventListener('keydown', (e) => {
       if (e.key === '/' && document.activeElement !== q) { e.preventDefault(); q.focus(); }
       if (e.key === 'Escape' && document.activeElement === q) { q.value = ''; apply(); q.blur(); }
@@ -172,6 +187,17 @@ const sections = COMPONENT_TYPES
     font: inherit; font-size: var(--f-n1);
   }
   #q:focus { outline: none; border-color: var(--accent); }
+  .find__x {
+    position: absolute; right: 6px;
+    display: grid; place-items: center; width: 32px; height: 32px;
+    background: none; border: 0; border-radius: 999px; cursor: pointer;
+    color: var(--text-dim);
+  }
+  .find__x:hover { color: var(--accent); background: color-mix(in oklab, var(--text) 8%, transparent); }
+  /* The count and the clear button share the same corner, so the count steps
+     aside once there is something to clear. */
+  .find:has(.find__x:not([hidden])) .find__n { display: none; }
+
   .find__n {
     position: absolute; right: 13px; pointer-events: none;
     font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim);
@@ -192,7 +218,7 @@ const sections = COMPONENT_TYPES
   .rail__tot b { color: var(--text); }
 
   .stacks { display: grid; gap: var(--s-xl); }
-  .stack { scroll-margin-top: calc(var(--s-2xl) + var(--s-s)); }
+  .stack { scroll-margin-top: calc(var(--mast-h, 64px) + var(--s-2xs)); }
 
   /* Explicit placement: auto-placement put the count in column one and pushed
      the heading to the right. */
@@ -227,7 +253,11 @@ const sections = COMPONENT_TYPES
     border: 1px solid var(--border); border-radius: var(--radius-sm);
     background: var(--bg);
   }
-  .tile__view iframe { display: block; width: 100%; aspect-ratio: 5 / 3; border: 0; }
+  /* The frame is a picture of the component, not the component. Pointer events
+     inside it go to its own document, so a tap on the preview — which is most
+     of the tile, and the obvious thing to tap on a phone — hit the iframe and
+     nothing happened. The link is the tile; the frame must not intercept it. */
+  .tile__view iframe { display: block; width: 100%; aspect-ratio: 5 / 3; border: 0; pointer-events: none; }
   a.tile__in:hover .tile__view { border-color: var(--accent); }
   .tile h3 { font-size: var(--f-0); }
   a.tile__in:hover h3 { color: var(--accent); }
@@ -241,6 +271,16 @@ const sections = COMPONENT_TYPES
     align-content: start;
   }
   .tile--soon h3 { color: var(--text-dim); }
+
+  /* The tile you just came back from. Seventy tiles look alike on a phone; this
+     is the only thing that answers "where was I". It is a mark, not a
+     selection, so it fades rather than persisting down the page. */
+  .tile { scroll-margin-top: calc(var(--mast-h, 64px) + var(--s-m)); }
+  .tile--seen .tile__view { border-color: var(--accent); }
+  .tile--seen h3 { color: var(--accent); }
+  .tile--seen .tile__wk::after {
+    content: "· opened"; margin-left: .4em; color: var(--accent);
+  }
 
   .empty { margin-top: var(--s-l); text-align: center; color: var(--text-dim); }
 

@@ -13,7 +13,7 @@
     "prebuild": "node -e \"const f=require('node:fs');f.writeFileSync('public/tokens-preview.css',f.readFileSync('src/styles/tokens.css','utf8')+f.readFileSync('src/styles/scale.css','utf8'))\" && node scripts/gen-imports.mjs",
     "predev": "node -e \"const f=require('node:fs');f.writeFileSync('public/tokens-preview.css',f.readFileSync('src/styles/tokens.css','utf8')+f.readFileSync('src/styles/scale.css','utf8'))\" && node scripts/gen-imports.mjs",
     "qa": "node test/qa.mjs",
-    "verify": "npm run build && node test/run.mjs && node test/library.mjs && node test/motion.mjs && node test/all.mjs && node test/contrast.mjs && node test/qa.mjs",
+    "verify": "npm run build && node test/run.mjs && node test/library.mjs && node test/motion.mjs && node test/all.mjs && node test/contrast.mjs && node test/qa.mjs && node test/nav.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {

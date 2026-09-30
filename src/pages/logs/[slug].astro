@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import PageNav from '../../components/PageNav.astro';
 import { allLogs } from '../../lib/logs.js';
 import { figureFor } from '../../lib/log-figures.js';
 
@@ -28,7 +29,14 @@ const sections = [
 ---
 <Base title={`Agent log ${log.week}`} description={log.task}>
   <article class="al">
-    <p class="al__eyebrow"><a href="/logs">Agent logs</a> · Week {log.week}</p>
+    <PageNav
+      back="/logs"
+      backLabel="Agent logs"
+      crumbs={[`week ${log.week}`]}
+      prev={prev ? { href: `/logs/${prev.slug}`, label: `Week ${prev.week}` } : null}
+      next={next ? { href: `/logs/${next.slug}`, label: `Week ${next.week}` } : null}
+      pagerLabel="log"
+    />
     <h1>{log.task}</h1>
     <p class="al__agent">{log.agent}</p>
 
@@ -188,6 +196,9 @@ const sections = [
   }
 
   .al__src { margin-top: var(--s-l); font-size: var(--f-n1); color: var(--text-dim); }
+
+  /* The fixed pager carries these on a phone. */
+  @media (max-width: 860px) { .al__nav { display: none; } }
 
   .al__nav {
     display: flex; justify-content: space-between; gap: var(--s-s);

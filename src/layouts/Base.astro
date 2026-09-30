@@ -2,6 +2,16 @@
 import '../styles/tokens.css';
 import '../styles/scale.css';
 const { title, wide = false, description = 'Seventy React components that read their palette out of an image.' } = Astro.props;
+
+/* Which masthead link is the page you are on. The library is the only one that
+   owns more than its own path — a component page belongs to it. */
+const path = Astro.url.pathname.replace(/\.html$/, '');
+const NAV = [
+  { href: '/', label: 'Index', owns: (p) => p === '/' || p.startsWith('/components') },
+  { href: '/patterns', label: 'Patterns', owns: (p) => p.startsWith('/patterns') },
+  { href: '/logs', label: 'Logs', owns: (p) => p.startsWith('/logs') },
+  { href: '/about', label: 'Method', owns: (p) => p.startsWith('/about') }
+];
 ---
 <!doctype html>
 <html lang="en">
@@ -22,23 +32,32 @@ const { title, wide = false, description = 'Seventy React components that read t
   <header class="mast">
     <a class="mast__id" href="/">prism</a>
     <nav class="mast__nav">
-      <a href="/">Index</a>
-      <a href="/patterns">Patterns</a>
-      <a href="/logs">Logs</a>
-      <a href="/about">Method</a>
+      {NAV.map((n) => (
+        <a href={n.href} aria-current={n.owns(path) ? 'page' : undefined}>{n.label}</a>
+      ))}
       <a href="https://github.com/Shinzuu/prism">Source</a>
     </nav>
   </header>
 
   <main><slot /></main>
 
+  <!-- Every page here runs past a phone screen several times over, and the
+       masthead scrolls away with the document. -->
+  <button class="totop" type="button" data-top aria-label="Back to top">
+    <svg width="16" height="16" viewBox="0 0 14 14" aria-hidden="true" fill="none"
+      stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M7 11V3M3.5 6.5 7 3l3.5 3.5" />
+    </svg>
+  </button>
+
   <footer class="colo">
     <p>Two components a week for ninety days. Each one keeps the prompt that produced it.</p>
     <p class="colo__set">Set in IBM Plex. Palette derived in OKLab, lightness held on a fixed ladder.</p>
   </footer>
 
-  <script is:inline>
-  </script>
+  <!-- Scroll memory, the pager's keys, and the back control. Plain script, not
+       a module: it has to run before the browser's own restore gives up. -->
+  <script is:inline src="/nav.js"></script>
 
   <script>
     import '../scripts/motion.js';
@@ -47,7 +66,10 @@ const { title, wide = false, description = 'Seventy React components that read t
   <style is:global>
     :root { --well: 1180px; --gutter: var(--s-l); }
     body.wide { --well: 1320px; }
-    html { scroll-padding-block-start: calc(var(--s-2xl) + var(--s-s)); }
+    /* nav.js measures the masthead and writes --mast-h. The fallback is what
+       it measures on a laptop, so a jump lands correctly before the script
+       runs and without it. */
+    html { scroll-padding-block-start: calc(var(--mast-h, 64px) + var(--s-2xs)); }
     /* Nothing may widen the document. A single overflowing decoration makes a
        phone zoom the whole page out, which reads as a broken layout. */
     body { overflow-x: clip; }
@@ -67,6 +89,12 @@ const { title, wide = false, description = 'Seventy React components that read t
       transition: color 160ms ease, background 160ms ease;
     }
     .mast__nav a:hover { color: var(--text); background: color-mix(in oklab, var(--text) 8%, transparent); }
+    /* Where you are. Without it, four identical links and no way to tell which
+       of them you already pressed. */
+    .mast__nav a[aria-current="page"] {
+      color: var(--accent);
+      background: color-mix(in oklab, var(--accent) 12%, transparent);
+    }
 
     
     
@@ -88,13 +116,43 @@ const { title, wide = false, description = 'Seventy React components that read t
     main { max-width: var(--well); margin: 0 auto; padding: var(--s-2xs) var(--gutter) var(--s-3xl); }
 
     /* A narrow phone is a real device, not an edge case. Tighten the gutter and
-       let the masthead give up its padding before the document widens. */
+       let the masthead give up its padding before the document widens.
+
+       The nav scrolls sideways rather than wrapping onto a second line: a
+       masthead that is one row tall on one page and two on the next moves every
+       heading under it, and it is sticky, so it eats the screen. */
+    @media (max-width: 560px) {
+      .mast { flex-wrap: nowrap; gap: var(--s-2xs); padding-block: var(--s-3xs); }
+      .mast__nav {
+        gap: 0; overflow-x: auto; overscroll-behavior-x: contain;
+        scrollbar-width: none; -webkit-overflow-scrolling: touch;
+      }
+      .mast__nav::-webkit-scrollbar { display: none; }
+      /* 44px of target. The label stays the size it was. */
+      .mast__nav a { padding: 13px 9px; }
+    }
+
     @media (max-width: 400px) {
       :root { --gutter: var(--s-s); }
-      .mast { gap: var(--s-2xs); padding-inline: var(--s-s); }
-      .mast__nav a { padding: 5px 7px; }
+      .mast { padding-inline: var(--s-s); }
+      .mast__nav a { padding: 13px 7px; }
       .mast__id { font-size: var(--f-0); }
     }
+
+    .totop {
+      position: fixed; right: max(var(--s-s), env(safe-area-inset-right));
+      bottom: max(var(--s-s), env(safe-area-inset-bottom));
+      z-index: 45;
+      display: grid; place-items: center; width: 42px; height: 42px;
+      border: var(--rule); border-radius: 999px;
+      background: color-mix(in oklab, var(--surface) 88%, transparent);
+      backdrop-filter: blur(8px);
+      color: var(--text-dim); cursor: pointer;
+      opacity: 0; visibility: hidden; transform: translateY(6px);
+      transition: opacity 180ms ease, transform 180ms ease, visibility 180ms;
+    }
+    .totop[data-on] { opacity: 1; visibility: visible; transform: none; }
+    .totop:hover { color: var(--accent); border-color: var(--accent); }
 
     .colo {
       max-width: var(--well); margin: var(--s-2xl) auto 0; padding: var(--s-l) var(--gutter) var(--s-2xl);
