@@ -5,7 +5,11 @@ const { title, wide = false, description = 'Seventy React components that read t
 
 /* Which masthead link is the page you are on. The library is the only one that
    owns more than its own path — a component page belongs to it. */
-const path = Astro.url.pathname.replace(/\.html$/, '');
+/* build.format is 'file', so this page's own pathname is "/index.html" and a
+   section's is "/logs/index.html". Stripping the extension is not enough —
+   "/index" matched none of the links below, and the library was the one page
+   that never marked itself. */
+const path = (Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/') || '/');
 const NAV = [
   { href: '/', label: 'Index', owns: (p) => p === '/' || p.startsWith('/components') },
   { href: '/patterns', label: 'Patterns', owns: (p) => p.startsWith('/patterns') },
@@ -91,9 +95,11 @@ const NAV = [
     .mast__nav a:hover { color: var(--text); background: color-mix(in oklab, var(--text) 8%, transparent); }
     /* Where you are. Without it, four identical links and no way to tell which
        of them you already pressed. */
+    /* Accent ink on an accent tint measured 3.81:1 at this size — the tint is
+       what marks the link, so the text can stay at full contrast. */
     .mast__nav a[aria-current="page"] {
-      color: var(--accent);
-      background: color-mix(in oklab, var(--accent) 12%, transparent);
+      color: var(--text); font-weight: 500;
+      background: color-mix(in oklab, var(--accent) 16%, transparent);
     }
 
     

@@ -211,7 +211,12 @@ const sections = COMPONENT_TYPES
     font-size: var(--f-n1); color: var(--text-dim); text-decoration: none;
   }
   .rail__nav a span { flex: 1; }
-  .rail__nav a i { font-style: normal; font-size: var(--f-n2); font-variant-numeric: tabular-nums; opacity: .7; }
+  /* The count is already the quiet half of this row. Dimming a dim colour a
+     second time with opacity put it at 3.5:1 against the page. */
+  .rail__nav a i {
+    font-style: normal; font-size: var(--f-n2); font-variant-numeric: tabular-nums;
+    color: var(--text-dim);
+  }
   .rail__nav a:hover { color: var(--text); }
   .rail__nav a[aria-current="true"] { color: var(--accent); }
   .rail__tot { font-size: var(--f-n2); color: var(--text-dim); font-variant-numeric: tabular-nums; }

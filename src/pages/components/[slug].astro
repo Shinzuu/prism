@@ -70,11 +70,15 @@ const files = [
     </figure>
 
     <section class="src">
-      <div class="src__tabs" role="tablist" aria-label="Files">
-        {files.map((f, i) => (
-          <button class="src__tab" type="button" role="tab" data-wb-tab={f.lang}
-            aria-selected={i === 0 ? 'true' : 'false'}>{f.label}</button>
-        ))}
+      <div class="src__tabs">
+        {/* The copy button used to sit inside the tablist, which is only
+            allowed to contain tabs. */}
+        <div class="src__tablist" role="tablist" aria-label="Files">
+          {files.map((f, i) => (
+            <button class="src__tab" type="button" role="tab" data-wb-tab={f.lang}
+              aria-selected={i === 0 ? 'true' : 'false'}>{f.label}</button>
+          ))}
+        </div>
         <button class="link link--end" type="button" data-wb-copy>copy</button>
       </div>
       {files.map((f, i) => (
@@ -130,6 +134,12 @@ const files = [
     row-gap: var(--s-m);
   }
   .doc > * { grid-column: text; }
+  /* PageNav is a separate component, so it carries its own scope attribute and
+     `.doc > *` — which Astro scopes to this page's own elements — never matched
+     it. The breadcrumb was being placed in column one, the bleed margin, which
+     is zero wide on a phone: it collapsed to nothing and the header painted
+     over the top of it. Nothing about it looked broken in the markup. */
+  .doc > :global(.pnav) { grid-column: text; }
 
   .doc__head h1 { font-size: var(--f-4); }
   .doc__sum { margin-top: var(--s-2xs); font-size: var(--f-1); line-height: var(--lh-lead); color: var(--text-dim); }
@@ -175,7 +185,15 @@ const files = [
     padding: var(--s-3xs) var(--s-xs); border-top: var(--rule); background: var(--surface);
     font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim);
   }
-  .stage__bar [data-state="ok"] { color: var(--accent); }
+  /* Accent ink on the bar's own surface measured 4.35:1 at 11px. The word
+     carries full contrast and the accent moves to a dot, which is a graphic and
+     clears its own 3:1 floor. */
+  .stage__bar [data-state="ok"] { color: var(--text); }
+  .stage__bar [data-state="ok"]::before {
+    content: ""; display: inline-block; vertical-align: 1px;
+    width: 7px; height: 7px; margin-right: 5px; border-radius: 999px;
+    background: var(--accent);
+  }
   .stage__bar [data-state="err"] { color: oklch(56% 0.2 25); }
 
   .link {
@@ -187,6 +205,7 @@ const files = [
   .link--end { margin-left: auto; }
 
   .src__tabs { display: flex; align-items: center; gap: 2px; border-bottom: var(--rule); }
+  .src__tablist { display: flex; align-items: center; gap: 2px; }
   .src__tab {
     padding: var(--s-3xs) var(--s-2xs); background: none; border: 0;
     border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer;
