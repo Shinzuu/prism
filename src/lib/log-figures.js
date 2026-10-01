@@ -2,7 +2,7 @@
 
    Only the logs that recorded real measurements get one. A chart is a claim,
    and a chart drawn from numbers nobody measured is a worse claim than a
-   paragraph. Six of the eighteen logs have the data; the rest carry none, and
+   paragraph. Six of the twenty logs have the data; the rest carry none, and
    that is the honest outcome rather than a gap to fill.
 
    Every value here is quoted from the log text beside it. */

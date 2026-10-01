@@ -1,0 +1,74 @@
+Week: 19
+Task: Stop scrolling a busy support channel to find out what was asked of me
+Agent: Claude (Claude Code, terminal), with a Discord reader built for it
+
+Prompt or workflow:
+The pain: a client support channel on Discord moves fast, and the only way
+to know what was asked of me, when, and what was still open was to scroll
+back through it by hand. Two days of messages could be a hundred posts, most
+of them not mine, with the actual requests buried in threads.
+
+The fix was not a chat bot. It is a private, read-only Discord bot account
+that Claude Code calls as tools, through a small local MCP server. Nothing is
+hosted and nothing listens; it exists only while the terminal session does.
+
+The brief opened with the constraint, not the feature:
+
+  "an LLM uses it to pull messages from chosen channels on demand. the bot
+   never posts, edits or deletes anything. security comes before every other
+   requirement."
+
+The order of work was the useful part:
+
+  1. index the Discord API docs first, so the plan cites real endpoints
+  2. write a design spec, then a task-by-task plan, before any code
+  3. name the review cases in the plan up front — "a 429 in the middle of
+     pagination", "a token file with mode 644" — so review has a target
+  4. build, then run two separate passes: a correctness review and a
+     security audit, each fixed in its own commit
+
+Day-to-day use is one sentence: "pull the last 48h from the support channel."
+A companion skill turns that into a fetch and writes a breakdown with an
+open-requests table: who, what, first asked, last activity, urgency.
+
+Result:
+Four read-only tools (list servers, list channels, fetch messages, search),
+TypeScript run directly by Node with no build step, two pinned runtime
+dependencies, about 1,400 lines including 53 tests. Spec to hardened code in
+about twenty minutes; one evening including live setup.
+
+Read-only is enforced, not promised. The only HTTP method in the code is GET,
+and a test fails if any other appears. Only allowlisted channels are readable.
+The bot is invited with view and read-history permissions and nothing else.
+Message text is labelled as untrusted content, so the model treats what
+people wrote as data and never as instructions.
+
+What review caught that the first build shipped:
+  - listing a category opened every channel inside it; now only threads
+    inherit access from their parent
+  - a long rate-limit wait could hang the server, and it waited twice after
+    a 429; now it fails fast
+  - large results overflowed the tool output; now they go to a private file
+  - redirects were followed; now refused
+  - the credentials file was trusted at any permission; now the server
+    refuses to start if it is readable by anyone else
+
+What live setup caught that no review could:
+  - the token was pasted into the chat and had to be reset
+  - the first pull returned every message with empty text, because the
+    message-content permission is a separate switch
+  - the bot could not see the channel until its permissions were fixed
+
+Verification run: a 48-hour pull returned 108 messages, 104 with text, and a
+channel outside the allowlist was refused. The breakdown found that 57 of the
+108 came from a single thread, which is the kind of thing scrolling hides.
+
+What it saved: the scroll-back, every day. Nothing measured the minutes, so
+none are claimed here. The real change is that "what is still open for me"
+is now a question with a table for an answer instead of a memory exercise.
+
+The lesson for prompting: put the constraint in the first sentence and make
+the plan name its own failure cases. "Never posts" written as a test is
+worth more than "be read-only" written as a wish, and a review that is told
+what a 429 mid-pagination should do finds the bug that a review told to
+"check for issues" walks past.
