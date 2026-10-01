@@ -336,14 +336,17 @@ for (const [name, launcher] of ENGINES) {
       await p.waitForTimeout(500);
       ok(`no sideways scroll at 320px on ${path}`, (await overflowX(p)) === 0, `${await overflowX(p)}px over`);
     }
-    /* The masthead nav scrolls sideways on a phone rather than wrapping. Its
-       first link must still start inside the screen. */
-    const first = await p.evaluate(() => {
-      const a = document.querySelector('.mast__nav a');
+    /* Every masthead link must be wholly on screen. The nav once scrolled
+       sideways with its scrollbar hidden, which cut the last two links off at
+       360px and passed a check that only looked at the first one. */
+    const links = await p.evaluate(() => [...document.querySelectorAll('.mast a')].map((a) => {
       const r = a.getBoundingClientRect();
-      return { x: Math.round(r.x), h: Math.round(r.height) };
-    });
-    ok('the masthead nav starts on screen at 320px', first.x >= 0 && first.x < 320, `x=${first.x}`);
+      return { t: a.textContent.trim(), l: Math.round(r.left), r: Math.round(r.right), h: Math.round(r.height) };
+    }));
+    const cut = links.filter((a) => a.l < 0 || a.r > 320);
+    ok('every masthead link is wholly on screen at 320px', links.length >= 7 && cut.length === 0,
+      cut.length ? `cut: ${cut.map((a) => a.t).join(', ')}` : `${links.length} links`);
+    const first = links.find((a) => a.t === 'Index') ?? { h: 0 };
     ok('masthead taps are 44px tall at 320px', first.h >= 44, `${first.h}px`);
     await ctx.close();
   }

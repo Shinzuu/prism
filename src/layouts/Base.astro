@@ -44,8 +44,8 @@ const updatedLong = updated && new Intl.DateTimeFormat('en-GB', { day: 'numeric'
       {NAV.map((n) => (
         <a href={n.href} aria-current={n.owns(path) ? 'page' : undefined}>{n.label}</a>
       ))}
-      <a href="https://github.com/Shinzuu/prism">Source</a>
     </nav>
+    <a class="mast__src" href="https://github.com/Shinzuu/prism">Source</a>
   </header>
 
   <main><slot /></main>
@@ -93,12 +93,15 @@ const updatedLong = updated && new Intl.DateTimeFormat('en-GB', { day: 'numeric'
     }
     .mast__id { font-family: var(--serif); font-size: var(--f-1); font-weight: 600; letter-spacing: var(--tr-head); text-decoration: none; }
     .mast__nav { display: flex; gap: 2px; margin-left: auto; font-size: var(--f-n1); min-width: 0; }
-    .mast__nav a {
+    .mast__nav a, .mast__src {
       color: var(--text-dim); text-decoration: none; white-space: nowrap;
       padding: 6px 10px; border-radius: 999px;
       transition: color 160ms ease, background 160ms ease;
     }
-    .mast__nav a:hover { color: var(--text); background: color-mix(in oklab, var(--text) 8%, transparent); }
+    /* Source sits outside the nav because it leaves the site, but it reads as
+       one more link in the same row: same size, same spacing. */
+    .mast__src { font-size: var(--f-n1); margin-left: calc(2px - var(--s-s)); }
+    .mast__nav a:hover, .mast__src:hover { color: var(--text); background: color-mix(in oklab, var(--text) 8%, transparent); }
     /* Where you are. Without it, four identical links and no way to tell which
        of them you already pressed. */
     /* Accent ink on an accent tint measured 3.81:1 at this size — the tint is
@@ -130,25 +133,48 @@ const updatedLong = updated && new Intl.DateTimeFormat('en-GB', { day: 'numeric'
     /* A narrow phone is a real device, not an edge case. Tighten the gutter and
        let the masthead give up its padding before the document widens.
 
-       The nav scrolls sideways rather than wrapping onto a second line: a
-       masthead that is one row tall on one page and two on the next moves every
-       heading under it, and it is sticky, so it eats the screen. */
+       Six links do not fit beside the wordmark at 360px, and a nav that
+       scrolls sideways hid the last two with nothing to say they were there.
+       So the phone masthead is two rows on every page: wordmark and Source,
+       then the five sections spread across the full width. It sticks at a
+       negative top, so the first row scrolls away and only the 44px menu row
+       stays pinned — no more of the screen than the single row used to take. */
     @media (max-width: 560px) {
-      .mast { flex-wrap: nowrap; gap: var(--s-2xs); padding-block: var(--s-3xs); }
-      .mast__nav {
-        gap: 0; overflow-x: auto; overscroll-behavior-x: contain;
-        scrollbar-width: none; -webkit-overflow-scrolling: touch;
+      .mast {
+        --mast-r1: 44px;
+        display: grid; grid-template-columns: 1fr auto;
+        grid-template-rows: var(--mast-r1) 44px;
+        grid-template-areas: "id src" "nav nav";
+        gap: 0; padding-block: 0;
+        top: calc(-1 * var(--mast-r1));
       }
-      .mast__nav::-webkit-scrollbar { display: none; }
+      .mast__id { grid-area: id; align-self: center; }
+      .mast__src { grid-area: src; align-self: center; padding: 13px 9px; }
+      /* The row reaches past the gutter by one link's padding, so the first
+         and last labels line up with the wordmark rather than their pills. */
+      .mast__nav { grid-area: nav; margin: 0 -8px; gap: 0; justify-content: space-between; }
       /* 44px of target. The label stays the size it was. */
-      .mast__nav a { padding: 13px 9px; }
+      .mast__nav a { padding: 13px 8px; }
+      .mast__src { margin-left: 0; }
+      /* A 44px pill around a four-letter word reads as a blob. The tap target
+         stays 44px; the tint is drawn behind the label at its own height. */
+      .mast__nav a, .mast__src { position: relative; }
+      .mast__nav a, .mast__nav a:hover, .mast__nav a[aria-current="page"],
+      .mast__src, .mast__src:hover { background: none; }
+      .mast__nav a::before, .mast__src::before {
+        content: ""; position: absolute; inset: 8px 0; z-index: -1;
+        border-radius: 999px; background: transparent;
+        transition: background 160ms ease;
+      }
+      .mast__nav a:hover::before, .mast__src:hover::before { background: color-mix(in oklab, var(--text) 8%, transparent); }
+      .mast__nav a[aria-current="page"]::before { background: color-mix(in oklab, var(--accent) 16%, transparent); }
     }
 
     @media (max-width: 400px) {
       :root { --gutter: var(--s-s); }
       .mast { padding-inline: var(--s-s); }
-      .mast__nav a { padding: 13px 7px; }
-      .mast__id { font-size: var(--f-0); }
+      .mast__nav { margin: 0 -5px; }
+      .mast__nav a { padding: 13px 5px; }
     }
 
     .totop {

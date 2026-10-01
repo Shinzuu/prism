@@ -35,8 +35,12 @@
      the guess was one fixed value, and it put section headings under the bar. */
   const mast = document.querySelector('.mast');
   if (mast) {
+    /* On a phone the masthead sticks at a negative top, so its first row
+       scrolls away and only the menu stays pinned. What covers the page is
+       the height plus that offset, not the height. */
     const measure = () => {
-      document.documentElement.style.setProperty('--mast-h', `${Math.round(mast.offsetHeight)}px`);
+      const top = Number.parseFloat(getComputedStyle(mast).top) || 0;
+      document.documentElement.style.setProperty('--mast-h', `${Math.round(mast.offsetHeight + Math.min(top, 0))}px`);
     };
     measure();
     if (window.ResizeObserver) new ResizeObserver(measure).observe(mast);
