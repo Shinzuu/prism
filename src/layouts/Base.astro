@@ -1,6 +1,7 @@
 ---
 import '../styles/tokens.css';
 import '../styles/scale.css';
+import { lastUpdated } from '../lib/changelog.js';
 const { title, wide = false, description = 'Seventy React components that read their palette out of an image.' } = Astro.props;
 
 /* Which masthead link is the page you are on. The library is the only one that
@@ -14,8 +15,12 @@ const NAV = [
   { href: '/', label: 'Index', owns: (p) => p === '/' || p.startsWith('/components') },
   { href: '/patterns', label: 'Patterns', owns: (p) => p.startsWith('/patterns') },
   { href: '/logs', label: 'Logs', owns: (p) => p.startsWith('/logs') },
-  { href: '/about', label: 'Method', owns: (p) => p.startsWith('/about') }
+  { href: '/about', label: 'Method', owns: (p) => p.startsWith('/about') },
+  { href: '/changelog', label: 'Changelog', owns: (p) => p.startsWith('/changelog') }
 ];
+const updated = lastUpdated();
+const updatedLong = updated && new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+  .format(new Date(`${updated}T00:00:00Z`));
 ---
 <!doctype html>
 <html lang="en">
@@ -56,6 +61,7 @@ const NAV = [
 
   <footer class="colo">
     <p>Two components a week for ninety days. Each one keeps the prompt that produced it.</p>
+    {updated && <p class="colo__upd">Last updated <a href="/changelog"><time datetime={updated}>{updatedLong}</time></a></p>}
     <p class="colo__set">Set in IBM Plex. Palette derived in OKLab, lightness held on a fixed ladder.</p>
   </footer>
 
@@ -165,6 +171,7 @@ const NAV = [
       border-top: var(--rule); color: var(--text-dim); font-size: var(--f-n1);
     }
     .colo p { max-width: var(--measure); }
+    .colo__upd { margin-top: var(--s-3xs); }
     .colo__set { margin-top: var(--s-3xs); font-family: var(--mono); font-size: var(--f-n2); }
 
     @media (prefers-reduced-motion: reduce) {

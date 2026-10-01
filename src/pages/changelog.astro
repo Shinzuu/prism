@@ -1,0 +1,60 @@
+---
+import Base from '../layouts/Base.astro';
+import { changelog } from '../lib/changelog.js';
+
+const days = changelog();
+const fmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+const long = (d: string) => fmt.format(new Date(`${d}T00:00:00Z`));
+const REPO = 'https://github.com/Shinzuu/prism/commit/';
+---
+<Base title="Changelog" description="Every change to the site, by date, read from its git history.">
+  <article class="cl">
+    <header class="cl__top">
+      <h1>Changelog</h1>
+      <p class="cl__lead">
+        Every change to the site, newest first. This page is built from the repository's
+        history, so it cannot fall behind what is deployed. Changes to the test harness
+        and tooling are left out.
+      </p>
+    </header>
+
+    {days.map((d) => (
+      <section class="cl__day" aria-labelledby={`d-${d.date}`}>
+        <h2 id={`d-${d.date}`}><time datetime={d.date}>{long(d.date)}</time></h2>
+        <ul>
+          {d.entries.map((e) => (
+            <li>
+              <span class={`cl__kind cl__kind--${e.kind.toLowerCase()}`}>{e.kind}</span>
+              <span class="cl__text">{e.text}</span>
+              <a class="cl__hash" href={REPO + e.hash} aria-label={`Commit ${e.hash}`}>{e.hash}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </article>
+</Base>
+
+<style>
+  .cl { max-width: var(--measure); }
+  .cl h1 { font-size: var(--f-4); }
+  .cl__lead { margin-top: var(--s-s); font-family: var(--serif); font-size: var(--f-1); line-height: var(--lh-lead); }
+
+  .cl__day { margin-top: var(--s-xl); }
+  .cl__day h2 { font-size: var(--f-1); padding-bottom: var(--s-2xs); border-bottom: var(--rule); }
+  .cl__day ul { list-style: none; margin: 0; padding: 0; }
+  .cl__day li {
+    display: grid; grid-template-columns: 4.5rem 1fr auto; gap: var(--s-s); align-items: baseline;
+    padding: var(--s-2xs) 0; border-bottom: var(--rule);
+  }
+  .cl__kind { font-size: var(--f-n2); color: var(--text-dim); }
+  .cl__kind--added { color: var(--accent); }
+  .cl__text { font-size: var(--f-0); }
+  .cl__hash { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); }
+  .cl__hash:hover { color: var(--accent); }
+
+  @media (max-width: 560px) {
+    .cl__day li { grid-template-columns: 1fr auto; }
+    .cl__text { grid-column: 1 / -1; grid-row: 2; }
+  }
+</style>
