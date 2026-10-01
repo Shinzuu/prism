@@ -29,7 +29,7 @@ const LESSONS = [
       `These are not polish. They are the difference between a component that feels built and one that feels generated, and none of them are discovered by asking for polish. They have to be stated as requirements, with the reason attached, because the reason is what survives a later refactor.`,
     ],
     evidence: [
-      ['spotlight-card', 'An effect that depends on a pointer has no appearance without one — it must survive a screenshot.'],
+      ['freshness-card', 'Time passing is invisible in a still frame. A figure with no age claims to be current forever, and a countdown timer lies after a hidden tab.'],
       ['command-palette', 'Focus returning to the trigger closes the loop that otherwise strands a keyboard user after Escape.'],
       ['segment-nav', 'No animation on first placement; never volunteered, and immediately visible once wrong.'],
       ['slide-confirm', 'The transition has to be scoped to the settling state or the grip lags the pointer.'],
@@ -43,7 +43,7 @@ const LESSONS = [
       `The same applies across devices and input methods rather than only across events. A pen reports pressure and a mouse reports a constant, an IME fires composition events the keyboard path never sees, and a deliberate gesture has no honest keyboard equivalent that is a single keypress. Listing the paths is more reliable than describing the widget.`,
     ],
     evidence: [
-      ['code-input', 'iOS delivers a whole SMS code into one input; undiscoverable on a desktop, three lines once stated.'],
+      ['mention-field', 'Typing @ is one path. Pasting a copied @name, backspacing into a mention and arrowing through one are three more, and each broke separately.'],
       ['ime-search-field', 'Correct in English, five wasted requests per word in Chinese — and the naive composition guard still leaks one in Safari.'],
       ['pressure-signature-pad', 'e.pressure always returns a number, so a mouse silently flattens the effect with no error to notice.'],
       ['slide-confirm', 'Asked for keyboard support, a model reaches for Enter — the exact press the component exists to prevent.'],

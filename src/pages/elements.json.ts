@@ -11,7 +11,7 @@ export const GET: APIRoute = () => {
     name: 'prism',
     description: 'React + TypeScript + Tailwind elements, addressable by id.',
     stack: 'react+typescript+tailwind',
-    usage: 'Reference an element by its id, for example: use the "spotlight-card" element. Fetch /elements/<id>.json for its source.',
+    usage: 'Reference an element by its id, for example: use the "slide-confirm" element. Fetch /elements/<id>.json for its source.',
     types: COMPONENT_TYPES,
     count: all.length,
     elements: all.map((c) => ({

@@ -1,0 +1,12 @@
+/* A figure that stops being current fades rather than snapping, so the change
+   reads as the card noticing, not as a glitch. */
+.fc-value { transition: color 600ms ease; }
+
+/* The only motion while a refresh is in flight. Under reduced motion the
+   button's own "Refreshing…" text carries the state alone. */
+.fc-spin { animation: fc-spin 900ms linear infinite; transform-origin: 50% 50%; }
+@keyframes fc-spin { to { rotate: 1turn; } }
+@media (prefers-reduced-motion: reduce) {
+  .fc-spin { animation: none; }
+  .fc-value { transition: none; }
+}

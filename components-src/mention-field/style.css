@@ -1,0 +1,46 @@
+/* The textarea and its mirror must lay text out identically, glyph for glyph,
+   or the highlights drift off the names. Every metric that affects wrapping is
+   declared once here for both, and neither has a border of its own — the
+   border is on the box around them. scrollbar-gutter keeps the two the same
+   width when the text grows a scrollbar. */
+.mf-text {
+  box-sizing: border-box;
+  margin: 0; border: 0;
+  padding: 10px 13px;
+  font: 400 .92rem/1.55 var(--sans);
+  letter-spacing: normal;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  tab-size: 4;
+  scrollbar-gutter: stable;
+}
+
+/* The textarea's own glyphs are hidden; the mirror's show through. The caret
+   and the selection still belong to the textarea. */
+.mf-input { color: transparent; caret-color: var(--text); overflow-y: auto; min-height: 5.6em; }
+.mf-input::placeholder { color: var(--text-dim); }
+.mf-input::selection { background: color-mix(in oklab, var(--accent) 30%, transparent); color: transparent; }
+
+/* No padding and no border on the mark: either would widen the name and push
+   every following character out of line with the textarea. The tint reaches
+   past the glyphs with a shadow instead, which takes no space. */
+.mf-mark {
+  color: inherit;
+  background: color-mix(in oklab, var(--accent) 20%, transparent);
+  border-radius: 4px;
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent) 20%, transparent);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* Forced colours drops backgrounds, so the mirror would show nothing a reader
+   could use. Show the real text instead. */
+@media (forced-colors: active) {
+  .mf-mirror { display: none; }
+  .mf-input { color: CanvasText; }
+}
+
+/* The textarea fills a rounded box, so its own square focus ring would sit
+   outside the box's corners. The ring goes on the box instead. */
+.mf-input:focus-visible { outline: none; }
+.mf-box:has(.mf-input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }

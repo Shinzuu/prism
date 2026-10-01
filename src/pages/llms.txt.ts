@@ -12,7 +12,7 @@ export const GET: APIRoute = () => {
     '',
     '> React + TypeScript + Tailwind elements, addressable by id.',
     '',
-    'To use one, reference it by id — "use the spotlight-card element" — then fetch',
+    'To use one, reference it by id — "use the slide-confirm element" — then fetch',
     `its record at ${SITE}/elements/<id>.json for the source.`,
     '',
     `Index: ${SITE}/elements.json`,

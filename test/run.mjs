@@ -74,56 +74,36 @@ if (fsInfo) {
   check('filmstrip: last panel reachable', lastVisible);
 }
 
-// ---------- spotlight card ----------
-await page.goto(`${BASE}/preview/spotlight-card`, { waitUntil: 'networkidle' });
+// ---------- freshness card ----------
+await page.goto(`${BASE}/preview/freshness-card`, { waitUntil: 'networkidle' });
 await page.waitForTimeout(300);
-const card = page.locator('.sc-card').first();
-check('spotlight: card visible', await card.isVisible());
-const box = await card.boundingBox();
-await page.mouse.move(box.x + box.width * 0.3, box.y + box.height * 0.3);
-await page.waitForTimeout(250);
-const sc = await page.evaluate(() => {
-  const c = document.querySelector('.sc-card');
-  return { lit: c.style.getPropertyValue('--lit'), mx: c.style.getPropertyValue('--mx'), tf: c.style.transform };
-});
-check('spotlight: lights on pointer', sc.lit === '1', JSON.stringify(sc));
-check('spotlight: tilts on pointer', /rotate/.test(sc.tf), sc.tf || '(none)');
-await page.mouse.move(5, 5);
-await page.waitForTimeout(250);
-check('spotlight: rests on leave', (await page.evaluate(() => getComputedStyle(document.querySelector('.sc-card')).getPropertyValue('--lit').trim())) === '0');
+const fcCard = page.locator('article[data-freshness]');
+check('freshness: starts fresh with an age', (await fcCard.getAttribute('data-freshness')) === 'fresh' && /ago|just now/.test(await fcCard.textContent()));
+const fcBtn = page.getByRole('button', { name: /Refresh/ });
+const fcBefore = await page.locator('.fc-value').textContent();
+await fcBtn.click();
+await page.waitForTimeout(150);
+check('freshness: busy while refreshing, value kept', (await fcCard.getAttribute('aria-busy')) === 'true' && (await page.locator('.fc-value').textContent()) === fcBefore);
+await page.waitForTimeout(1100);
+check('freshness: refresh lands', /just now/.test(await fcCard.textContent()) && (await fcCard.getAttribute('aria-busy')) === 'false');
 
-// ---------- code input ----------
-await page.goto(`${BASE}/preview/code-input`, { waitUntil: 'networkidle' });
+// ---------- mention field ----------
+await page.goto(`${BASE}/preview/mention-field`, { waitUntil: 'networkidle' });
 await page.waitForTimeout(300);
-await page.locator('input[inputmode=numeric]').first().focus();
-await page.keyboard.type('123');
-await page.waitForTimeout(150);
-const typed = await page.evaluate(() => [...document.querySelectorAll('input[inputmode=numeric]')].map(s => s.value).join(''));
-check('code: typing advances slots', typed === '123', `got "${typed}"`);
+const mfTa = page.locator('textarea[role=combobox]');
+await mfTa.click();
+await page.keyboard.press('Control+End');
+await page.keyboard.type(' @an');
+check('mention: @ opens a filtered list', (await page.locator('[role=option]').count()) === 2 && (await mfTa.getAttribute('aria-expanded')) === 'true');
+await page.keyboard.press('Enter');
+check('mention: enter inserts the name', (await mfTa.inputValue()).endsWith('@Ana Lima '));
 await page.keyboard.press('Backspace');
 await page.keyboard.press('Backspace');
-await page.waitForTimeout(150);
-const afterBk = await page.evaluate(() => [...document.querySelectorAll('input[inputmode=numeric]')].map(s => s.value).join(''));
-check('code: backspace walks back', afterBk.length < 3, `got "${afterBk}"`);
-// autofill: whole code into one slot
-await page.evaluate(() => {
-  const s = document.querySelectorAll('input[inputmode=numeric]');
-  s.forEach(x => x.value = '');
-  /* React tracks the last value it wrote, so assigning .value directly is
-     swallowed and onChange never fires — the field would just hold all six
-     digits in slot one while the test read them back and looked green. Going
-     through the native setter is what actually exercises the component. */
-  const set = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-  set.call(s[0], '482913');
-  s[0].dispatchEvent(new Event('input', { bubbles: true }));
-});
-await page.waitForTimeout(250);
-const filled = await page.evaluate(() => [...document.querySelectorAll('input[inputmode=numeric]')].map(s => s.value).join(''));
-check('code: autofill distributes', filled === '482913', `got "${filled}"`);
-// The React version states the outcome in the live region rather than on a
-// data attribute, which is the part a user actually receives.
-const state = await page.evaluate(() => document.querySelector('[role=status]')?.textContent ?? '');
-check('code: reports success state', /accepted/i.test(state), `status="${state}"`);
+check('mention: backspace removes it whole', (await mfTa.inputValue()).endsWith('Friday? '));
+// A real key press, not a synthetic select event: the synthetic one passed while ArrowLeft was trapped.
+await page.evaluate(() => { const t = document.querySelector('textarea'); t.setSelectionRange(16, 16); });
+await page.keyboard.press('ArrowLeft');
+check('mention: ArrowLeft crosses a mention whole', (await page.evaluate(() => document.querySelector('textarea').selectionStart)) === 7);
 
 // ---------- segmented nav ----------
 await page.goto(`${BASE}/preview/segment-nav`, { waitUntil: 'networkidle' });
