@@ -3,8 +3,9 @@ import { useEffect, useRef, useState } from 'react';
 /* Three levels deep on purpose. With a one-level tree the stack never exceeds
    two panes, so nothing ever collapses and the spines — the reason this
    pattern exists — can never be reached. */
-type Node = Record<string, string[] | null>;
-const TREE: Record<string, Node> = {
+export type PaneNode = Record<string, string[] | null>;
+export type PaneTree = Record<string, PaneNode>;
+const DEFAULT_TREE: PaneTree = {
   Runtime: { Isolates: ['Lifetime', 'Memory', 'Eviction'], 'Cold starts': ['Warm pool', 'P99'],
              'CPU limits': ['Budget', 'Overrun'], 'Env bindings': null },
   Storage: { KV: ['Reads', 'Writes', 'TTL'], 'Durable objects': ['Placement', 'Alarms'],
@@ -12,11 +13,44 @@ const TREE: Record<string, Node> = {
   Routing: { Wildcards: ['Ordering', 'Escapes'], Precedence: ['Specificity'], Redirects: null },
   Limits: { 'Request size': ['Body', 'Headers'], Subrequests: ['Depth', 'Fan-out'], Duration: null },
 };
-const ROOT = Object.keys(TREE);
 
-export default function SlidingPaneStack() {
-  const [path, setPath] = useState<string[]>([]);
+export interface SlidingPaneStackProps {
+  /** Three-level tree: sections, their pages (null for a leaf), and each page's topics. */
+  tree?: PaneTree;
+  /** Heading of the first pane, which lists the top-level sections. */
+  rootTitle?: string;
+  /** Accessible name of the nav landmark. */
+  ariaLabel?: string;
+  /** How many of the newest panes stay open before older ones collapse to spines. */
+  openPanes?: number;
+  /** Shown in a pane that has nothing under it. */
+  emptyText?: string;
+  /** Explanatory note under the rail. */
+  description?: string;
+  /** Fired when the open path changes, with the keys from the root down. */
+  onNavigate?: (path: string[]) => void;
+  /** Extra classes appended to the root element. */
+  className?: string;
+}
+
+export default function SlidingPaneStack({
+  tree: TREE = DEFAULT_TREE,
+  rootTitle = 'Sections',
+  ariaLabel = 'Documentation',
+  openPanes = 2,
+  emptyText = 'No further sections.',
+  description = 'Opening a link pushes a pane instead of replacing the view, so the path you took stays on screen. Older panes collapse to spines — click one to come back.',
+  onNavigate,
+  className = '',
+}: SlidingPaneStackProps) {
+  const [path, setPathState] = useState<string[]>([]);
   const railRef = useRef<HTMLDivElement>(null);
+  const ROOT = Object.keys(TREE);
+
+  const setPath = (next: string[]) => {
+    setPathState(next);
+    onNavigate?.(next);
+  };
 
   // Wait a frame: scrolling in the same tick as the insertion reads the old
   // scrollWidth and lands short.
@@ -30,11 +64,11 @@ export default function SlidingPaneStack() {
   }, [path]);
 
   const panes: { title: string; items: string[]; openable: boolean }[] = [
-    { title: 'Sections', items: ROOT, openable: true },
+    { title: rootTitle, items: ROOT, openable: true },
   ];
-  let node: Node | string[] | null = null;
+  let node: PaneNode | string[] | null = null;
   path.forEach((key, i) => {
-    node = i === 0 ? TREE[key]! : (node && !Array.isArray(node) ? node[key] ?? null : null);
+    node = i === 0 ? TREE[key] ?? null : (node && !Array.isArray(node) ? node[key] ?? null : null);
     const items = Array.isArray(node) ? node : node ? Object.keys(node) : [];
     panes.push({ title: key, items, openable: !Array.isArray(node) && !!node });
   });
@@ -42,14 +76,14 @@ export default function SlidingPaneStack() {
   const total = panes.length;
 
   return (
-    <nav aria-label="Documentation" className="grid gap-2">
+    <nav aria-label={ariaLabel} className={`grid gap-2 ${className}`}>
       <div
         ref={railRef}
         className="sps-rail flex h-[210px] items-stretch overflow-x-auto rounded-[10px] border border-border bg-bg"
       >
         {panes.map((pane, level) => {
           // Keep the last two open; everything older becomes a spine.
-          const collapsed = level < total - 2;
+          const collapsed = level < total - openPanes;
           return (
             <section
               key={`${pane.title}-${level}`}
@@ -61,7 +95,7 @@ export default function SlidingPaneStack() {
                 if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setPath(path.slice(0, level)); }
               } : undefined}
               className={`sps-pane relative grid shrink-0 snap-end border-e border-border last:border-e-0 last:grow ${
-                collapsed ? 'w-[2.1rem] cursor-pointer' : 'w-[15rem]'
+                collapsed ? 'w-[2.1rem] cursor-pointer hover:bg-raised active:opacity-80 focus-visible:outline-2 focus-visible:outline-accent focus-visible:-outline-offset-2' : 'w-[15rem]'
               }`}
             >
               {/* A collapsed pane stays a labelled, focusable control. Hidden,
@@ -80,7 +114,7 @@ export default function SlidingPaneStack() {
                             type="button"
                             aria-expanded={path[level] === item}
                             onClick={() => setPath([...path.slice(0, level), item])}
-                            className={`flex w-full cursor-pointer justify-between gap-2 rounded-md border-0 bg-transparent px-2 py-1.5 text-start font-sans text-[.76rem] after:text-text-dim after:content-['›'] hover:bg-raised focus-visible:outline-2 focus-visible:outline-accent focus-visible:-outline-offset-1 ${
+                            className={`flex w-full cursor-pointer justify-between gap-2 rounded-md border-0 bg-transparent px-2 py-1.5 text-start font-sans text-[.76rem] after:text-text-dim after:content-['›'] hover:bg-raised active:opacity-80 focus-visible:outline-2 focus-visible:outline-accent focus-visible:-outline-offset-1 ${
                               path[level] === item ? 'bg-raised text-accent' : 'text-text'
                             }`}
                           >
@@ -93,17 +127,14 @@ export default function SlidingPaneStack() {
                     )}
                   </ul>
                 ) : (
-                  <p className="m-0 px-2 py-1.5 text-[.74rem] text-text-dim">No further sections.</p>
+                  <p className="m-0 px-2 py-1.5 text-[.74rem] text-text-dim">{emptyText}</p>
                 )}
               </div>
             </section>
           );
         })}
       </div>
-      <p className="m-0 text-[.72rem] leading-relaxed text-text-dim">
-        Opening a link pushes a pane instead of replacing the view, so the path you took stays on
-        screen. Older panes collapse to spines — click one to come back.
-      </p>
+      <p className="m-0 text-[.72rem] leading-relaxed text-text-dim">{description}</p>
     </nav>
   );
 }

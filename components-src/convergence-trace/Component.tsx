@@ -1,20 +1,67 @@
 import { useEffect, useRef, useState } from 'react';
 
 const W = 300, H = 96, PAD = 6;
-const TOP = 1, FLOOR = 1e-7, TARGET = 1e-6, MAX = 44;
+const TOP = 1, FLOOR = 1e-7;
+const DEFAULT_INTRO = 'The slope gives an estimate a spinner cannot. A flat trace means stalled, not working.';
+const DEFAULT_CONVERGED = 'Converged. The dashed line was the extrapolation from the log slope.';
+const DEFAULT_EXHAUSTED = 'Ran out of iterations — the flat stretch is visible, not hidden.';
 
 /* Map a residual to a y pixel through its LOG. Linear would put every value
    after the second iteration inside one pixel of the bottom edge — blank
    precisely during the long tail anyone is waiting through. */
 const y = (r: number) => PAD + (Math.log10(Math.max(r, FLOOR)) / Math.log10(FLOOR / TOP)) * (H - PAD * 2);
-const x = (n: number) => PAD + (n / (MAX - 1)) * (W - PAD * 2);
 
-export default function ConvergenceTrace() {
+export type ConvergenceResult = { converged: boolean; iterations: number; residual: number };
+
+export interface ConvergenceTraceProps {
+  /** Heading above the plot. */
+  title?: string;
+  /** Dimmed qualifier after the heading. */
+  subtitle?: string;
+  /** Residual at which the run counts as converged; keep it between 1e-7 and 1. */
+  target?: number;
+  /** Iterations before the run gives up; also sets the width of the x axis. */
+  maxIterations?: number;
+  /** Delay between iterations, in milliseconds. */
+  stepMs?: number;
+  /** Pause before the demo run restarts, in milliseconds. */
+  restartDelayMs?: number;
+  /** Caption shown while the first run is in progress. */
+  introNote?: string;
+  /** Caption shown when a run reaches the target. */
+  convergedNote?: string;
+  /** Caption shown when a run hits the iteration limit. */
+  exhaustedNote?: string;
+  /** Called each time a run ends, converged or not. */
+  onFinish?: (result: ConvergenceResult) => void;
+  /** Extra classes for the root element. */
+  className?: string;
+}
+
+export default function ConvergenceTrace({
+  title = 'Solving',
+  subtitle = 'residual',
+  target = 1e-6,
+  maxIterations = 44,
+  stepMs = 150,
+  restartDelayMs = 2200,
+  introNote = DEFAULT_INTRO,
+  convergedNote = DEFAULT_CONVERGED,
+  exhaustedNote = DEFAULT_EXHAUSTED,
+  onFinish,
+  className = '',
+}: ConvergenceTraceProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [pts, setPts] = useState<number[]>([]);
   const [state, setState] = useState<'running' | 'stalled' | 'done'>('running');
   const [eta, setEta] = useState('estimating');
-  const [note, setNote] = useState('The slope gives an estimate a spinner cannot. A flat trace means stalled, not working.');
+  const [note, setNote] = useState(introNote);
+  // A ref, so a parent passing an inline callback does not restart the run.
+  const finishRef = useRef(onFinish);
+  useEffect(() => { finishRef.current = onFinish; });
+
+  const MAX = maxIterations;
+  const x = (n: number) => PAD + (n / (MAX - 1)) * (W - PAD * 2);
 
   useEffect(() => {
     const el = rootRef.current;
@@ -44,36 +91,35 @@ export default function ConvergenceTrace() {
         xs.forEach((xv, k) => { num += (xv - mx) * (ys[k]! - my); den += (xv - mx) ** 2; });
         const slope = den ? num / den : 0;
         const stalled = slope > -0.02;      // decades per iteration
-        const left = stalled ? Infinity : (Math.log10(TARGET) - Math.log10(res)) / slope;
-        setState(res <= TARGET ? 'done' : stalled ? 'stalled' : 'running');
-        setEta(res <= TARGET ? 'converged' : stalled ? 'stalled — slope flat' : `~${Math.max(1, Math.ceil(left))} iterations left`);
+        const left = stalled ? Infinity : (Math.log10(target) - Math.log10(res)) / slope;
+        setState(res <= target ? 'done' : stalled ? 'stalled' : 'running');
+        setEta(res <= target ? 'converged' : stalled ? 'stalled — slope flat' : `~${Math.max(1, Math.ceil(left))} iterations left`);
       }
 
-      if (res <= TARGET || list.length >= MAX) {
-        setNote(res <= TARGET
-          ? 'Converged. The dashed line was the extrapolation from the log slope.'
-          : 'Ran out of iterations — the flat stretch is visible, not hidden.');
-        timer = setTimeout(() => { res = 0.8; i = 0; list = []; setPts([]); setNote(''); step(); }, 2200);
+      if (res <= target || list.length >= maxIterations) {
+        setNote(res <= target ? convergedNote : exhaustedNote);
+        finishRef.current?.({ converged: res <= target, iterations: list.length, residual: res });
+        timer = setTimeout(() => { res = 0.8; i = 0; list = []; setPts([]); setNote(''); step(); }, restartDelayMs);
         return;
       }
       // setTimeout, not rAF: iterations are events, not frames.
-      timer = setTimeout(step, 150);
+      timer = setTimeout(step, stepMs);
     };
 
     const io = new IntersectionObserver((es) => {
-      for (const e of es) { clearTimeout(timer); if (e.isIntersecting) timer = setTimeout(step, 150); }
+      for (const e of es) { clearTimeout(timer); if (e.isIntersecting) timer = setTimeout(step, stepMs); }
     }, { rootMargin: '80px' });
     io.observe(el);
     return () => { clearTimeout(timer); io.disconnect(); };
-  }, []);
+  }, [target, maxIterations, stepMs, restartDelayMs, convergedNote, exhaustedNote]);
 
   const last = pts[pts.length - 1];
   const d = pts.map((r, n) => `${n ? 'L' : 'M'}${x(n)} ${y(r)}`).join(' ');
 
   return (
-    <div ref={rootRef} className="grid gap-1.5">
+    <div ref={rootRef} className={`grid gap-1.5 ${className}`}>
       <div className="flex items-baseline justify-between gap-[10px]">
-        <p className="m-0 text-[.82rem] font-medium">Solving <span className="font-normal text-text-dim">— residual</span></p>
+        <p className="m-0 text-[.82rem] font-medium">{title} <span className="font-normal text-text-dim">— {subtitle}</span></p>
         <p className="m-0 font-mono text-[.7rem] tabular-nums text-text-dim">
           {last ? last.toExponential(1) : '—'}<span className="mx-1.5 opacity-50">·</span>{eta}
         </p>
@@ -95,7 +141,7 @@ export default function ConvergenceTrace() {
           </g>
           {last && state !== 'done' && (
             <path className="ct-fit" fill="none"
-              d={`M${x(pts.length - 1)} ${y(last)} L${x(Math.min(MAX - 1, pts.length + 8))} ${y(state === 'stalled' ? last : TARGET)}`} />
+              d={`M${x(pts.length - 1)} ${y(last)} L${x(Math.min(MAX - 1, pts.length + 8))} ${y(state === 'stalled' ? last : target)}`} />
           )}
           <path className={`ct-line ${state === 'stalled' ? 'ct-dim' : ''}`} fill="none" d={d} />
           {last && <circle className={`ct-dot ${state === 'stalled' ? 'ct-dim-fill' : ''}`} r="2.6" cx={x(pts.length - 1)} cy={y(last)} />}

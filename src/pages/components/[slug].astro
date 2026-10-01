@@ -14,6 +14,7 @@ const { c, prev, next } = Astro.props;
 const repo = `https://github.com/Shinzuu/prism/blob/main/${c.repoPath}`;
 const site = 'https://prism.shinzuu-dev.workers.dev';
 const files = [
+  ...(c.usage ? [{ label: 'Usage', lang: 'usage', body: c.usage }] : []),
   /* React components publish their .tsx. style.css survives only where Tailwind
      genuinely cannot reach — @property registration, keyframes, scroll
      timelines, @font-face — so it is shown only when it exists. */
@@ -44,7 +45,7 @@ const files = [
           <button class="link" type="button" data-use-copy={`Use the "${c.slug}" element from ${site}/components/${c.slug}`}>copy reference</button>
         </p>
         <p class="use__hint">Ask for it by ID: <em>use the <code>{c.slug}</code> element</em>. The
-          full source and props are at <code>/elements/{c.slug}.json</code>.</p>
+          full source, props and a usage example are at <code>/elements/{c.slug}.json</code>.</p>
       </div>
     </header>
 
@@ -87,6 +88,27 @@ const files = [
       ))}
       <p class="src__note">Read-only. Copy it into a React + Tailwind project as-is.</p>
     </section>
+
+    {c.props.length > 0 && (
+      <section class="props" aria-labelledby="props-h">
+        <h2 id="props-h">Props</h2>
+        <p class="props__note">Every prop is optional and defaults to the demo above, so <code>&lt;{c.tsx.match(/export default function (\w+)/)?.[1]} /&gt;</code> renders exactly what you see.</p>
+        <div class="props__wrap">
+          <table class="props__table">
+            <thead><tr><th scope="col">Prop</th><th scope="col">Type</th><th scope="col">What it does</th></tr></thead>
+            <tbody>
+              {c.props.map((p) => (
+                <tr>
+                  <td><code>{p.name}{p.optional ? '?' : ''}</code></td>
+                  <td><code class="props__type">{p.type}</code></td>
+                  <td>{p.doc}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )}
 
     <section class="say">
       <h2>The prompt</h2>
@@ -217,6 +239,9 @@ const files = [
     background: transparent; color: var(--text);
     font-family: var(--mono); font-size: var(--f-n1); line-height: 1.7; tab-size: 2;
   }
+  /* display: block outranks the hidden attribute, which left every pane
+     showing at once beneath the tabs. */
+  .src__text[hidden] { display: none; }
   .src__text:focus { outline: none; }
   .src__note { padding-top: var(--s-3xs); border-top: var(--rule); font-size: var(--f-n2); color: var(--text-dim); }
 
@@ -231,6 +256,28 @@ const files = [
     }
   }
 
+  .props { margin-top: var(--s-l); }
+  .props h2 { margin-bottom: var(--s-2xs); }
+  .props__note { max-width: var(--measure); color: var(--text-dim); font-size: var(--f-n1); }
+  .props__note code { font-family: var(--mono); color: var(--text); }
+  /* A union type can run long; the table scrolls inside its own box rather
+     than widening the page. */
+  .props__wrap { margin-top: var(--s-s); overflow-x: auto; border-top: var(--rule); }
+  .props__table { width: 100%; border-collapse: collapse; font-size: var(--f-n1); }
+  .props__table th { text-align: left; font-weight: 500; padding: var(--s-2xs) var(--s-s) var(--s-2xs) 0; border-bottom: var(--rule); }
+  .props__table td { vertical-align: top; padding: var(--s-2xs) var(--s-s) var(--s-2xs) 0; border-bottom: var(--rule); }
+  .props__table td:first-child code { font-family: var(--mono); color: var(--accent); white-space: nowrap; }
+  .props__type { font-family: var(--mono); font-size: var(--f-n2); color: var(--text-dim); overflow-wrap: anywhere; }
+  .props__table td:nth-child(2) { min-width: 12ch; max-width: 34ch; }
+  /* Three columns cannot share a phone. Each prop becomes a block: name and
+     type on one line, what it does beneath. */
+  @media (max-width: 560px) {
+    .props__table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    .props__table tr { display: block; padding: var(--s-2xs) 0; border-bottom: var(--rule); }
+    .props__table td { display: inline; padding: 0; border: 0; }
+    .props__table td:nth-child(2) { margin-left: var(--s-2xs); }
+    .props__table td:nth-child(3) { display: block; margin-top: var(--s-3xs); }
+  }
   .say { margin-top: var(--s-l); }
   .say h2 { margin-bottom: var(--s-2xs); }
   .say__p { margin-top: var(--s-2xs); color: var(--text-dim); }

@@ -1,9 +1,15 @@
 import { useRef, useState } from 'react';
 
-/* Arrow keys move to the tile the eye expects, computed from GEOMETRY rather
-   than DOM order. With mixed tile sizes those two orders disagree constantly,
-   which is why DOM-order navigation feels wrong in any non-uniform grid. */
-const TILES = [
+export type Tile = {
+  name: string;
+  code: string;
+  /** Columns the tile spans. */
+  col?: number;
+  /** Rows the tile spans. */
+  row?: number;
+};
+
+const DEFAULT_TILES: Tile[] = [
   { name: 'Tomcat', code: 'F-14', col: 2 },
   { name: 'Tornado', code: 'GR4' },
   { name: 'Flogger', code: 'MiG-23' },
@@ -14,7 +20,34 @@ const TILES = [
   { name: 'Mirage', code: 'G8' },
 ];
 
-export default function SpatialGridNav() {
+/* Arrow keys move to the tile the eye expects, computed from GEOMETRY rather
+   than DOM order. With mixed tile sizes those two orders disagree constantly,
+   which is why DOM-order navigation feels wrong in any non-uniform grid. */
+export interface SpatialGridNavProps {
+  /** Tiles to lay out; mixed spans are what make geometric navigation matter. */
+  tiles?: Tile[];
+  /** Instruction line above the grid. */
+  hint?: string;
+  /** Accessible name of the tile navigation. */
+  ariaLabel?: string;
+  /** Status text for the selected tile. */
+  selectedLabel?: (tile: Tile) => string;
+  /** Fired when a tile is reached by arrow keys or clicked. */
+  onSelect?: (tile: Tile, index: number) => void;
+  /** Extra classes appended to the root element. */
+  className?: string;
+}
+
+const defaultSelectedLabel = (t: Tile) => `${t.name} selected`;
+
+export default function SpatialGridNav({
+  tiles = DEFAULT_TILES,
+  hint = 'Arrow keys move by geometry, not by DOM order. Tab enters and leaves the grid once.',
+  ariaLabel = 'Airframe tiles',
+  selectedLabel = defaultSelectedLabel,
+  onSelect,
+  className = '',
+}: SpatialGridNavProps) {
   const refs = useRef<(HTMLAnchorElement | null)[]>([]);
   const [active, setActive] = useState(0);
   const [now, setNow] = useState('');
@@ -47,15 +80,18 @@ export default function SpatialGridNav() {
   };
 
   const focus = (i: number) => {
+    const t = tiles[i];
+    if (!t) return;
     setActive(i);
     refs.current[i]?.focus();
-    setNow(`${TILES[i]!.name} selected`);
+    setNow(selectedLabel(t));
+    onSelect?.(t, i);
   };
 
   return (
-    <div className="grid gap-[9px]">
+    <div className={`grid gap-[9px] ${className}`}>
       <p className="m-0 text-[.76rem] text-text-dim">
-        Arrow keys move by geometry, not by DOM order. Tab enters and leaves the grid once.
+        {hint}
       </p>
 
       {/* Not role="grid". A grid promises rows of cells, and the tiles here
@@ -65,26 +101,26 @@ export default function SpatialGridNav() {
           column positions that are invented. The roving tabindex and the
           geometric arrow keys work the same either way. */}
       <nav
-        aria-label="Airframe tiles"
+        aria-label={ariaLabel}
         className="grid auto-rows-[62px] grid-cols-4 gap-[7px] max-[480px]:grid-cols-2"
         onKeyDown={(e) => {
           if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
           e.preventDefault();
           if (e.key === 'Home') return focus(0);
-          if (e.key === 'End') return focus(TILES.length - 1);
+          if (e.key === 'End') return focus(tiles.length - 1);
           focus(best(active, e.key));
         }}
       >
-        {TILES.map((t, i) => (
+        {tiles.map((t, i) => (
           <a
             key={t.name}
             href="#"
             ref={(el) => { refs.current[i] = el; }}
             tabIndex={i === active ? 0 : -1}
             onFocus={() => setActive(i)}
-            onClick={(e) => e.preventDefault()}
+            onClick={(e) => { e.preventDefault(); onSelect?.(t, i); }}
             style={{ gridColumn: `span ${t.col ?? 1}`, gridRow: `span ${t.row ?? 1}` }}
-            className="sn-tile grid content-center gap-0.5 rounded-[9px] border border-border bg-surface px-3 py-[9px] text-[.86rem] text-text no-underline hover:border-accent"
+            className="sn-tile grid content-center gap-0.5 rounded-[9px] border border-border bg-surface px-3 py-[9px] text-[.86rem] text-text no-underline hover:border-accent active:translate-y-px"
           >
             {t.name}
             <small className="font-mono text-[.66rem] text-text-dim">{t.code}</small>

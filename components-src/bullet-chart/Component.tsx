@@ -1,10 +1,11 @@
-type Row = {
+/** One bullet. poor/ok/good/measure/target are percentages of the track width. */
+export type Row = {
   label: string; value: string; unit: string;
   poor: number; ok: number; good: number; measure: number; target: number;
   over?: boolean; aria: string; actual: string; targetLabel: string;
 };
 
-const ROWS: Row[] = [
+const DEFAULT_ROWS: Row[] = [
   { label: 'Revenue', value: '3.42', unit: 'M', poor: 55, ok: 80, good: 100, measure: 90, target: 100,
     aria: 'Revenue: 3.42 million against a target of 3.8 million. Below target, inside the satisfactory band.',
     actual: '3.42M', targetLabel: '3.80M' },
@@ -24,10 +25,27 @@ const BANDS = [
   { key: 'good', mix: 5, z: 'z-10' },
 ] as const;
 
-export default function BulletChart() {
+export interface BulletChartProps {
+  /** Measures to chart, one bullet each. */
+  rows?: Row[];
+  /** Caption of the screen-reader table that mirrors the chart. */
+  caption?: string;
+  /** Column headings of the screen-reader table: measure, actual, target. */
+  tableHeadings?: readonly [string, string, string];
+  /** Extra classes appended to the root element. */
+  className?: string;
+}
+
+export default function BulletChart({
+  rows = DEFAULT_ROWS,
+  caption = 'Performance against target',
+  tableHeadings = ['Measure', 'Actual', 'Target'],
+  className = '',
+}: BulletChartProps) {
+  const [hMeasure, hActual, hTarget] = tableHeadings;
   return (
-    <div className="grid gap-[14px]">
-      {ROWS.map((r) => (
+    <div className={`grid gap-[14px] ${className}`}>
+      {rows.map((r) => (
         <div
           key={r.label}
           role="img"
@@ -74,12 +92,12 @@ export default function BulletChart() {
 
       {/* The chart is a picture of a table, so ship the table. */}
       <table className="sr-only">
-        <caption>Performance against target</caption>
+        <caption>{caption}</caption>
         <thead>
-          <tr><th scope="col">Measure</th><th scope="col">Actual</th><th scope="col">Target</th></tr>
+          <tr><th scope="col">{hMeasure}</th><th scope="col">{hActual}</th><th scope="col">{hTarget}</th></tr>
         </thead>
         <tbody>
-          {ROWS.map((r) => (
+          {rows.map((r) => (
             <tr key={r.label}>
               <th scope="row">{r.label}</th>
               <td>{r.actual}</td>

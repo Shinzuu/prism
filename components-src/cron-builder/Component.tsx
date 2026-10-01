@@ -1,11 +1,14 @@
 import { useMemo, useState } from 'react';
 
 const RANGES = { min: [0, 59], hour: [0, 23], dom: [1, 31], mon: [1, 12], dow: [0, 6] } as const;
-type Key = keyof typeof RANGES;
+export type CronField = keyof typeof RANGES;
+type Key = CronField;
 const ORDER: Key[] = ['min', 'hour', 'dom', 'mon', 'dow'];
-const LABELS: Record<Key, string> = { min: 'Minute', hour: 'Hour', dom: 'Day', mon: 'Month', dow: 'Weekday' };
+const DEFAULT_LABELS: Record<Key, string> = { min: 'Minute', hour: 'Hour', dom: 'Day', mon: 'Month', dow: 'Weekday' };
+const DEFAULT_FIELDS: Record<Key, string> = { min: '*/15', hour: '9-17', dom: '*', mon: '*', dow: '1-5' };
 const DOW = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const MON = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const COUNT_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
 
 function expand(field: string, [lo, hi]: readonly [number, number]): number[] | null {
   const out = new Set<number>();
@@ -42,17 +45,48 @@ function nextRuns(sets: Record<Key, number[]>, from: Date, n: number) {
   return out;
 }
 
-export default function CronBuilder() {
-  const [raw, setRaw] = useState<Record<Key, string>>({ min: '*/15', hour: '9-17', dom: '*', mon: '*', dow: '1-5' });
+const toExpr = (raw: Record<Key, string>) => ORDER.map((k) => raw[k].trim() || '*').join(' ');
+const isValid = (raw: Record<Key, string>) => ORDER.every((k) => expand(raw[k].trim() || '*', RANGES[k]) !== null);
+
+export interface CronBuilderProps {
+  /** Starting text of the five cron fields. */
+  initialFields?: Record<Key, string>;
+  /** Label above each of the five fields. */
+  labels?: Record<Key, string>;
+  /** How many upcoming run times to list. */
+  runCount?: number;
+  /** Called with the full expression and whether it parses, on every edit. */
+  onChange?: (expression: string, valid: boolean) => void;
+  /** Disables all five fields. */
+  disabled?: boolean;
+  /** Extra classes for the root element. */
+  className?: string;
+}
+
+export default function CronBuilder({
+  initialFields = DEFAULT_FIELDS,
+  labels = DEFAULT_LABELS,
+  runCount = 5,
+  onChange,
+  disabled = false,
+  className = '',
+}: CronBuilderProps) {
+  const [raw, setRaw] = useState<Record<Key, string>>(initialFields);
   const fmt = useMemo(() => new Intl.DateTimeFormat(undefined, {
     weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
   }), []);
   const tz = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone, []);
 
-  const expr = ORDER.map((k) => raw[k].trim() || '*').join(' ');
+  const expr = toExpr(raw);
   const parsed = ORDER.map((k) => [k, expand(raw[k].trim() || '*', RANGES[k])] as const);
   const bad = parsed.some(([, s]) => s === null);
   const sets = bad ? null : Object.fromEntries(parsed) as Record<Key, number[]>;
+
+  const edit = (k: Key, value: string) => {
+    const next = { ...raw, [k]: value };
+    setRaw(next);
+    onChange?.(toExpr(next), isValid(next));
+  };
 
   const says = (() => {
     if (!sets) return 'One of these fields is not valid cron, so there is nothing to predict.';
@@ -70,23 +104,26 @@ export default function CronBuilder() {
     return `Runs ${time} ${hours}, ${days}${months}.`;
   })();
 
-  const runs = sets ? nextRuns(sets, new Date(), 5) : [];
+  const runs = sets ? nextRuns(sets, new Date(), runCount) : [];
+  const runsHeading = runCount === 1 ? 'Next run' : `Next ${COUNT_WORDS[runCount] ?? runCount} runs`;
 
   return (
-    <div className="grid max-w-[460px] gap-[11px]">
+    <div className={`grid max-w-[460px] gap-[11px] ${className}`}>
       <div className="grid grid-cols-3 gap-[7px] sm:grid-cols-5">
         {ORDER.map((k) => {
           const invalid = expand(raw[k].trim() || '*', RANGES[k]) === null;
           return (
             <label key={k} className="grid gap-1 text-[.7rem] text-text-dim">
-              {LABELS[k]}
+              {labels[k]}
               <input
                 value={raw[k]}
                 autoComplete="off" spellCheck={false}
                 aria-invalid={invalid}
-                onChange={(e) => setRaw((r) => ({ ...r, [k]: e.target.value }))}
-                className={`w-full rounded-[7px] border bg-bg px-2 py-[7px] text-center font-mono text-[.8rem] text-text focus:outline-none ${
-                  invalid ? 'border-accent bg-[color-mix(in_oklab,var(--accent)_7%,var(--bg))]' : 'border-border focus:border-accent'
+                disabled={disabled}
+                onChange={(e) => edit(k, e.target.value)}
+                // An invalid field already wears the accent border, so focus needs an outline to show at all.
+                className={`w-full rounded-[7px] border bg-bg px-2 py-[7px] text-center font-mono text-[.8rem] text-text focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
+                  invalid ? 'border-accent bg-[color-mix(in_oklab,var(--accent)_7%,var(--bg))] focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-1' : 'border-border focus:border-accent enabled:hover:border-text-dim'
                 }`}
               />
             </label>
@@ -101,7 +138,7 @@ export default function CronBuilder() {
       <p role="status" aria-live="polite" className={`m-0 text-[.84rem] ${bad ? 'text-accent' : ''}`}>{says}</p>
 
       <div className="border-t border-border pt-[9px]">
-        <p className="m-0 mb-[5px] text-[.74rem] text-text-dim">Next five runs ({tz})</p>
+        <p className="m-0 mb-[5px] text-[.74rem] text-text-dim">{runsHeading} ({tz})</p>
         <ol className="m-0 grid list-decimal gap-0.5 ps-[1.1rem] font-mono text-[.76rem] tabular-nums">
           {bad ? null : runs.length
             ? runs.map((r, i) => <li key={i}>{fmt.format(r)}</li>)

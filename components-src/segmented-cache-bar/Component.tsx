@@ -1,14 +1,51 @@
 import { useEffect, useRef, useState } from 'react';
 
-const SHARDS = 16;
-const WORKERS = 4;
-type Seg = 'idle' | 'run' | 'done' | 'miss';
+export type Seg = 'idle' | 'run' | 'done' | 'miss';
 
-export default function SegmentedCacheBar() {
-  const [segs, setSegs] = useState<Seg[]>(Array(SHARDS).fill('idle'));
-  const [lanes, setLanes] = useState<string[]>(Array(WORKERS).fill('idle'));
+export interface SegmentedCacheBarProps {
+  /** Number of shards to warm, one segment each. */
+  shards?: number;
+  /** Number of workers pulling shards off the shared queue. */
+  workers?: number;
+  /** Probability (0–1) that a shard comes back a miss. */
+  missRate?: number;
+  /** Shortest simulated shard cost, in ms. */
+  minCost?: number;
+  /** Random extra cost added on top of minCost, in ms. */
+  costJitter?: number;
+  /** Pause before the run restarts once every shard has settled, in ms. */
+  restartDelay?: number;
+  /** Heading above the bar. */
+  title?: string;
+  /** Accessible name of the progress bar. */
+  progressLabel?: string;
+  /** Explanatory note under the worker lanes. */
+  description?: string;
+  /** Fired when every shard has settled, with the hit and miss counts. */
+  onComplete?: (result: { done: number; miss: number }) => void;
+  /** Extra classes appended to the root element. */
+  className?: string;
+}
+
+export default function SegmentedCacheBar({
+  shards: SHARDS = 16,
+  workers: WORKERS = 4,
+  missRate = 0.18,
+  minCost = 180,
+  costJitter = 900,
+  restartDelay = 2200,
+  title = 'Warming cache',
+  progressLabel = 'Cache warm progress',
+  description = 'Four workers, sixteen shards, taken off a shared queue. Segments light where they land — the gaps are real concurrency, not a stalled animation.',
+  onComplete,
+  className = '',
+}: SegmentedCacheBarProps) {
+  const [segs, setSegs] = useState<Seg[]>(() => Array<Seg>(SHARDS).fill('idle'));
+  const [lanes, setLanes] = useState<string[]>(() => Array<string>(WORKERS).fill('idle'));
   const [elapsed, setElapsed] = useState('0.0s');
   const rootRef = useRef<HTMLDivElement>(null);
+  const onCompleteRef = useRef(onComplete);
+  useEffect(() => { onCompleteRef.current = onComplete; }, [onComplete]);
 
   useEffect(() => {
     const el = rootRef.current;
@@ -22,8 +59,8 @@ export default function SegmentedCacheBar() {
     const start = () => {
       stop();
       t0 = performance.now();
-      setSegs(Array(SHARDS).fill('idle'));
-      setLanes(Array(WORKERS).fill('idle'));
+      setSegs(Array<Seg>(SHARDS).fill('idle'));
+      setLanes(Array<string>(WORKERS).fill('idle'));
 
       const tick = () => {
         setElapsed(`${((performance.now() - t0) / 1000).toFixed(1)}s`);
@@ -37,19 +74,23 @@ export default function SegmentedCacheBar() {
          even, regular fill that shows no concurrency at all. */
       let next = 0;
       let settled = 0;
+      let misses = 0;
       const pump = (w: number) => {
         if (next >= SHARDS) { setLanes((l) => l.map((v, i) => (i === w ? 'drained' : v))); return; }
         const i = next++;
         setSegs((s) => s.map((v, j) => (j === i ? 'run' : v)));
         setLanes((l) => l.map((v, k) => (k === w ? `shard ${i}` : v)));
-        const cost = 180 + Math.random() * 900;
+        const cost = minCost + Math.random() * costJitter;
         timers.push(setTimeout(() => {
-          setSegs((s) => s.map((v, j) => (j === i ? (Math.random() < 0.18 ? 'miss' : 'done') : v)));
+          const miss = Math.random() < missRate;
+          if (miss) misses++;
+          setSegs((s) => s.map((v, j) => (j === i ? (miss ? 'miss' : 'done') : v)));
           settled++;
           if (settled === SHARDS) {
             cancelAnimationFrame(raf);
             setLanes((l) => l.map((v, k) => (k === w ? 'drained' : v)));
-            timers.push(setTimeout(start, 2200));
+            onCompleteRef.current?.({ done: SHARDS - misses, miss: misses });
+            timers.push(setTimeout(start, restartDelay));
             return;
           }
           pump(w);
@@ -64,15 +105,15 @@ export default function SegmentedCacheBar() {
     }, { rootMargin: '80px' });
     io.observe(el);
     return () => { stop(); io.disconnect(); };
-  }, []);
+  }, [SHARDS, WORKERS, missRate, minCost, costJitter, restartDelay]);
 
   const settled = segs.filter((s) => s === 'done' || s === 'miss').length;
   const pct = Math.round((settled / SHARDS) * 100);
 
   return (
-    <div ref={rootRef} className="grid gap-2">
+    <div ref={rootRef} className={`grid gap-2 ${className}`}>
       <div className="flex items-baseline justify-between gap-[10px]">
-        <p className="m-0 text-[.82rem] font-medium">Warming cache</p>
+        <p className="m-0 text-[.82rem] font-medium">{title}</p>
         <p className="m-0 font-mono text-[.68rem] tabular-nums text-text-dim">
           {settled}/{SHARDS} shards<span className="mx-1.5 opacity-50">·</span>{elapsed}
         </p>
@@ -82,7 +123,7 @@ export default function SegmentedCacheBar() {
           how much is done — never which parts, nor that three came back a miss. */}
       <div
         role="progressbar"
-        aria-label="Cache warm progress"
+        aria-label={progressLabel}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={pct}
@@ -111,10 +152,7 @@ export default function SegmentedCacheBar() {
         ))}
       </ol>
 
-      <p className="m-0 text-[.72rem] leading-relaxed text-text-dim">
-        Four workers, sixteen shards, taken off a shared queue. Segments light where they land — the
-        gaps are real concurrency, not a stalled animation.
-      </p>
+      <p className="m-0 text-[.72rem] leading-relaxed text-text-dim">{description}</p>
     </div>
   );
 }

@@ -1,19 +1,20 @@
 import { useState } from 'react';
 
 const DOF = 2;   // width and height determine ratio and area
-type Key = 'w' | 'h' | 'r' | 'a';
-const FIELDS: { key: Key; label: string; unit: string }[] = [
+export type Key = 'w' | 'h' | 'r' | 'a';
+export type SolverField = { key: Key; label: string; unit: string };
+const DEFAULT_FIELDS: SolverField[] = [
   { key: 'w', label: 'Width', unit: 'mm' },
   { key: 'h', label: 'Height', unit: 'mm' },
   { key: 'r', label: 'Ratio', unit: 'w:h' },
   { key: 'a', label: 'Area', unit: 'm²' },
 ];
+const DEFAULT_VALUES: Record<Key, string> = { w: '1200', h: '800', r: '1.5', a: '0.96' };
+const DEFAULT_DRIVING: Key[] = ['w', 'h'];
+const DEFAULT_INTRO = 'Pin the values you know. The rest are solved for. Pin too many and it names the one to release.';
 
-export default function ConstraintSolverForm() {
-  const [vals, setVals] = useState<Record<Key, string>>({ w: '1200', h: '800', r: '1.5', a: '0.96' });
-  const [order, setOrder] = useState<Key[]>(['w', 'h']);
+function solve(vals: Record<Key, string>, order: Key[]): Record<Key, string> {
   const driving = new Set(order);
-
   /* Six possible pairs, each handled explicitly rather than by a generic
      solver, so the awkward ones (area with ratio needs a square root) are
      visible in the code instead of silently wrong. */
@@ -30,6 +31,40 @@ export default function ConstraintSolverForm() {
     else if (key === 'ah') { const W = (a * 1e6) / h; set('w', W); set('r', W / h); }
     else if (key === 'ar') { const W = Math.sqrt(a * 1e6 * r); set('w', W); set('h', W / r); }
   }
+  return solved;
+}
+
+export interface ConstraintSolverFormProps {
+  /** Label and unit for each of the four quantities, in display order. */
+  fields?: SolverField[];
+  /** Starting value of every field, as typed text. */
+  initialValues?: Record<Key, string>;
+  /** Fields pinned as driving on first render, oldest first. */
+  initialDriving?: Key[];
+  /** Instruction line above the fields. */
+  intro?: string;
+  /** Called with the solved values and the driving fields whenever either changes. */
+  onChange?: (values: Record<Key, string>, driving: Key[]) => void;
+  /** Disables every input and pin toggle. */
+  disabled?: boolean;
+  /** Extra classes for the root form. */
+  className?: string;
+}
+
+export default function ConstraintSolverForm({
+  fields = DEFAULT_FIELDS,
+  initialValues = DEFAULT_VALUES,
+  initialDriving = DEFAULT_DRIVING,
+  intro = DEFAULT_INTRO,
+  onChange,
+  disabled = false,
+  className = '',
+}: ConstraintSolverFormProps) {
+  const [vals, setVals] = useState<Record<Key, string>>(initialValues);
+  const [order, setOrder] = useState<Key[]>(initialDriving);
+  const driving = new Set(order);
+  const solved = solve(vals, order);
+  const labelOf = (k: Key) => (fields.find((f) => f.key === k)?.label ?? k).toLowerCase();
 
   const over = driving.size - DOF;
   /* Over-constrained names the OLDEST pin to release — the newest is what the
@@ -38,22 +73,31 @@ export default function ConstraintSolverForm() {
   const release = over > 0 ? order[0] : null;
   const conflicts = new Set(over > 0 ? order.slice(0, over) : []);
 
-  const toggle = (k: Key) =>
-    setOrder((o) => (o.includes(k) ? o.filter((x) => x !== k) : [...o, k]));
+  const toggle = (k: Key) => {
+    const next = order.includes(k) ? order.filter((x) => x !== k) : [...order, k];
+    setOrder(next);
+    onChange?.(solve(vals, next), next);
+  };
+
+  const edit = (k: Key, value: string) => {
+    const next = { ...vals, [k]: value };
+    setVals(next);
+    onChange?.(solve(next, order), order);
+  };
 
   const status =
-    over > 0 ? `Over-constrained by ${over}. Release ${FIELDS.find((f) => f.key === release)!.label.toLowerCase()} to solve for the rest.`
+    over > 0 && release ? `Over-constrained by ${over}. Release ${labelOf(release)} to solve for the rest.`
     : driving.size < DOF ? `Under-constrained. Pin ${DOF - driving.size} more to solve.`
-    : `Solved from ${order.map((k) => FIELDS.find((f) => f.key === k)!.label.toLowerCase()).join(' and ')}.`;
+    : `Solved from ${order.map(labelOf).join(' and ')}.`;
 
   return (
-    <form className="grid gap-[10px]" onSubmit={(e) => e.preventDefault()} noValidate>
+    <form className={`grid gap-[10px] ${className}`} onSubmit={(e) => e.preventDefault()} noValidate>
       <p className="m-0 text-[.74rem] leading-relaxed text-text-dim">
-        Pin the values you know. The rest are solved for. Pin too many and it names the one to release.
+        {intro}
       </p>
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        {FIELDS.map((f) => {
+        {fields.map((f) => {
           const on = driving.has(f.key);
           return (
             <div
@@ -72,16 +116,18 @@ export default function ConstraintSolverForm() {
                 // readOnly, NEVER disabled: disabled drops it from the tab order
                 // and the a11y tree and greys the value the form just computed.
                 readOnly={!on}
-                onChange={(e) => setVals((v) => ({ ...v, [f.key]: e.target.value }))}
-                className={`w-full min-w-0 rounded-md border px-[7px] py-[5px] font-sans text-[.84rem] tabular-nums focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-1 ${
+                disabled={disabled}
+                onChange={(e) => edit(f.key, e.target.value)}
+                className={`w-full min-w-0 rounded-md border px-[7px] py-[5px] font-sans text-[.84rem] tabular-nums focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-1 disabled:cursor-not-allowed disabled:opacity-50 ${
                   on ? 'border-border bg-raised text-text' : 'border-dashed border-border bg-transparent text-text-dim'
                 }`}
               />
               <button
                 type="button"
                 aria-pressed={on}
+                disabled={disabled}
                 onClick={() => toggle(f.key)}
-                className={`cursor-pointer whitespace-nowrap rounded-full border px-2 py-1 font-mono text-[.6rem] focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2 ${
+                className={`cursor-pointer whitespace-nowrap rounded-full border px-2 py-1 font-mono text-[.6rem] focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2 enabled:hover:border-accent enabled:active:scale-[.96] disabled:cursor-not-allowed disabled:opacity-50 ${
                   on ? 'border-accent text-accent' : 'border-border text-text-dim'
                 } ${conflicts.has(f.key) ? 'bg-[color-mix(in_oklab,var(--accent)_14%,transparent)]' : 'bg-raised'}`}
               >

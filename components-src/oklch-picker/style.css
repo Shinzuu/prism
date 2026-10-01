@@ -6,3 +6,5 @@
 .op-range::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; margin-top: -4px; border-radius: 50%; background: var(--bg); border: 2px solid var(--text); }
 .op-range::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--bg); border: 2px solid var(--text); }
 .op-range:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 999px; }
+/* .op-range sets its cursor outside the utility layer, so a disabled utility cannot override it. */
+.op-range:disabled { cursor: not-allowed; }

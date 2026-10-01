@@ -1,10 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 const ROWS = 50000;
-const SYMBOLS = ['AIRF', 'HYDR', 'TURB', 'PYLN', 'RDME', 'NOZL', 'GLOV', 'STAB'];
+const DEFAULT_SYMBOLS = ['AIRF', 'HYDR', 'TURB', 'PYLN', 'RDME', 'NOZL', 'GLOV', 'STAB'];
+export type LedgerColumns = readonly [string, string, string, string, string];
+const DEFAULT_COLUMNS: LedgerColumns = ['#', 'Instrument', 'Side', 'Qty', 'Price'];
+const DEFAULT_FOOTNOTE = 'Fifty thousand real rows. No virtualization library, no windowing, no scroll listener. The figure is measured after fonts settle, so it reports the rows rather than the network.';
 /* Built once and reused. Number.prototype.toLocaleString() resolves a fresh
    formatter per call: 1,105ms across these rows against 26ms hoisted. */
 const nf = new Intl.NumberFormat();
+const escapeHtml = (t: string) =>
+  t.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
 /* Short, scoped class names on the repeated rows. Utility classes are written
    once per element, and at 50,000 rows that is 50,000 copies of the same
@@ -13,13 +18,42 @@ const nf = new Intl.NumberFormat();
    written once; they are the wrong unit for a row emitted fifty thousand
    times. */
 
-export default function EndlessLedger() {
+export interface EndlessLedgerProps {
+  /** Number of rows rendered, all of them, with no windowing. */
+  rowCount?: number;
+  /** Instrument codes the rows cycle through. Pass a stable array: a new one re-renders every row. */
+  symbols?: string[];
+  /** Heading above the ledger; also the table's accessible name. */
+  title?: string;
+  /** Header labels for the five columns: row number, instrument, side, quantity, price. */
+  columns?: LedgerColumns;
+  /** Explanation under the ledger. */
+  footnote?: ReactNode;
+  /** Called with the measured time to first paint, in milliseconds. */
+  onPaint?: (ms: number) => void;
+  /** Extra classes for the root element. */
+  className?: string;
+}
+
+export default function EndlessLedger({
+  rowCount = ROWS,
+  symbols = DEFAULT_SYMBOLS,
+  title = 'Trade ledger',
+  columns = DEFAULT_COLUMNS,
+  footnote = DEFAULT_FOOTNOTE,
+  onPaint,
+  className = '',
+}: EndlessLedgerProps) {
   const [html, setHtml] = useState('');
   const [paint, setPaint] = useState('measuring…');
   const t0 = useRef(0);
+  const paintRef = useRef(onPaint);
+  useEffect(() => { paintRef.current = onPaint; });
 
   useEffect(() => {
     let cancelled = false;
+    // Escaped once here, not per row: the codes go into raw HTML below.
+    const ROWS = rowCount, SYMBOLS = symbols.map(escapeHtml);
     /* Wait for fonts before starting the clock. Otherwise the paint callback
        queues behind a 3.5s font fetch and the figure reports the network
        rather than the rows — which would make the component's one claim a lie
@@ -43,22 +77,26 @@ export default function EndlessLedger() {
     };
     if (document.fonts?.ready) document.fonts.ready.then(go); else go();
     return () => { cancelled = true; };
-  }, []);
+  }, [rowCount, symbols]);
 
   useEffect(() => {
     if (!html) return;
     // Measure after the browser has actually painted, not after the loop.
     requestAnimationFrame(() =>
-      requestAnimationFrame(() => setPaint(`${Math.round(performance.now() - t0.current)}ms to first paint`))
+      requestAnimationFrame(() => {
+        const ms = Math.round(performance.now() - t0.current);
+        setPaint(`${ms}ms to first paint`);
+        paintRef.current?.(ms);
+      })
     );
   }, [html]);
 
   return (
-    <div className="grid gap-2">
+    <div className={`grid gap-2 ${className}`}>
       <div className="flex items-baseline justify-between gap-3">
-        <p className="m-0 text-[.86rem] font-medium">Trade ledger</p>
+        <p className="m-0 text-[.86rem] font-medium">{title}</p>
         <p className="m-0 font-mono text-[.7rem] tabular-nums text-text-dim">
-          {nf.format(ROWS)} rows<span className="mx-1.5 opacity-50">·</span>{paint}
+          {nf.format(rowCount)} rows<span className="mx-1.5 opacity-50">·</span>{paint}
         </p>
       </div>
 
@@ -74,10 +112,10 @@ export default function EndlessLedger() {
           which is this element either way. */}
       <div tabIndex={0} role="region" aria-label="Ledger rows"
            className="h-[210px] overflow-y-auto rounded-[9px] border border-border bg-bg focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent">
-        <div role="table" aria-rowcount={ROWS} aria-label="Trade ledger" className="text-[.78rem]">
+        <div role="table" aria-rowcount={rowCount} aria-label={title} aria-busy={!html || undefined} className="text-[.78rem]">
           <div role="row" className="el-row sticky top-0 z-10 !border-b-border bg-raised text-[.7rem] text-text-dim">
-            {['#', 'Instrument', 'Side', 'Qty', 'Price'].map((h, i) => (
-              <span key={h} role="columnheader" className={i >= 3 ? 'el-num' : undefined}>{h}</span>
+            {columns.map((h, i) => (
+              <span key={i} role="columnheader" className={i >= 3 ? 'el-num' : undefined}>{h}</span>
             ))}
           </div>
           <div role="rowgroup" dangerouslySetInnerHTML={{ __html: html }} />
@@ -85,8 +123,7 @@ export default function EndlessLedger() {
       </div>
 
       <p className="m-0 text-[.72rem] text-text-dim">
-        Fifty thousand real rows. No virtualization library, no windowing, no scroll listener. The
-        figure is measured after fonts settle, so it reports the rows rather than the network.
+        {footnote}
       </p>
     </div>
   );

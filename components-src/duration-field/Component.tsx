@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 const UNITS: Record<string, number> = { d: 86400, h: 3600, m: 60, s: 1 };
+const DEFAULT_EXAMPLES = ['90m', '1:30', '2h30', '1d 4h', '45s'];
 
 /* The parse IS the component; the field is incidental. It accepts how people
    actually write durations, then shows exactly what it understood. */
@@ -58,14 +59,53 @@ function words(total: number) {
   return bits.join(', ');
 }
 
-export default function DurationField() {
-  const [raw, setRaw] = useState('2h 30m');
+export interface DurationFieldProps {
+  /** Visible label of the field. */
+  label?: string;
+  /** Text in the field on first render. */
+  defaultValue?: string;
+  /** Sample inputs listed under the field as hints. */
+  examples?: string[];
+  /** Status text while the input does not parse. */
+  invalidMessage?: string;
+  /** Seconds added or removed by ArrowUp / ArrowDown. */
+  step?: number;
+  /** Seconds added or removed by Shift + ArrowUp / ArrowDown. */
+  largeStep?: number;
+  /** Called on every change with the parsed seconds (null when it does not parse) and the raw text. */
+  onChange?: (seconds: number | null, raw: string) => void;
+  /** Called on blur with the parsed seconds, when the input is valid. */
+  onCommit?: (seconds: number) => void;
+  /** Disables the field. */
+  disabled?: boolean;
+  /** Extra classes for the root element. */
+  className?: string;
+}
+
+export default function DurationField({
+  label = 'Timeout',
+  defaultValue = '2h 30m',
+  examples = DEFAULT_EXAMPLES,
+  invalidMessage = 'Not a duration yet.',
+  step: baseStep = 60,
+  largeStep = 3600,
+  onChange,
+  onCommit,
+  disabled = false,
+  className = '',
+}: DurationFieldProps) {
+  const [raw, setRaw] = useState(defaultValue);
   const total = parse(raw);
   const bad = total === null;
 
+  const change = (next: string) => {
+    setRaw(next);
+    onChange?.(parse(next), next);
+  };
+
   return (
-    <div className="grid max-w-[340px] gap-[6px]">
-      <label className="text-[.84rem] font-medium" htmlFor="df-in">Timeout</label>
+    <div className={`grid max-w-[340px] gap-[6px] ${className}`}>
+      <label className="text-[.84rem] font-medium" htmlFor="df-in">{label}</label>
       <input
         id="df-in"
         type="text"
@@ -73,22 +113,24 @@ export default function DurationField() {
         spellCheck={false}
         aria-describedby="df-help"
         aria-invalid={bad}
+        disabled={disabled}
         value={raw}
-        onChange={(e) => setRaw(e.target.value)}
+        onChange={(e) => change(e.target.value)}
         // Normalise only on blur, never mid-keystroke.
-        onBlur={() => { if (total !== null) setRaw(format(total)); }}
+        onBlur={() => { if (total !== null) { setRaw(format(total)); onCommit?.(total); } }}
         onKeyDown={(e) => {
           if (total === null) return;
-          const step = e.shiftKey ? 3600 : e.altKey ? 1 : 60;
-          if (e.key === 'ArrowUp') { e.preventDefault(); setRaw(format(total + step)); }
-          else if (e.key === 'ArrowDown') { e.preventDefault(); setRaw(format(Math.max(0, total - step))); }
+          const step = e.shiftKey ? largeStep : e.altKey ? 1 : baseStep;
+          if (e.key === 'ArrowUp') { e.preventDefault(); change(format(total + step)); }
+          else if (e.key === 'ArrowDown') { e.preventDefault(); change(format(Math.max(0, total - step))); }
         }}
-        className={`rounded-[9px] border bg-bg px-[13px] py-[10px] font-mono text-[.92rem] tabular-nums text-text focus:outline-none ${
-          bad ? 'border-[color-mix(in_oklab,var(--accent)_55%,var(--text))]' : 'border-border focus:border-accent'
+        // An invalid field already has a coloured border, so focus needs an outline to show at all.
+        className={`rounded-[9px] border bg-bg px-[13px] py-[10px] font-mono text-[.92rem] tabular-nums text-text focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
+          bad ? 'border-[color-mix(in_oklab,var(--accent)_55%,var(--text))] focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-1' : 'border-border focus:border-accent enabled:hover:border-text-dim'
         }`}
       />
       <p className="m-0 text-[.74rem] text-text-dim" id="df-help">
-        Try {['90m', '1:30', '2h30', '1d 4h', '45s'].map((c, i) => (
+        Try {examples.map((c, i) => (
           <span key={c}>
             {i > 0 && ', '}
             <code className="rounded bg-raised px-[5px] py-px font-mono">{c}</code>
@@ -100,7 +142,7 @@ export default function DurationField() {
         aria-live="polite"
         className={`m-0 mt-0.5 min-h-[1.2em] text-[.78rem] tabular-nums ${bad ? 'text-accent' : 'text-text-dim'}`}
       >
-        {bad ? 'Not a duration yet.' : `${format(total)} · ${words(total)} · ${total}s`}
+        {bad ? invalidMessage : `${format(total)} · ${words(total)} · ${total}s`}
       </p>
     </div>
   );

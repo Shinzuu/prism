@@ -1,12 +1,43 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-const COMMIT = 0.92;   // fraction of the rail that counts as confirmed
-const HOLD_STEP = 6;   // percent per key repeat
+export interface SlideConfirmProps {
+  /** Fraction of the rail (0–1) the grip must reach to count as confirmed. */
+  commitThreshold?: number;
+  /** Percent of the rail each right-arrow key repeat moves the grip. */
+  keyStep?: number;
+  /** How long the confirmed state holds before the control resets, in ms. */
+  resetDelay?: number;
+  /** Text inside the rail before confirming. */
+  label?: string;
+  /** Text inside the rail once confirmed. */
+  doneLabel?: string;
+  /** Status message announced after confirming. */
+  doneMessage?: string;
+  /** Accessible name of the grip. */
+  gripLabel?: string;
+  /** Disables the grip so the action cannot be confirmed. */
+  disabled?: boolean;
+  /** Fired once when the slide is confirmed. */
+  onConfirm?: () => void;
+  /** Extra classes appended to the root element. */
+  className?: string;
+}
 
 /* The gesture exists to make a destructive action deliberate, so the two
    things that matter are that a partial drag NEVER fires, and that the
    keyboard path is equally deliberate rather than a single Enter. */
-export default function SlideConfirm() {
+export default function SlideConfirm({
+  commitThreshold: COMMIT = 0.92,
+  keyStep: HOLD_STEP = 6,
+  resetDelay = 2200,
+  label = 'Slide to delete this airframe',
+  doneLabel = 'Deleted',
+  doneMessage = 'Airframe deleted.',
+  gripLabel = 'Slide right to confirm deletion. Or hold the right arrow key.',
+  disabled = false,
+  onConfirm,
+  className = '',
+}: SlideConfirmProps) {
   const railRef = useRef<HTMLDivElement>(null);
   const gripRef = useRef<HTMLButtonElement>(null);
   const [pct, setPct] = useState(0);
@@ -36,16 +67,17 @@ export default function SlideConfirm() {
   }, [set]);
 
   const commit = useCallback(() => {
-    if (done) return;
+    if (done || disabled) return;
     setDone(true);
     settle(1);
-    setOut('Airframe deleted.');
+    setOut(doneMessage);
+    onConfirm?.();
     setTimeout(() => {
       setDone(false);
       setOut('');
       settle(0);
-    }, 2200);
-  }, [done, settle]);
+    }, resetDelay);
+  }, [done, disabled, settle, doneMessage, onConfirm, resetDelay]);
 
   useEffect(() => {
     const onResize = () => set(pctRef.current);
@@ -56,7 +88,7 @@ export default function SlideConfirm() {
   const armed = pct >= COMMIT;
 
   return (
-    <div className="grid max-w-[420px] gap-[10px]">
+    <div className={`grid max-w-[420px] gap-[10px] ${className}`}>
       <div
         ref={railRef}
         className="relative h-[52px] touch-none overflow-hidden rounded-full border border-border bg-raised"
@@ -72,7 +104,7 @@ export default function SlideConfirm() {
             armed ? 'text-accent-fg' : 'text-text-dim'
           }`}
         >
-          {done ? 'Deleted' : 'Slide to delete this airframe'}
+          {done ? doneLabel : label}
         </span>
         <button
           ref={gripRef}
@@ -81,13 +113,14 @@ export default function SlideConfirm() {
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(pct * 100)}
-          aria-label="Slide right to confirm deletion. Or hold the right arrow key."
-          className={`absolute left-1 top-1 grid h-[42px] w-11 cursor-grab place-items-center rounded-full border border-border bg-bg text-[1.2rem] leading-none text-text active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-[3px] ${
+          aria-label={gripLabel}
+          disabled={disabled}
+          className={`absolute left-1 top-1 grid h-[42px] w-11 cursor-grab place-items-center rounded-full border border-border bg-bg text-[1.2rem] leading-none text-text enabled:hover:border-accent active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-[3px] disabled:cursor-not-allowed disabled:opacity-50 ${
             settling ? 'sl-settle' : ''
           }`}
           style={{ left: `${4 + pct * span()}px` }}
           onPointerDown={(e) => {
-            if (done) return;
+            if (done || disabled) return;
             dragging.current = true;
             // The drag must survive leaving the rail.
             e.currentTarget.setPointerCapture(e.pointerId);
@@ -107,7 +140,7 @@ export default function SlideConfirm() {
           }}
           onPointerCancel={() => { dragging.current = false; settle(0); }}
           onKeyDown={(e) => {
-            if (done) return;
+            if (done || disabled) return;
             if (e.key === 'ArrowRight') {
               e.preventDefault();
               held.current = true;

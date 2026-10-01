@@ -10,6 +10,13 @@ export interface Attempt {
   problem: string;
 }
 
+export interface Prop {
+  name: string;
+  optional: boolean;
+  type: string;
+  doc: string;
+}
+
 export interface Component {
   slug: string;
   name: string;
@@ -25,6 +32,8 @@ export interface Component {
   js: string;
   tsx: string;
   hasTsx: boolean;
+  usage: string;
+  props: Prop[];
   repoPath: string;
 }
 

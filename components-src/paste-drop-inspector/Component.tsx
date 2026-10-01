@@ -1,13 +1,14 @@
 import { useState } from 'react';
 
-type Row = { mime: string; size: number | null; kind: string; peek?: string; tree?: string };
+/** One clipboard flavour, file or directory; size is in bytes, null for directories. */
+export type Row = { mime: string; size: number | null; kind: string; peek?: string; tree?: string };
 const fmt = (n: number) => n < 1024 ? `${n} B` : n < 1048576 ? `${(n / 1024).toFixed(1)} KB` : `${(n / 1048576).toFixed(1)} MB`;
 
 /* readEntries returns at most 100 children per call, so it has to be called
    REPEATEDLY until it returns empty — one call silently truncates anything
    larger, which only shows up with real data. */
-async function walk(entry: any, depth: number, lines: string[]): Promise<void> {
-  if (depth > 3) return;
+async function walk(entry: any, depth: number, lines: string[], maxDepth = 3): Promise<void> {
+  if (depth > maxDepth) return;
   if (entry.isFile) { lines.push('  '.repeat(depth) + entry.name); return; }
   const reader = entry.createReader();
   for (;;) {
@@ -15,17 +16,51 @@ async function walk(entry: any, depth: number, lines: string[]): Promise<void> {
     if (!batch.length) return;
     for (const e of batch) {
       lines.push('  '.repeat(depth) + e.name + (e.isDirectory ? '/' : ''));
-      if (e.isDirectory) await walk(e, depth + 1, lines);
+      if (e.isDirectory) await walk(e, depth + 1, lines, maxDepth);
     }
   }
 }
 
-export default function PasteDropInspector() {
+export interface PasteDropInspectorProps {
+  /** Line shown before anything has been inspected. */
+  initialNote?: string;
+  /** Main text inside the drop zone. */
+  title?: string;
+  /** Muted hint under the title. */
+  hint?: string;
+  /** Accessible name of the drop zone. */
+  ariaLabel?: string;
+  /** How many characters of each string flavour to preview. */
+  peekLength?: number;
+  /** How many lines of a dropped directory tree to list. */
+  maxTreeLines?: number;
+  /** How many folder levels deep to walk a dropped directory. */
+  maxDepth?: number;
+  /** Ignores pastes and drops. */
+  disabled?: boolean;
+  /** Fires once everything in a paste or drop has been read, directories included. */
+  onInspect?: (rows: Row[], source: 'pasted' | 'dropped') => void;
+  /** Extra classes for the root element. */
+  className?: string;
+}
+
+export default function PasteDropInspector({
+  initialNote = 'Nothing inspected yet. Copy a cell from a spreadsheet for the clearest result.',
+  title = 'Paste or drop here',
+  hint = 'Ctrl/Cmd+V, or drag a file or folder in',
+  ariaLabel = 'Paste with Control V or drop files here to inspect what the clipboard actually contains',
+  peekLength = 220,
+  maxTreeLines = 40,
+  maxDepth = 3,
+  disabled = false,
+  onInspect,
+  className = '',
+}: PasteDropInspectorProps) {
   const [rows, setRows] = useState<Row[]>([]);
-  const [note, setNote] = useState('Nothing inspected yet. Copy a cell from a spreadsheet for the clearest result.');
+  const [note, setNote] = useState(initialNote);
   const [over, setOver] = useState(false);
 
-  const show = async (dt: DataTransfer, label: string) => {
+  const show = async (dt: DataTransfer, label: 'pasted' | 'dropped') => {
     const out: Row[] = [];
     const types = [...dt.types];
 
@@ -33,7 +68,7 @@ export default function PasteDropInspector() {
     for (const t of types) {
       if (t === 'Files') continue;
       const data = dt.getData(t);
-      out.push({ mime: t, size: new TextEncoder().encode(data).length, kind: 'string', peek: data.slice(0, 220) });
+      out.push({ mime: t, size: new TextEncoder().encode(data).length, kind: 'string', peek: data.slice(0, peekLength) });
     }
 
     /* webkitGetAsEntry is the only way to see a dropped DIRECTORY:
@@ -54,30 +89,38 @@ export default function PasteDropInspector() {
       (dirs.length ? `, ${dirs.length} directory` : '') +
       (types.length > 1 ? '. Reading only text/plain would have discarded the rest.' : '.'));
 
+    const all = [...out];
     for (const dir of dirs as any[]) {
       const lines: string[] = [];
-      await walk(dir, 0, lines);
-      setRows((prev) => [...prev, { mime: `${dir.name}/`, size: null, kind: 'directory', tree: lines.slice(0, 40).join('\n') || '(empty)' }]);
+      await walk(dir, 0, lines, maxDepth);
+      const row: Row = { mime: `${dir.name}/`, size: null, kind: 'directory', tree: lines.slice(0, maxTreeLines).join('\n') || '(empty)' };
+      all.push(row);
+      setRows((prev) => [...prev, row]);
     }
+    onInspect?.(all, label);
   };
 
   return (
-    <div className="grid gap-[9px]">
+    <div className={`grid gap-[9px] ${className}`}>
       <div
-        tabIndex={0}
-        aria-label="Paste with Control V or drop files here to inspect what the clipboard actually contains"
-        onPaste={(e) => { e.preventDefault(); void show(e.clipboardData, 'pasted'); }}
+        tabIndex={disabled ? -1 : 0}
+        aria-label={ariaLabel}
+        aria-disabled={disabled || undefined}
+        onPaste={(e) => { e.preventDefault(); if (!disabled) void show(e.clipboardData, 'pasted'); }}
         // preventDefault on dragover too, or the browser navigates to the file.
-        onDragEnter={(e) => { e.preventDefault(); setOver(true); }}
-        onDragOver={(e) => { e.preventDefault(); setOver(true); }}
+        // That holds while disabled as well, so only the reading is skipped.
+        onDragEnter={(e) => { e.preventDefault(); if (!disabled) setOver(true); }}
+        onDragOver={(e) => { e.preventDefault(); if (!disabled) setOver(true); }}
         onDragLeave={() => setOver(false)}
-        onDrop={(e) => { e.preventDefault(); setOver(false); void show(e.dataTransfer, 'dropped'); }}
-        className={`grid min-h-[92px] cursor-copy place-items-center gap-[3px] rounded-[10px] border border-dashed p-[14px] text-center focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2 ${
+        onDrop={(e) => { e.preventDefault(); setOver(false); if (!disabled) void show(e.dataTransfer, 'dropped'); }}
+        className={`grid min-h-[92px] place-items-center gap-[3px] rounded-[10px] border border-dashed p-[14px] text-center focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2 ${
+          disabled ? 'cursor-not-allowed opacity-50' : 'cursor-copy'
+        } ${
           over ? 'border-solid border-accent bg-[color-mix(in_oklab,var(--accent)_8%,var(--bg))]' : 'border-border bg-bg'
         }`}
       >
-        <p className="m-0 text-[.84rem]">Paste or drop here</p>
-        <p className="m-0 text-[.7rem] text-text-dim">Ctrl/Cmd+V, or drag a file or folder in</p>
+        <p className="m-0 text-[.84rem]">{title}</p>
+        <p className="m-0 text-[.7rem] text-text-dim">{hint}</p>
       </div>
 
       <ul aria-live="polite" className="m-0 grid list-none gap-[3px] p-0">

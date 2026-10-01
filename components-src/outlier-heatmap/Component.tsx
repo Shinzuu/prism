@@ -1,4 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+
+/** Each dimension name maps to the values a point may hold for it. */
+export type Dimensions = Record<string, readonly string[]>;
+/** One request: payload size on x, latency on y, plus one string per dimension. */
+export type Point = { size: number; ms: number; [dimension: string]: string | number };
 
 const DIMS = {
   region: ['us-east', 'us-west', 'eu-central', 'ap-south'],
@@ -6,8 +11,10 @@ const DIMS = {
   client: ['web', 'ios', 'android', 'cli'],
   cache: ['hit', 'miss'],
 } as const;
-type Point = { region: string; tier: string; client: string; cache: string; size: number; ms: number };
 const W = 600, H = 260, MAXMS = 820, MAXSIZE = 940;
+
+// Locale-independent, so the default heading reads the same everywhere.
+const thousands = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
 function makePoints(): Point[] {
   // Deterministic, so the demo tells the same story on every load.
@@ -23,18 +30,76 @@ function makePoints(): Point[] {
   });
 }
 
-export default function OutlierHeatmap() {
+export interface OutlierHeatmapProps {
+  /** Points to plot. Defaults to a deterministic demo set with a planted slow cluster. */
+  points?: Point[];
+  /** Dimensions whose values are ranked by lift. */
+  dimensions?: Dimensions;
+  /** Payload size at the right edge of the plot. */
+  maxSize?: number;
+  /** Latency at the top of the plot; slower points are pinned to the edge. */
+  maxMs?: number;
+  /** Fewest selected points before anything is ranked. */
+  minSelection?: number;
+  /** How many ranked values to show. */
+  topN?: number;
+  /** Share of slowest points the keyboard shortcut selects (0–1). */
+  keyboardFraction?: number;
+  /** Plot heading. */
+  title?: string;
+  /** Muted text after the heading. Defaults to the point count. */
+  subtitle?: string;
+  /** Readout before anything is selected. */
+  prompt?: string;
+  /** Accessible name of the plot. */
+  plotLabel?: string;
+  /** Shown instead of rankings when too few points are selected. */
+  emptyMessage?: string;
+  /** Explanatory line under the rankings. Empty string hides it. */
+  caption?: string;
+  /** Turns off selection by pointer and keyboard. */
+  disabled?: boolean;
+  /** Fires with the indices of the selected points whenever the selection changes. */
+  onSelect?: (indices: number[]) => void;
+  /** Extra classes for the root element. */
+  className?: string;
+}
+
+export default function OutlierHeatmap({
+  points,
+  dimensions = DIMS,
+  maxSize = MAXSIZE,
+  maxMs = MAXMS,
+  minSelection = 12,
+  topN = 4,
+  keyboardFraction = 0.1,
+  title = 'Request latency',
+  subtitle,
+  prompt = 'Drag a box around the slow cluster',
+  plotLabel = 'Latency scatter. Press Enter to select the slowest tenth of requests.',
+  emptyMessage = 'Too few points selected to rank anything honestly.',
+  caption = 'Lift is the rate inside the box divided by the rate outside. A tall bar means that value is over-represented among the slow requests.',
+  disabled = false,
+  onSelect,
+  className = '',
+}: OutlierHeatmapProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const plotRef = useRef<HTMLDivElement>(null);
   const pts = useRef<Point[]>([]);
   const start = useRef<{ x: number; y: number } | null>(null);
   const [sel, setSel] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
   const [inside, setInside] = useState<Set<number>>(new Set());
-  const [read, setRead] = useState('Drag a box around the slow cluster');
+  const [read, setRead] = useState(prompt);
 
-  if (!pts.current.length) pts.current = makePoints();
-  const px = (p: Point) => 8 + (p.size / MAXSIZE) * (W - 16);
-  const py = (p: Point) => H - 8 - (Math.min(p.ms, MAXMS) / MAXMS) * (H - 16);
+  const data = useMemo(() => points ?? makePoints(), [points]);
+  pts.current = data;
+  const px = (p: Point) => 8 + (p.size / maxSize) * (W - 16);
+  const py = (p: Point) => H - 8 - (Math.min(p.ms, maxMs) / maxMs) * (H - 16);
+
+  const choose = (next: Set<number>) => {
+    setInside(next);
+    onSelect?.([...next]);
+  };
 
   useEffect(() => {
     const c = canvasRef.current, host = plotRef.current;
@@ -57,18 +122,19 @@ export default function OutlierHeatmap() {
       ctx.fill();
     }
     ctx.globalAlpha = 1;
-  }, [inside]);
+    // px/py read maxSize and maxMs, so a change of scale must repaint too.
+  }, [inside, data, maxSize, maxMs]);
 
   /* Ranked by LIFT — the rate inside the box divided by the rate outside —
      never by raw count, which just re-ranks the most common values overall. */
   const ranks = (() => {
-    if (inside.size < 12) return null;
+    if (inside.size < minSelection) return null;
     const rows: { key: string; lift: number }[] = [];
-    for (const [dim, values] of Object.entries(DIMS)) {
+    for (const [dim, values] of Object.entries(dimensions)) {
       for (const value of values) {
         let hitIn = 0, hitOut = 0;
         pts.current.forEach((p, i) => {
-          if ((p as never as Record<string, string>)[dim] !== value) return;
+          if (p[dim] !== value) return;
           if (inside.has(i)) hitIn++; else hitOut++;
         });
         const rIn = hitIn / inside.size;
@@ -79,7 +145,7 @@ export default function OutlierHeatmap() {
         rows.push({ key: `${dim} = ${value}`, lift: rIn / Math.max(rOut, 1 / pts.current.length) });
       }
     }
-    return rows.sort((a, b) => b.lift - a.lift).slice(0, 4);
+    return rows.sort((a, b) => b.lift - a.lift).slice(0, topN);
   })();
   const cap = ranks ? Math.max(...ranks.map((r) => r.lift), 2) : 2;
 
@@ -89,21 +155,24 @@ export default function OutlierHeatmap() {
   };
 
   return (
-    <div className="grid gap-2">
+    <div className={`grid gap-2 ${className}`}>
       <div className="flex flex-wrap items-baseline justify-between gap-[10px]">
         <p className="m-0 text-[.82rem] font-medium">
-          Request latency <span className="font-normal text-text-dim">— 1,400 requests</span>
+          {title} <span className="font-normal text-text-dim">{subtitle ?? `— ${thousands(data.length)} requests`}</span>
         </p>
         <p className="m-0 font-mono text-[.68rem] tabular-nums text-text-dim">{read}</p>
       </div>
 
       <div
         ref={plotRef}
-        tabIndex={0}
+        tabIndex={disabled ? -1 : 0}
         role="application"
-        aria-label="Latency scatter. Press Enter to select the slowest tenth of requests."
-        className="relative cursor-crosshair touch-none overflow-hidden rounded-lg border border-border bg-bg"
-        onPointerDown={(e) => { start.current = local(e); (e.target as HTMLElement).setPointerCapture(e.pointerId); e.preventDefault(); }}
+        aria-label={plotLabel}
+        aria-disabled={disabled || undefined}
+        className={`relative touch-none overflow-hidden rounded-lg border border-border bg-bg focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2 ${
+          disabled ? 'cursor-not-allowed opacity-50' : 'cursor-crosshair'
+        }`}
+        onPointerDown={(e) => { if (disabled) return; start.current = local(e); (e.target as HTMLElement).setPointerCapture(e.pointerId); e.preventDefault(); }}
         onPointerMove={(e) => {
           if (!start.current) return;
           const p = local(e);
@@ -116,17 +185,19 @@ export default function OutlierHeatmap() {
             const cx = px(pt), cy = py(pt);
             if (cx >= x0 && cx <= x1 && cy >= y0 && cy <= y1) next.add(i);
           });
-          setInside(next);
+          choose(next);
           setRead(`${next.size} of ${pts.current.length} selected`);
         }}
         onPointerUp={() => { start.current = null; }}
         onKeyDown={(e) => {
-          if (e.key !== 'Enter' && e.key !== ' ') return;
+          if (disabled || (e.key !== 'Enter' && e.key !== ' ')) return;
           e.preventDefault();
-          const cut = [...pts.current].sort((a, b) => b.ms - a.ms)[Math.floor(pts.current.length * 0.1)]!.ms;
+          const sorted = [...pts.current].sort((a, b) => b.ms - a.ms);
+          const cut = sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * keyboardFraction))]?.ms;
+          if (cut === undefined) return;
           const next = new Set<number>();
           pts.current.forEach((p, i) => { if (p.ms >= cut) next.add(i); });
-          setSel(null); setInside(next);
+          setSel(null); choose(next);
           setRead(`${next.size} slowest requests selected`);
         }}
       >
@@ -141,7 +212,7 @@ export default function OutlierHeatmap() {
 
       <ol aria-live="polite" className="m-0 grid min-h-[4.2rem] list-none gap-1 p-0">
         {ranks === null ? (
-          <li><p className="m-0 text-[.72rem] text-text-dim">Too few points selected to rank anything honestly.</p></li>
+          <li><p className="m-0 text-[.72rem] text-text-dim">{emptyMessage}</p></li>
         ) : ranks.map((r) => (
           <li key={r.key} className="grid grid-cols-[8.5rem_1fr_3.2rem] items-center gap-2 text-[.7rem]">
             <span className="truncate font-mono text-[.66rem] text-text-dim">{r.key}</span>
@@ -153,10 +224,11 @@ export default function OutlierHeatmap() {
         ))}
       </ol>
 
-      <p className="m-0 text-[.72rem] leading-relaxed text-text-dim">
-        Lift is the rate inside the box divided by the rate outside. A tall bar means that value is
-        over-represented among the slow requests.
-      </p>
+      {caption && (
+        <p className="m-0 text-[.72rem] leading-relaxed text-text-dim">
+          {caption}
+        </p>
+      )}
     </div>
   );
 }

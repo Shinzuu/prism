@@ -51,6 +51,20 @@ function loadOne(slug) {
   const html = read('index.html');
   const css = read('style.css');
   const js = read('script.js');
+  const usage = read('usage.tsx');
+
+  /* The team standard: no hardcoded dynamic values, typed props on every
+     component, and a usage example beside the preview. Each prop defaults to
+     the demo value, so the gallery mounts <X /> and gets the same render. */
+  let props = [];
+  if (hasTsx) {
+    const iface = /export interface (\w+Props)\s*\{/.exec(tsx);
+    if (!iface) fail(slug, 'Component.tsx exports no "<Name>Props" interface. Every component takes typed props.');
+    if (!/export default function \w+\(\s*\{/.test(tsx)) fail(slug, 'the default export takes no props. Destructure its Props with defaults.');
+    if (!usage.trim()) fail(slug, 'usage.tsx is missing. Every component page shows a usage example.');
+    props = parseProps(tsx, iface.index + iface[0].length);
+    if (!props.length) fail(slug, `${iface[1]} declares no props.`);
+  }
 
   /* Components must theme from tokens, never from literal colours.
      A hardcoded colour breaks the wallpaper palette and fails the library's purpose. */
@@ -87,9 +101,39 @@ function loadOne(slug) {
     finalPrompt,
     attempts: Array.isArray(meta.attempts) ? meta.attempts : [],
     why: meta.why || '',
-    html, css, js, tsx, hasTsx,
+    html, css, js, tsx, hasTsx, usage, props,
     repoPath: `components-src/${slug}`
   };
+}
+
+/* Reads the members of a Props interface: name, optional, type and the JSDoc
+   line above each. Brace-matched rather than regexed, because a member's type
+   can itself contain braces. */
+function parseProps(src, start) {
+  let depth = 1, i = start;
+  while (i < src.length && depth) { if (src[i] === '{') depth++; else if (src[i] === '}') depth--; i++; }
+  const body = src.slice(start, i - 1);
+  const out = [];
+  let d = 0, line = '', doc = '';
+  for (let j = 0; j < body.length; j++) {
+    const ch = body[j];
+    if (d === 0 && body.startsWith('/**', j)) {
+      const end = body.indexOf('*/', j);
+      doc = body.slice(j + 3, end).replace(/^\s*\*\s?/gm, '').replace(/\s+/g, ' ').trim();
+      j = end + 1; continue;
+    }
+    if (d === 0 && body.startsWith('//', j)) { j = body.indexOf('\n', j); if (j < 0) break; continue; }
+    if ('{([<'.includes(ch)) d++;
+    if ('})]>'.includes(ch) && !(ch === '>' && body[j - 1] === '=')) d--;
+    if (d === 0 && ch === ';') {
+      const m = /^\s*(?:readonly\s+)?(\w+)(\?)?\s*:\s*([\s\S]+?)\s*$/.exec(line);
+      if (m) out.push({ name: m[1], optional: !!m[2], type: m[3].replace(/\s+/g, ' ').replace(/^\| /, ''), doc });
+      line = ''; doc = '';
+      continue;
+    }
+    line += ch;
+  }
+  return out;
 }
 
 export function allComponents() {

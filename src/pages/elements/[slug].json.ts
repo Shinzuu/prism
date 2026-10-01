@@ -20,8 +20,10 @@ export const GET: APIRoute = ({ props }) => {
     demo: `${SITE}/components/${c.slug}`,
     preview: `${SITE}/preview/${c.slug}`,
     source: `https://github.com/Shinzuu/prism/blob/main/${c.repoPath}`,
+    props: c.props,
     files: [
       { path: 'Component.tsx', language: 'tsx', contents: c.tsx },
+      ...(c.usage ? [{ path: 'usage.tsx', language: 'tsx', contents: c.usage }] : []),
       ...(c.css ? [{ path: 'style.css', language: 'css', contents: c.css }] : []),
     ],
     requires: {

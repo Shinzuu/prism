@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react';
 
-const A = 'The sweep schedule clamps wing position against Mach number. Pilots may override the schedule, but the automatic mode exists because the optimum moves faster than a hand can follow it.';
-const B = 'The sweep schedule programs wing position against Mach number and altitude. Pilots may override it at any time, but the automatic mode exists because the optimum moves faster than a hand can follow.';
+const DEFAULT_BEFORE = 'The sweep schedule clamps wing position against Mach number. Pilots may override the schedule, but the automatic mode exists because the optimum moves faster than a hand can follow it.';
+const DEFAULT_AFTER = 'The sweep schedule programs wing position against Mach number and altitude. Pilots may override it at any time, but the automatic mode exists because the optimum moves faster than a hand can follow.';
 
 type Op = ['same' | 'del' | 'ins', string];
+export type DiffMode = 'inline' | 'split';
 const tokenise = (s: string) => s.match(/\S+\s*/g) ?? [];
 
 /* Word-level diff. A line diff marks a whole sentence changed when one word
@@ -31,9 +32,34 @@ function diff(a: string[], b: string[]): Op[] {
   return ops;
 }
 
-export default function WordDiff() {
-  const [mode, setMode] = useState<'inline' | 'split'>('inline');
-  const ops = useMemo(() => diff(tokenise(A), tokenise(B)), []);
+export interface WordDiffProps {
+  /** Original text. */
+  before?: string;
+  /** Revised text. */
+  after?: string;
+  /** View shown first. */
+  initialMode?: DiffMode;
+  /** Label of the inline view button. */
+  inlineLabel?: string;
+  /** Label of the split view button. */
+  splitLabel?: string;
+  /** Fired when the view is switched. */
+  onModeChange?: (mode: DiffMode) => void;
+  /** Extra classes appended to the root element. */
+  className?: string;
+}
+
+export default function WordDiff({
+  before = DEFAULT_BEFORE,
+  after = DEFAULT_AFTER,
+  initialMode = 'inline',
+  inlineLabel = 'Inline',
+  splitLabel = 'Split',
+  onModeChange,
+  className = '',
+}: WordDiffProps) {
+  const [mode, setMode] = useState<DiffMode>(initialMode);
+  const ops = useMemo(() => diff(tokenise(before), tokenise(after)), [before, after]);
   const added = ops.filter((o) => o[0] === 'ins').length;
   const removed = ops.filter((o) => o[0] === 'del').length;
 
@@ -53,16 +79,17 @@ export default function WordDiff() {
   );
 
   return (
-    <div className="wd grid gap-[9px]">
+    <div className={`wd grid gap-[9px] ${className}`}>
       <div className="flex items-center gap-1.5">
         {(['inline', 'split'] as const).map((m) => (
           <button
-            key={m} type="button" aria-pressed={mode === m} onClick={() => setMode(m)}
-            className={`cursor-pointer rounded-full border px-[11px] py-[5px] font-sans text-[.76rem] ${
-              mode === m ? 'border-accent bg-accent text-accent-fg' : 'border-border bg-transparent text-text-dim'
+            key={m} type="button" aria-pressed={mode === m}
+            onClick={() => { if (m !== mode) { setMode(m); onModeChange?.(m); } }}
+            className={`cursor-pointer rounded-full border px-[11px] py-[5px] font-sans text-[.76rem] active:translate-y-px focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2 ${
+              mode === m ? 'border-accent bg-accent text-accent-fg' : 'border-border bg-transparent text-text-dim hover:border-accent hover:text-text'
             }`}
           >
-            {m === 'inline' ? 'Inline' : 'Split'}
+            {m === 'inline' ? inlineLabel : splitLabel}
           </button>
         ))}
         <span className="ms-auto font-mono text-[.72rem] tabular-nums text-text-dim">+{added} −{removed} words</span>

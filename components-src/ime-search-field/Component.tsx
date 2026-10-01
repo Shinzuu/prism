@@ -1,10 +1,49 @@
 import { useRef, useState } from 'react';
 
+const DEFAULT_REPLAY_STEPS: readonly string[] = ['n', 'ni', 'nih', 'niha', 'nihao'];
+
+export interface ImeSearchFieldProps {
+  /** Visible label above the field. */
+  label?: string;
+  /** Placeholder inside the field. */
+  placeholder?: string;
+  /** Id for the input; change it when rendering more than one. */
+  id?: string;
+  /** Quiet period after the last keystroke before a query is sent, in ms. */
+  debounceMs?: number;
+  /** Intermediate strings the IME emits during the replayed composition. */
+  replaySteps?: readonly string[];
+  /** The committed word the replayed composition ends on. */
+  replayResult?: string;
+  /** Text on the replay button. */
+  replayLabel?: string;
+  /** Disables the field and the replay button. */
+  disabled?: boolean;
+  /** Fires with every raw value, including mid-composition ones. */
+  onChange?: (value: string) => void;
+  /** Fires once per settled, non-empty query: never with a half-composed word. */
+  onSearch?: (query: string) => void;
+  /** Extra classes appended to the root element. */
+  className?: string;
+}
+
 /* Typing 你好 on a pinyin IME emits the intermediate letters n, ni, nih, niha,
    nihao as real input events. A field that queries on input searches the pinyin
    five times and matches nothing — and the bug does not exist in Latin script,
    so it ships. */
-export default function ImeSearchField() {
+export default function ImeSearchField({
+  label = 'Search products',
+  placeholder = 'Type — or compose with an IME',
+  id = 'ime-q',
+  debounceMs = 140,
+  replaySteps = DEFAULT_REPLAY_STEPS,
+  replayResult = '你好',
+  replayLabel = 'Replay a composition',
+  disabled = false,
+  onChange,
+  onSearch,
+  className = '',
+}: ImeSearchFieldProps) {
   const [value, setValue] = useState('');
   const [state, setState] = useState<'idle' | 'typing' | 'composing'>('idle');
   const [good, setGood] = useState<string[]>([]);
@@ -16,6 +55,7 @@ export default function ImeSearchField() {
     set((prev) => [line, ...prev].slice(0, 6));
 
   const query = (v: string, set: typeof setGood) => { if (v) push(set, `GET /search?q=${v}`); };
+  const search = (v: string) => { query(v, setGood); if (v) onSearch?.(v); };
 
   const guarded = (v: string) => {
     /* Two independent guards, and both are needed. compositionstart/end bracket
@@ -24,26 +64,27 @@ export default function ImeSearchField() {
        let through. */
     if (composing.current) return;
     if (debounce.current) clearTimeout(debounce.current);
-    debounce.current = setTimeout(() => query(v, setGood), 140);
+    debounce.current = setTimeout(() => search(v), debounceMs);
   };
 
   // Replay a pinyin composition, so the difference is visible without an IME.
   const replay = () => {
+    if (disabled) return;
     setValue(''); setGood([]); setBad([]);
     composing.current = true;
     setState('composing');
-    const steps = ['n', 'ni', 'nih', 'niha', 'nihao'];
+    const steps = replaySteps;
     steps.forEach((s, i) => {
       setTimeout(() => {
         setValue(s);
         query(s, setBad);                  // the naive field fires on each
         if (i === steps.length - 1) {
           setTimeout(() => {
-            setValue('你好');
-            query('你好', setBad);
+            setValue(replayResult);
+            query(replayResult, setBad);
             composing.current = false;
             setState('idle');
-            query('你好', setGood);        // the one real query
+            search(replayResult);          // the one real query
           }, 170);
         }
       }, 170 * i);
@@ -57,15 +98,16 @@ export default function ImeSearchField() {
   );
 
   return (
-    <div className="grid gap-[10px]">
-      <label className="text-[.74rem] text-text-dim" htmlFor="ime-q">Search products</label>
+    <div className={`grid gap-[10px] ${className}`}>
+      <label className="text-[.74rem] text-text-dim" htmlFor={id}>{label}</label>
       <div className="relative flex items-center">
         <input
-          id="ime-q"
+          id={id}
           type="search"
           autoComplete="off"
-          placeholder="Type — or compose with an IME"
+          placeholder={placeholder}
           value={value}
+          disabled={disabled}
           onCompositionStart={() => { composing.current = true; setState('composing'); }}
           onCompositionEnd={(e) => {
             composing.current = false;
@@ -76,13 +118,14 @@ export default function ImeSearchField() {
           onChange={(e) => {
             const v = e.target.value;
             setValue(v);
+            onChange?.(v);
             const isComposing = (e.nativeEvent as InputEvent).isComposing;
             setState(isComposing ? 'composing' : 'typing');
             query(v, setBad);              // the unguarded field
             if (isComposing) return;        // belt as well as braces
             guarded(v);
           }}
-          className="flex-1 rounded-[9px] border border-border bg-bg py-[9px] pl-[11px] pr-[5.4rem] font-sans text-[.84rem] text-text focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-1"
+          className="flex-1 rounded-[9px] border border-border bg-bg py-[9px] pl-[11px] pr-[5.4rem] font-sans text-[.84rem] text-text focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
         />
         <span className={`absolute right-[9px] rounded-[5px] border px-1.5 py-0.5 font-mono text-[.6rem] ${
           state === 'composing' ? 'border-accent text-accent' : 'border-border text-text-dim'
@@ -109,9 +152,10 @@ export default function ImeSearchField() {
       <button
         type="button"
         onClick={replay}
-        className="cursor-pointer justify-self-start rounded-[7px] border border-border bg-raised px-[11px] py-1.5 font-sans text-[.74rem] text-text focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+        disabled={disabled}
+        className="cursor-pointer justify-self-start rounded-[7px] border border-border bg-raised px-[11px] py-1.5 font-sans text-[.74rem] text-text hover:border-accent active:translate-y-px focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-border disabled:active:translate-y-0"
       >
-        Replay a composition
+        {replayLabel}
       </button>
     </div>
   );

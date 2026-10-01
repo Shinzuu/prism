@@ -7,3 +7,5 @@
   @keyframes or-in { from { opacity: 0; transform: translateY(-6px) } }
   .or-in { animation: or-in 260ms ease; }
 }
+/* .or-link sets its cursor outside the utility layer, so a disabled utility cannot override it. */
+.or-link:disabled { cursor: not-allowed; opacity: .5; }

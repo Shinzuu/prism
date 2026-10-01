@@ -1,25 +1,66 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-const CONTENT: Record<string, string[]> = {
-  Runtime: ['Isolates', 'Cold starts', 'CPU budget'],
-  Storage: ['KV namespaces', 'Durable objects', 'R2 buckets'],
-  Network: ['Routes', 'Rate limits', 'Egress'],
-  Billing: ['Plan', 'Invoices', 'Usage alerts'],
-};
-const KEYS = Object.keys(CONTENT);
+/** One menu entry and the submenu it opens. Labels must be unique. */
+export type HoverGroup = { label: string; items: string[]; disabled?: boolean };
+
+const DEFAULT_GROUPS: HoverGroup[] = [
+  { label: 'Runtime', items: ['Isolates', 'Cold starts', 'CPU budget'] },
+  { label: 'Storage', items: ['KV namespaces', 'Durable objects', 'R2 buckets'] },
+  { label: 'Network', items: ['Routes', 'Rate limits', 'Egress'] },
+  { label: 'Billing', items: ['Plan', 'Invoices', 'Usage alerts'] },
+];
 type Pt = [number, number];
+
+export interface SafeTriangleHoverProps {
+  /** Menu entries, top to bottom, each with the items its submenu lists. */
+  groups?: HoverGroup[];
+  /** Whether the safe-triangle check starts switched on. */
+  initialSafe?: boolean;
+  /** Whether the triangle starts drawn on screen. */
+  initialShowTriangle?: boolean;
+  /** Shows the demo checkboxes that toggle the triangle and its drawing. */
+  showControls?: boolean;
+  /** Label of the checkbox that draws the triangle. */
+  showTriangleLabel?: string;
+  /** Label of the checkbox that switches the safe triangle off. */
+  disableTriangleLabel?: string;
+  /** Fired when the open submenu changes, with its label or null when closed. */
+  onOpenChange?: (label: string | null) => void;
+  /** Extra classes appended to the root element. */
+  className?: string;
+}
 
 /* The submenu sits to the right, so reaching it means moving diagonally — and
    a diagonal crosses the item below, whose hover closes the panel you were
    heading for. A close delay cannot be tuned, because the right value is a
    property of the person's hand. The geometric question has an exact answer. */
-export default function SafeTriangleHover() {
+export default function SafeTriangleHover({
+  groups = DEFAULT_GROUPS,
+  initialSafe = true,
+  initialShowTriangle = true,
+  showControls = true,
+  showTriangleLabel = 'Show the safe triangle',
+  disableTriangleLabel = 'Disable it — try reaching the panel diagonally',
+  onOpenChange,
+  className = '',
+}: SafeTriangleHoverProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState<string | null>(null);
   const [tri, setTri] = useState<Pt[] | null>(null);
-  const [showTri, setShowTri] = useState(true);
-  const [disabled, setDisabled] = useState(false);
+  const [showTri, setShowTri] = useState(initialShowTriangle);
+  const [disabled, setDisabled] = useState(!initialSafe);
+
+  const onOpenRef = useRef(onOpenChange);
+  useEffect(() => { onOpenRef.current = onOpenChange; });
+  const reported = useRef(open);
+  useEffect(() => {
+    if (reported.current === open) return;
+    reported.current = open;
+    onOpenRef.current?.(open);
+  }, [open]);
+
+  const openGroup = groups.find((g) => g.label === open);
 
   const inSafe = (x: number, y: number) => {
     if (!tri || !rootRef.current) return false;
@@ -44,7 +85,7 @@ export default function SafeTriangleHover() {
   };
 
   return (
-    <div className="grid gap-2">
+    <div className={`grid gap-2 ${className}`}>
       <div
         ref={rootRef}
         className="relative flex min-h-[168px] items-start"
@@ -63,20 +104,22 @@ export default function SafeTriangleHover() {
           className="m-0 grid w-[9.5rem] shrink-0 list-none gap-0.5 rounded-[9px] border border-border bg-bg p-[5px]"
           onPointerLeave={(e) => { if (open && !disabled) build(e.clientX, e.clientY); }}
         >
-          {KEYS.map((k) => (
+          {groups.map(({ label: k, disabled: off }) => (
             <li key={k}>
               <button
                 type="button"
                 aria-haspopup="true"
                 aria-expanded={open === k}
+                disabled={off}
                 onPointerEnter={(e) => {
+                  if (off) return;
                   // The whole mechanism: inside the wedge, the hover is ignored.
                   if (!disabled && inSafe(e.clientX, e.clientY)) return;
                   setOpen(k); setTri(null);
                 }}
-                onFocus={() => setOpen(k)}
+                onFocus={() => { if (!off) setOpen(k); }}
                 onKeyDown={(e) => { if (e.key === 'Escape') setOpen(null); }}
-                className={`flex w-full cursor-pointer justify-between rounded-md border-0 bg-transparent px-[9px] py-[7px] text-start font-sans text-[.76rem] after:text-text-dim after:content-['›'] focus-visible:outline-2 focus-visible:outline-accent focus-visible:-outline-offset-1 ${
+                className={`flex w-full cursor-pointer justify-between rounded-md border-0 bg-transparent px-[9px] py-[7px] text-start font-sans text-[.76rem] after:text-text-dim after:content-['›'] hover:bg-raised focus-visible:outline-2 focus-visible:outline-accent focus-visible:-outline-offset-1 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent ${
                   open === k ? 'bg-raised text-accent' : 'text-text'
                 }`}
               >
@@ -86,11 +129,11 @@ export default function SafeTriangleHover() {
           ))}
         </ul>
 
-        {open && (
+        {open && openGroup && (
           <div ref={panelRef} className="ms-3 min-w-0 flex-1 self-stretch rounded-[9px] border border-border bg-raised px-3 py-[10px] text-[.74rem] text-text-dim">
             <h4 className="m-0 mb-[5px] text-[.78rem] font-medium text-text">{open}</h4>
             <ul className="m-0 list-disc ps-[1.1rem] leading-loose">
-              {CONTENT[open]!.map((i) => <li key={i}>{i}</li>)}
+              {openGroup.items.map((i) => <li key={i}>{i}</li>)}
             </ul>
           </div>
         )}
@@ -107,10 +150,11 @@ export default function SafeTriangleHover() {
         )}
       </div>
 
-      {[['Show the safe triangle', showTri, setShowTri],
-        ['Disable it — try reaching the panel diagonally', disabled, setDisabled]].map(([label, val, set]) => (
+      {showControls && [[showTriangleLabel, showTri, setShowTri],
+        [disableTriangleLabel, disabled, setDisabled]].map(([label, val, set]) => (
         <label key={label as string} className="flex cursor-pointer items-center gap-1.5 text-[.7rem] text-text-dim">
           <input type="checkbox" checked={val as boolean}
+                 className="focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
                  onChange={(e) => (set as (v: boolean) => void)(e.target.checked)} />
           <span>{label as string}</span>
         </label>

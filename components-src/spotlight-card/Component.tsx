@@ -2,16 +2,24 @@ import { useEffect, useRef } from 'react';
 
 const MAX_TILT = 6; // degrees; past about 8 it reads as a gimmick
 
-const CARDS = [
+export type SpotlightCardData = {
+  kicker: string;
+  title: string;
+  text: string;
+  /** Label/value pairs shown under the body. */
+  spec: readonly (readonly [string, string])[];
+};
+
+const DEFAULT_CARDS: SpotlightCardData[] = [
   { kicker: 'Airframe 04', title: 'Delta canard',
     text: 'Close-coupled canards ahead of a delta wing, trading trim drag for vortex lift at high angle of attack.',
-    spec: [['ceiling', '19 800 m'], ['thrust', '2 × 90 kN']] as const },
+    spec: [['ceiling', '19 800 m'], ['thrust', '2 × 90 kN']] },
   { kicker: 'Airframe 07', title: 'Variable geometry',
     text: 'Wings sweep from 20 to 68 degrees, buying field performance at low sweep and supersonic reach at high.',
-    spec: [['sweep', '20–68°'], ['crew', '2']] as const },
+    spec: [['sweep', '20–68°'], ['crew', '2']] },
 ];
 
-function SpotlightCard({ card }: { card: (typeof CARDS)[number] }) {
+function SpotlightCard({ card, maxTilt }: { card: SpotlightCardData; maxTilt: number }) {
   const ref = useRef<HTMLElement>(null);
 
   /* Pointer position is written as custom properties so every visual decision
@@ -29,8 +37,8 @@ function SpotlightCard({ card }: { card: (typeof CARDS)[number] }) {
       const { x, y, w, h } = pending;
       el.style.setProperty('--mx', `${(x / w) * 100}%`);
       el.style.setProperty('--my', `${(y / h) * 100}%`);
-      const rx = (0.5 - y / h) * 2 * MAX_TILT;
-      const ry = (x / w - 0.5) * 2 * MAX_TILT;
+      const rx = (0.5 - y / h) * 2 * maxTilt;
+      const ry = (x / w - 0.5) * 2 * maxTilt;
       el.style.transform =
         `perspective(720px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) translateZ(0)`;
     };
@@ -63,7 +71,7 @@ function SpotlightCard({ card }: { card: (typeof CARDS)[number] }) {
       el.removeEventListener('focus', light);
       el.removeEventListener('blur', rest);
     };
-  }, []);
+  }, [maxTilt]);
 
   return (
     <article
@@ -91,10 +99,23 @@ function SpotlightCard({ card }: { card: (typeof CARDS)[number] }) {
   );
 }
 
-export default function SpotlightCards() {
+export interface SpotlightCardsProps {
+  /** Cards to render; each needs a unique kicker. */
+  cards?: SpotlightCardData[];
+  /** Maximum pointer tilt in degrees. */
+  maxTilt?: number;
+  /** Extra classes appended to the root element. */
+  className?: string;
+}
+
+export default function SpotlightCards({
+  cards = DEFAULT_CARDS,
+  maxTilt = MAX_TILT,
+  className = '',
+}: SpotlightCardsProps) {
   return (
-    <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4">
-      {CARDS.map((c) => <SpotlightCard key={c.kicker} card={c} />)}
+    <div className={`grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 ${className}`}>
+      {cards.map((c) => <SpotlightCard key={c.kicker} card={c} maxTilt={maxTilt} />)}
     </div>
   );
 }

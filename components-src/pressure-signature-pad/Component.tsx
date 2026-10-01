@@ -1,16 +1,63 @@
 import { useRef, useState } from 'react';
 
-export default function PressureSignaturePad() {
+export interface PressureSignaturePadProps {
+  /** Heading above the pad. */
+  title?: string;
+  /** Text of the clear button. */
+  clearLabel?: string;
+  /** Sampling readout before anything is drawn. */
+  idleMeta?: string;
+  /** Hint when the browser supplies coalesced pointer events. */
+  supportedHint?: string;
+  /** Hint when it does not. */
+  unsupportedHint?: string;
+  /** Accessible name of the drawing surface. */
+  ariaLabel?: string;
+  /** Backing-store width of the canvas in px; the CSS size stays fluid. */
+  canvasWidth?: number;
+  /** Backing-store height of the canvas in px. */
+  canvasHeight?: number;
+  /** Stops drawing and clearing. */
+  disabled?: boolean;
+  /** Fires when a stroke ends, with the canvas so the caller can export it. */
+  onStrokeEnd?: (canvas: HTMLCanvasElement) => void;
+  /** Fires after the pad is cleared. */
+  onClear?: () => void;
+  /** Extra classes for the root element. */
+  className?: string;
+}
+
+export default function PressureSignaturePad({
+  title = 'Sign here',
+  clearLabel = 'Clear',
+  idleMeta = 'draw to measure sampling',
+  supportedHint = 'Pressure from a stylus; speed stands in for a mouse.',
+  unsupportedHint = 'Coalesced events unavailable — stroke will be coarser.',
+  ariaLabel = 'Signature area. Draw with a mouse, finger or stylus.',
+  canvasWidth = 1040,
+  canvasHeight = 300,
+  disabled = false,
+  onStrokeEnd,
+  onClear,
+  className = '',
+}: PressureSignaturePadProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const last = useRef<{ x: number; y: number } | null>(null);
   const drawing = useRef(false);
   const counts = useRef({ samples: 0, frames: 0 });
-  const [meta, setMeta] = useState('draw to measure sampling');
+  const [meta, setMeta] = useState(idleMeta);
 
   const hint = typeof PointerEvent !== 'undefined' && 'getCoalescedEvents' in PointerEvent.prototype
-    ? 'Pressure from a stylus; speed stands in for a mouse.'
-    : 'Coalesced events unavailable — stroke will be coarser.';
+    ? supportedHint
+    : unsupportedHint;
+
+  const end = () => {
+    const wasDrawing = drawing.current;
+    drawing.current = false;
+    last.current = null;
+    if (wasDrawing && canvasRef.current) onStrokeEnd?.(canvasRef.current);
+  };
 
   const toLocal = (e: { clientX: number; clientY: number }) => {
     const c = canvasRef.current!;
@@ -55,20 +102,24 @@ export default function PressureSignaturePad() {
   };
 
   return (
-    <div ref={rootRef} className="grid gap-2">
+    <div ref={rootRef} className={`grid gap-2 ${className}`}>
       <div className="flex items-baseline justify-between gap-[10px]">
-        <p className="m-0 text-[.82rem] font-medium">Sign here</p>
+        <p className="m-0 text-[.82rem] font-medium">{title}</p>
         <p className="m-0 font-mono text-[.64rem] tabular-nums text-text-dim">{meta}</p>
       </div>
 
       <canvas
         ref={canvasRef}
-        width={1040}
-        height={300}
+        width={canvasWidth}
+        height={canvasHeight}
         role="img"
-        aria-label="Signature area. Draw with a mouse, finger or stylus."
-        className="block h-auto w-full cursor-crosshair touch-none rounded-[9px] border border-border bg-bg"
+        aria-label={ariaLabel}
+        aria-disabled={disabled || undefined}
+        className={`block h-auto w-full touch-none rounded-[9px] border border-border bg-bg ${
+          disabled ? 'cursor-not-allowed opacity-50' : 'cursor-crosshair'
+        }`}
         onPointerDown={(e) => {
+          if (disabled) return;
           drawing.current = true;
           last.current = null;
           e.currentTarget.setPointerCapture(e.pointerId);
@@ -89,23 +140,25 @@ export default function PressureSignaturePad() {
           setMeta(`${samples} samples / ${frames} frames · ${ratio.toFixed(1)}× per frame` +
             (ratio < 1.35 ? ' — this pointer has no extra samples to coalesce' : ' — extra samples recovered'));
         }}
-        onPointerUp={() => { drawing.current = false; last.current = null; }}
-        onPointerCancel={() => { drawing.current = false; last.current = null; }}
-        onPointerLeave={() => { drawing.current = false; last.current = null; }}
+        onPointerUp={end}
+        onPointerCancel={end}
+        onPointerLeave={end}
       />
 
       <div className="flex items-center gap-[10px]">
         <button
           type="button"
+          disabled={disabled}
           onClick={() => {
             const c = canvasRef.current;
             c?.getContext('2d')?.clearRect(0, 0, c.width, c.height);
             counts.current = { samples: 0, frames: 0 };
-            setMeta('draw to measure sampling');
+            setMeta(idleMeta);
+            onClear?.();
           }}
-          className="cursor-pointer rounded-[7px] border border-border bg-raised px-3 py-1.5 font-sans text-[.74rem] text-text focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+          className="cursor-pointer rounded-[7px] border border-border bg-raised px-3 py-1.5 font-sans text-[.74rem] text-text hover:border-accent active:scale-[.97] focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-border disabled:active:scale-100"
         >
-          Clear
+          {clearLabel}
         </button>
         <span className="text-[.68rem] text-text-dim">{hint}</span>
       </div>

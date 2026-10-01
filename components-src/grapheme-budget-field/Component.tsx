@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 
-const LIMIT = 40;
+const DEFAULT_LIMIT = 40;
+const DEFAULT_VALUE = 'Shipping 🇯🇵 today 👨‍👩‍👧‍👦 — café';
 
 /* Intl.Segmenter is the only one of the three counts that agrees with a reader.
    A family emoji is one character to everyone who has looked at it, eleven
@@ -17,15 +18,49 @@ function graphemes(value: string): string[] {
 
 type Row = { label: string; count: number; note: string; emphasis?: boolean };
 
-export default function GraphemeBudgetField() {
-  const [value, setValue] = useState('Shipping 🇯🇵 today 👨‍👩‍👧‍👦 — café');
+export interface GraphemeBudgetFieldProps {
+  /** Maximum number of graphemes (user-perceived characters) allowed. */
+  limit?: number;
+  /** Initial text in the field. */
+  defaultValue?: string;
+  /** Visible label above the field. */
+  label?: string;
+  /** Text on the truncate button. */
+  truncateLabel?: string;
+  /** Id for the textarea; the counter id is derived from it. Change it when rendering more than one. */
+  id?: string;
+  /** Disables the field and the truncate button. */
+  disabled?: boolean;
+  /** Fires on every edit and on truncate with the new value and its grapheme count. */
+  onChange?: (value: string, graphemeCount: number) => void;
+  /** Extra classes appended to the root element. */
+  className?: string;
+}
+
+export default function GraphemeBudgetField({
+  limit = DEFAULT_LIMIT,
+  defaultValue = DEFAULT_VALUE,
+  label = 'Status message',
+  truncateLabel = 'Truncate to limit',
+  id = 'gbf-in',
+  disabled = false,
+  onChange,
+  className = '',
+}: GraphemeBudgetFieldProps) {
+  const [value, setValue] = useState(defaultValue);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const units = value.length;
   const points = useMemo(() => [...value].length, [value]);
   const graphemeList = useMemo(() => graphemes(value), [value]);
   const count = graphemeList.length;
-  const over = count - LIMIT;
+  const over = count - limit;
+  const countId = id === 'gbf-in' ? 'gbf-count' : `${id}-count`;
+
+  const update = (next: string) => {
+    setValue(next);
+    onChange?.(next, graphemes(next).length);
+  };
 
   const rows: Row[] = [
     { label: '.length (UTF-16 units)', count: units, note: 'what most code counts' },
@@ -37,48 +72,52 @@ export default function GraphemeBudgetField() {
      joiner sequence or between a surrogate pair, and a lone surrogate renders
      as a replacement glyph and is not valid in JSON. */
   const truncate = () => {
-    setValue(graphemeList.slice(0, LIMIT).join(''));
+    if (disabled) return;
+    update(graphemeList.slice(0, limit).join(''));
     inputRef.current?.focus();
   };
 
   return (
-    <div className="grid gap-2">
-      <label className="text-[.7rem] text-text-dim" htmlFor="gbf-in">
-        Status message
+    <div className={`grid gap-2 ${className}`}>
+      <label className="text-[.7rem] text-text-dim" htmlFor={id}>
+        {label}
       </label>
       <textarea
-        id="gbf-in"
+        id={id}
         ref={inputRef}
         rows={3}
         value={value}
-        onChange={(e) => setValue(e.target.value)}
-        aria-describedby="gbf-count"
+        disabled={disabled}
+        onChange={(e) => update(e.target.value)}
+        aria-describedby={countId}
         className="w-full min-w-0 rounded-lg border border-border bg-bg px-[10px] py-2
                    font-sans text-[.84rem] leading-relaxed text-text
-                   outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-1"
+                   outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-1
+                   disabled:cursor-not-allowed disabled:opacity-50"
       />
 
       <div className="flex flex-wrap items-center justify-between gap-[10px]">
         <p
-          id="gbf-count"
+          id={countId}
           aria-live="polite"
           className={`m-0 font-mono text-[.7rem] tabular-nums ${over > 0 ? 'text-accent' : 'text-text-dim'}`}
         >
           {segmenter
             ? over > 0
-              ? `${count} / ${LIMIT} — ${over} over`
-              : `${count} / ${LIMIT}`
+              ? `${count} / ${limit} — ${over} over`
+              : `${count} / ${limit}`
             : 'Intl.Segmenter unavailable — counting code points'}
         </p>
         <button
           type="button"
           onClick={truncate}
-          disabled={over <= 0}
+          disabled={disabled || over <= 0}
           className="cursor-pointer rounded-md border border-border bg-raised px-[10px] py-[5px]
-                     font-sans text-[.7rem] text-text disabled:cursor-default disabled:opacity-50
+                     font-sans text-[.7rem] text-text hover:border-accent active:translate-y-px
+                     disabled:cursor-default disabled:opacity-50 disabled:hover:border-border disabled:active:translate-y-0
                      focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
         >
-          Truncate to limit
+          {truncateLabel}
         </button>
       </div>
 

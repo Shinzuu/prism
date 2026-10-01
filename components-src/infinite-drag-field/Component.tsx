@@ -1,13 +1,73 @@
 import { useEffect, useRef, useState } from 'react';
 
-export default function InfiniteDragField() {
-  const [value, setValue] = useState(0);
+export interface InfiniteDragFieldProps {
+  /** Starting value; Home returns to it. */
+  defaultValue?: number;
+  /** Lowest value the field accepts. */
+  min?: number;
+  /** Highest value the field accepts. */
+  max?: number;
+  /** Change per pixel dragged or per arrow press. */
+  step?: number;
+  /** Change per pixel or press while Shift is held. */
+  largeStep?: number;
+  /** Change per pixel or press while Alt is held. */
+  fineStep?: number;
+  /** Text on the drag handle. */
+  label?: string;
+  /** Unit shown after the number field. */
+  unit?: string;
+  /** Accessible name for the drag handle. */
+  handleLabel?: string;
+  /** Accessible name for the number field. */
+  inputLabel?: string;
+  /** Explanatory line under the field; pass an empty string to hide it. */
+  hint?: string;
+  /** Disables dragging, arrow keys and the number field. */
+  disabled?: boolean;
+  /** Fires with every new value, from drag, keys or typing. */
+  onChange?: (value: number) => void;
+  /** Extra classes appended to the root element. */
+  className?: string;
+}
+
+export default function InfiniteDragField({
+  defaultValue = 0,
+  min = -9999,
+  max = 9999,
+  step = 1,
+  largeStep = 10,
+  fineStep = 0.1,
+  label = 'Offset X',
+  unit = 'px',
+  handleLabel = 'Offset X, drag to scrub or use arrow keys',
+  inputLabel = 'Offset X in pixels',
+  hint = 'Drag the label sideways. The pointer is captured and hidden, wraps at the screen edge, and never runs out of room.',
+  disabled = false,
+  onChange,
+  className = '',
+}: InfiniteDragFieldProps) {
+  const [value, setValue] = useState(defaultValue);
   const [read, setRead] = useState('');
   const [scrubbing, setScrubbing] = useState(false);
   const scrubRef = useRef<HTMLSpanElement>(null);
   const dragging = useRef(false);
   const locked = useRef(false);
   const acc = useRef(0);
+  const valueRef = useRef(defaultValue);
+
+  /* The document listeners are bound once, so they read the current props
+     through a ref instead of a stale closure. */
+  const live = useRef({ min, max, step, largeStep, fineStep, onChange });
+  live.current = { min, max, step, largeStep, fineStep, onChange };
+
+  const commit = (next: number) => {
+    const { min: lo, max: hi, onChange: notify } = live.current;
+    const v = Math.min(hi, Math.max(lo, next));
+    valueRef.current = v;
+    setValue(v);
+    notify?.(v);
+  };
 
   useEffect(() => {
     setRead('requestPointerLock' in Element.prototype ? 'Pointer Lock available' : 'Pointer Lock unavailable — edge-limited fallback');
@@ -19,12 +79,13 @@ export default function InfiniteDragField() {
        scrubber dies the instant the lock engages. */
     const move = (e: PointerEvent) => {
       if (!dragging.current) return;
-      const gear = e.shiftKey ? 10 : e.altKey ? 0.1 : 1;
+      const cfg = live.current;
+      const gear = e.shiftKey ? cfg.largeStep : e.altKey ? cfg.fineStep : cfg.step;
       acc.current += (e.movementX || 0) * gear;
       const step = Math.trunc(acc.current);
       if (!step) return;
       acc.current -= step;
-      setValue((v) => v + step);
+      commit(valueRef.current + step);
       setRead(`movementX ${e.movementX > 0 ? '+' : ''}${e.movementX} · gear ×${gear}` +
         (locked.current ? ' · pointer locked' : ' · fallback, edge-limited'));
     };
@@ -49,6 +110,7 @@ export default function InfiniteDragField() {
   }, []);
 
   const down = async (e: React.PointerEvent<HTMLSpanElement>) => {
+    if (disabled) return;
     dragging.current = true;
     acc.current = 0;
     setScrubbing(true);
@@ -70,48 +132,48 @@ export default function InfiniteDragField() {
   };
 
   const key = (e: React.KeyboardEvent) => {
-    const step = e.shiftKey ? 10 : e.altKey ? 0.1 : 1;
-    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') setValue((v) => v + step);
-    else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') setValue((v) => v - step);
-    else if (e.key === 'Home') setValue(0);
+    if (disabled) return;
+    const by = e.shiftKey ? largeStep : e.altKey ? fineStep : step;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') commit(valueRef.current + by);
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') commit(valueRef.current - by);
+    else if (e.key === 'Home') commit(defaultValue);
     else return;
     e.preventDefault();
-    setRead(`keyboard · step ${step}`);
+    setRead(`keyboard · step ${by}`);
   };
 
   return (
-    <div className={`grid gap-2 ${scrubbing ? 'cursor-ew-resize' : ''}`}>
+    <div className={`grid gap-2 ${scrubbing ? 'cursor-ew-resize' : ''} ${className}`}>
       <div className="flex items-center gap-2">
         <span
           ref={scrubRef}
           role="slider"
           tabIndex={0}
-          aria-valuemin={-9999}
-          aria-valuemax={9999}
+          aria-valuemin={min}
+          aria-valuemax={max}
           aria-valuenow={Math.round(value)}
-          aria-label="Offset X, drag to scrub or use arrow keys"
+          aria-label={handleLabel}
+          aria-disabled={disabled || undefined}
           onPointerDown={down}
           onKeyDown={key}
-          className={`idf-lab cursor-ew-resize touch-none select-none whitespace-nowrap rounded-md border border-dashed bg-raised px-2 py-[5px] text-[.74rem] focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2 ${
-            scrubbing ? 'border-solid border-accent text-accent' : 'border-border text-text-dim'
+          className={`idf-lab cursor-ew-resize touch-none select-none whitespace-nowrap rounded-md border border-dashed bg-raised px-2 py-[5px] text-[.74rem] focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 ${
+            scrubbing ? 'border-solid border-accent text-accent' : `border-border text-text-dim${disabled ? '' : ' hover:border-accent hover:text-text'}`
           }`}
         >
-          Offset X
+          {label}
         </span>
         {/* The scrub label carries the name for the drag affordance; the number
             field is a separate control and needs its own. */}
         <input
           type="number" step={1} value={Math.round(value)}
-          aria-label="Offset X in pixels"
-          onChange={(e) => setValue(Number(e.target.value))}
-          className="w-28 min-w-0 rounded-[7px] border border-border bg-bg px-[9px] py-1.5 font-sans text-[.84rem] tabular-nums text-text focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-1"
+          aria-label={inputLabel}
+          min={min} max={max} disabled={disabled}
+          onChange={(e) => commit(Number(e.target.value))}
+          className="w-28 min-w-0 rounded-[7px] border border-border bg-bg px-[9px] py-1.5 font-sans text-[.84rem] tabular-nums text-text focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
         />
-        <span className="font-mono text-[.68rem] text-text-dim">px</span>
+        <span className="font-mono text-[.68rem] text-text-dim">{unit}</span>
       </div>
-      <p className="m-0 text-[.72rem] leading-relaxed text-text-dim">
-        Drag the label sideways. The pointer is captured and hidden, wraps at the screen edge, and
-        never runs out of room.
-      </p>
+      {hint && <p className="m-0 text-[.72rem] leading-relaxed text-text-dim">{hint}</p>}
       <p className="m-0 font-mono text-[.66rem] text-text-dim">{read}</p>
     </div>
   );

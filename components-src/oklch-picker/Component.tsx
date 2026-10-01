@@ -12,12 +12,51 @@ const AXES = [
 
 const css = (l: number, c: number, h: number) => `oklch(${l}% ${c} ${h})`;
 
-export default function OklchPicker() {
-  const [l, setL] = useState(62);
-  const [c, setC] = useState(0.18);
-  const [h, setH] = useState(28);
+/** Lightness in percent (0–100), chroma (0–0.37), hue in degrees (0–360). */
+export type OklchColor = { l: number; c: number; h: number };
+
+const DEFAULT_COLOR: OklchColor = { l: 62, c: 0.18, h: 28 };
+
+export interface OklchPickerProps {
+  /** Starting colour. */
+  defaultValue?: OklchColor;
+  /** Fires on every slider move with the new colour and its CSS string. */
+  onChange?: (color: OklchColor, css: string) => void;
+  /** Fires after the CSS string has been copied to the clipboard. */
+  onCopy?: (css: string) => void;
+  /** Copy button text at rest. */
+  copyLabel?: string;
+  /** Copy button text after a successful copy. */
+  copiedLabel?: string;
+  /** Copy button text when the clipboard refuses. */
+  copyFailedLabel?: string;
+  /** How long the copy feedback stays, in ms. */
+  copyFeedbackMs?: number;
+  /** Shown when the colour falls outside sRGB. */
+  gamutWarning?: string;
+  /** Locks the sliders and the copy button. */
+  disabled?: boolean;
+  /** Extra classes for the root element. */
+  className?: string;
+}
+
+export default function OklchPicker({
+  defaultValue = DEFAULT_COLOR,
+  onChange,
+  onCopy,
+  copyLabel = 'copy',
+  copiedLabel = 'copied',
+  copyFailedLabel = 'copy failed',
+  copyFeedbackMs = 1400,
+  gamutWarning = 'Outside the sRGB gamut — this is the nearest displayable colour.',
+  disabled = false,
+  className = '',
+}: OklchPickerProps) {
+  const [l, setL] = useState(defaultValue.l);
+  const [c, setC] = useState(defaultValue.c);
+  const [h, setH] = useState(defaultValue.h);
   const [outOfGamut, setOutOfGamut] = useState(false);
-  const [copy, setCopy] = useState('copy');
+  const [copy, setCopy] = useState(copyLabel);
   const ctx = useRef<CanvasRenderingContext2D | null>(null);
 
   useEffect(() => {
@@ -56,7 +95,7 @@ export default function OklchPicker() {
   const fmt = { l: `${l.toFixed(1)}%`, c: c.toFixed(3), h: `${h}°` };
 
   return (
-    <div className="grid max-w-[420px] gap-3">
+    <div className={`grid max-w-[420px] gap-3 ${className}`}>
       <div className="h-24 rounded-xl border border-border" style={{ background: value }} />
 
       <div className="grid gap-[9px]">
@@ -65,9 +104,15 @@ export default function OklchPicker() {
             <span>{a.label}</span>
             <input
               type="range" min={a.min} max={a.max} step={a.step} value={val[a.k]}
-              onChange={(e) => setter[a.k](Number(e.target.value))}
+              disabled={disabled}
+              onChange={(e) => {
+                const v = Number(e.target.value);
+                setter[a.k](v);
+                const next = { ...val, [a.k]: v };
+                onChange?.(next, css(next.l, next.c, next.h));
+              }}
               style={{ '--ramp': ramp(a.k) } as React.CSSProperties}
-              className="op-range"
+              className="op-range disabled:opacity-50"
             />
             <output className="text-right font-mono text-[.76rem] tabular-nums text-text">{fmt[a.k]}</output>
           </label>
@@ -76,7 +121,7 @@ export default function OklchPicker() {
 
       {outOfGamut && (
         <p className="m-0 text-[.76rem] text-accent">
-          Outside the sRGB gamut — this is the nearest displayable colour.
+          {gamutWarning}
         </p>
       )}
 
@@ -84,12 +129,13 @@ export default function OklchPicker() {
         <code className="rounded-md bg-raised px-[9px] py-1 font-mono">{value}</code>
         <button
           type="button"
+          disabled={disabled}
           onClick={async () => {
-            try { await navigator.clipboard.writeText(value); setCopy('copied'); }
-            catch { setCopy('copy failed'); }
-            setTimeout(() => setCopy('copy'), 1400);
+            try { await navigator.clipboard.writeText(value); setCopy(copiedLabel); onCopy?.(value); }
+            catch { setCopy(copyFailedLabel); }
+            setTimeout(() => setCopy(copyLabel), copyFeedbackMs);
           }}
-          className="cursor-pointer border-0 bg-transparent p-0 font-mono text-[.74rem] text-text-dim underline underline-offset-[3px] hover:text-accent"
+          className="cursor-pointer border-0 bg-transparent p-0 font-mono text-[.74rem] text-text-dim underline underline-offset-[3px] hover:text-accent active:opacity-70 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-text-dim"
         >
           {copy}
         </button>

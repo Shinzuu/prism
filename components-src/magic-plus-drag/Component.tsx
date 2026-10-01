@@ -1,11 +1,41 @@
 import { Fragment, useRef, useState } from 'react';
 
-export default function MagicPlusDrag() {
-  const [items, setItems] = useState(['Pre-flight checks', 'Fuel load sign-off', 'Cabin secure', 'Pushback clearance']);
+const DEFAULT_ITEMS: readonly string[] = ['Pre-flight checks', 'Fuel load sign-off', 'Cabin secure', 'Pushback clearance'];
+
+export interface MagicPlusDragProps {
+  /** Steps the list starts with, in order. */
+  defaultItems?: readonly string[];
+  /** Instruction shown under the list while idle. */
+  hint?: string;
+  /** Accessible name for the field that names a new step. */
+  inputLabel?: string;
+  /** Placeholder for the field that names a new step. */
+  placeholder?: string;
+  /** Accessible name for the plus handle. */
+  handleLabel?: string;
+  /** Disables the plus handle, so nothing can be inserted. */
+  disabled?: boolean;
+  /** Fires with the full list after a new step is named and kept. */
+  onChange?: (items: string[]) => void;
+  /** Extra classes appended to the root element. */
+  className?: string;
+}
+
+export default function MagicPlusDrag({
+  defaultItems = DEFAULT_ITEMS,
+  hint = 'Drag the plus between two steps.',
+  inputLabel = 'New step name',
+  placeholder = 'New step',
+  handleLabel = 'Drag to insert a step, or press Enter to choose a position with the arrow keys',
+  disabled = false,
+  onChange,
+  className = '',
+}: MagicPlusDragProps) {
+  const [items, setItems] = useState<string[]>(() => [...defaultItems]);
   const [slot, setSlot] = useState<number | null>(null);
   const [editing, setEditing] = useState<number | null>(null);
   const [draft, setDraft] = useState('');
-  const [read, setRead] = useState('Drag the plus between two steps.');
+  const [read, setRead] = useState(hint);
   const [armed, setArmed] = useState<number | null>(null);
   const listRef = useRef<HTMLOListElement>(null);
   const plusRef = useRef<HTMLButtonElement>(null);
@@ -34,11 +64,13 @@ export default function MagicPlusDrag() {
     const v = draft.trim();
     setEditing(null);
     if (!v) { setItems((xs) => xs.filter((_, j) => j !== i)); setRead('Cancelled.'); return; }
-    setItems((xs) => xs.map((x, j) => (j === i ? v : x)));
+    const next = items.map((x, j) => (j === i ? v : x));
+    setItems(next);
+    onChange?.(next);
   };
 
   return (
-    <div className="relative grid justify-items-start gap-[9px]">
+    <div className={`relative grid justify-items-start gap-[9px] ${className}`}>
       <ol ref={listRef} className="m-0 grid w-full list-none gap-[3px] p-0 [counter-reset:step]">
         {items.map((label, i) => (
           <Fragment key={label + i}>
@@ -52,8 +84,8 @@ export default function MagicPlusDrag() {
               {editing === i ? (
                 <input
                   autoFocus
-                  aria-label="New step name"
-                  placeholder="New step"
+                  aria-label={inputLabel}
+                  placeholder={placeholder}
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
                   onBlur={() => commit(i)}
@@ -75,8 +107,10 @@ export default function MagicPlusDrag() {
       <button
         ref={plusRef}
         type="button"
-        aria-label="Drag to insert a step, or press Enter to choose a position with the arrow keys"
+        aria-label={handleLabel}
+        disabled={disabled}
         onPointerDown={(e) => {
+          if (disabled) return;
           const r = e.currentTarget.getBoundingClientRect();
           drag.current = { dx: e.clientX - r.left, dy: e.clientY - r.top };
           e.currentTarget.setPointerCapture(e.pointerId);
@@ -100,11 +134,12 @@ export default function MagicPlusDrag() {
           drag.current = null;
           const i = slot;
           setSlot(null); setPos(null);
-          if (i !== null) insertAt(i); else setRead('Drag the plus between two steps.');
+          if (i !== null) insertAt(i); else setRead(hint);
         }}
         onPointerCancel={() => { drag.current = null; setSlot(null); setPos(null); }}
         onKeyDown={(e) => {
           // A drag is a pointer idiom; the same intention needs a key path.
+          if (disabled) return;
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
             if (armed === null) { setArmed(items.length); setSlot(items.length); }
@@ -117,8 +152,8 @@ export default function MagicPlusDrag() {
           if (e.key === 'Escape') { setArmed(null); setSlot(null); setRead('Cancelled.'); }
         }}
         style={pos ? { position: 'fixed', left: pos.x, top: pos.y, pointerEvents: 'none' } : undefined}
-        className={`grid h-[34px] w-[34px] cursor-grab touch-none place-items-center rounded-full border bg-raised text-base leading-none active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2 ${
-          pos ? 'z-30 border-accent text-accent' : 'border-border text-text'
+        className={`grid h-[34px] w-[34px] cursor-grab touch-none place-items-center rounded-full border bg-raised text-base leading-none active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+          pos ? 'z-30 border-accent text-accent' : 'border-border text-text hover:border-accent hover:text-accent disabled:hover:border-border disabled:hover:text-text'
         }`}
       >
         +

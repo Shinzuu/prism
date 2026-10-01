@@ -1,22 +1,59 @@
 import { useRef, useState } from 'react';
 
-const SNAP = 5;   // px of tolerance before a candidate is considered
-type Box = { x: number; y: number; w: number; h: number };
-const STATIC: (Box & { label: string })[] = [
+export type Box = { x: number; y: number; w: number; h: number };
+export type LabelledBox = Box & { label: string };
+const DEFAULT_BLOCKS: LabelledBox[] = [
   { label: 'Header', x: 24, y: 22, w: 92, h: 54 },
   { label: 'Media', x: 150, y: 22, w: 92, h: 54 },
   { label: 'Aside', x: 276, y: 22, w: 92, h: 54 },
 ];
-const LIVE: Box = { x: 120, y: 120, w: 104, h: 58 };
+const DEFAULT_LIVE: Box = { x: 120, y: 120, w: 104, h: 58 };
 
 type Line = { x1: number; y1: number; x2: number; y2: number; gap?: boolean };
 
-export default function SnapGuideCanvas() {
+export interface SnapGuideCanvasProps {
+  /** Fixed blocks the live block snaps against, in stage pixels. */
+  blocks?: LabelledBox[];
+  /** Starting position and size of the draggable block, in stage pixels. */
+  liveBlock?: Box;
+  /** Text on the draggable block. */
+  liveLabel?: string;
+  /** Px of tolerance before a snap candidate is considered. */
+  snapTolerance?: number;
+  /** Px moved per arrow key press. */
+  keyStep?: number;
+  /** Px moved per arrow key press with Shift held. */
+  shiftStep?: number;
+  /** Readout shown before the block is first moved. */
+  hint?: string;
+  /** Accessible name of the draggable block. */
+  ariaLabel?: string;
+  /** Locks the block in place: no drag, no keyboard moves, out of the tab order. */
+  disabled?: boolean;
+  /** Fired after each move, with the snapped position and the snaps that applied (empty if none). */
+  onMove?: (pos: { x: number; y: number }, snaps: string) => void;
+  /** Extra classes appended to the root element. */
+  className?: string;
+}
+
+export default function SnapGuideCanvas({
+  blocks: STATIC = DEFAULT_BLOCKS,
+  liveBlock: LIVE = DEFAULT_LIVE,
+  liveLabel = 'Drag me',
+  snapTolerance: SNAP = 5,
+  keyStep = 1,
+  shiftStep = 10,
+  hint = 'Drag the block — guides appear when it lines up with its neighbours.',
+  ariaLabel = 'Draggable block. Arrow keys move it, Shift for larger steps.',
+  disabled = false,
+  onMove,
+  className = '',
+}: SnapGuideCanvasProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState({ x: LIVE.x, y: LIVE.y });
   const [lines, setLines] = useState<Line[]>([]);
   const [labels, setLabels] = useState<{ x: number; y: number; text: string }[]>([]);
-  const [read, setRead] = useState('Drag the block — guides appear when it lines up with its neighbours.');
+  const [read, setRead] = useState(hint);
   const grab = useRef<{ dx: number; dy: number } | null>(null);
 
   /* Candidates are collected first and the closest wins PER AXIS. Applying
@@ -83,12 +120,13 @@ export default function SnapGuideCanvas() {
     setPos({ x: r.x, y: r.y });
     setLines(r.lines); setLabels(r.labels);
     setRead(r.said || `${Math.round(r.x)}, ${Math.round(r.y)}`);
+    onMove?.({ x: r.x, y: r.y }, r.said);
   };
 
   const block = 'absolute left-0 top-0 grid place-items-center rounded-[7px] border text-[.7rem]';
 
   return (
-    <div className="grid gap-2">
+    <div className={`grid gap-2 ${className}`}>
       <div ref={stageRef} className="relative h-[210px] touch-none overflow-hidden rounded-[10px] border border-border bg-bg">
         {STATIC.map((b) => (
           <div key={b.label}
@@ -99,12 +137,14 @@ export default function SnapGuideCanvas() {
         ))}
 
         <div
-          tabIndex={0}
+          tabIndex={disabled ? -1 : 0}
           role="application"
-          aria-label="Draggable block. Arrow keys move it, Shift for larger steps."
-          className={`${block} cursor-grab border-[color-mix(in_oklab,var(--accent)_55%,var(--border))] bg-[color-mix(in_oklab,var(--accent)_9%,var(--raised))] text-text active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2`}
+          aria-label={ariaLabel}
+          aria-disabled={disabled || undefined}
+          className={`${block} ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-grab'} border-[color-mix(in_oklab,var(--accent)_55%,var(--border))] bg-[color-mix(in_oklab,var(--accent)_9%,var(--raised))] text-text ${disabled ? '' : 'hover:border-accent active:cursor-grabbing '}focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2`}
           style={{ width: LIVE.w, height: LIVE.h, translate: `${pos.x}px ${pos.y}px` }}
           onPointerDown={(e) => {
+            if (disabled) return;
             const s = stageRef.current!.getBoundingClientRect();
             grab.current = { dx: e.clientX - s.left - pos.x, dy: e.clientY - s.top - pos.y };
             e.currentTarget.setPointerCapture(e.pointerId);
@@ -118,7 +158,8 @@ export default function SnapGuideCanvas() {
           onPointerUp={() => { grab.current = null; setLines([]); setLabels([]); }}
           onPointerCancel={() => { grab.current = null; setLines([]); setLabels([]); }}
           onKeyDown={(e) => {
-            const step = e.shiftKey ? 10 : 1;
+            if (disabled) return;
+            const step = e.shiftKey ? shiftStep : keyStep;
             const map: Record<string, [number, number]> = {
               ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step],
             };
@@ -128,7 +169,7 @@ export default function SnapGuideCanvas() {
             place(pos.x + d[0], pos.y + d[1]);
           }}
         >
-          Drag me
+          {liveLabel}
         </div>
 
         {/* Guides clear on drop — ones that persist read as a rendering bug. */}
