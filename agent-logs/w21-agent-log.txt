@@ -1,0 +1,73 @@
+Week: 21
+Task: Let the Discord agent act, not just read, without letting it act on its own
+Agent: Claude (Claude Code, terminal), extending the reader from week 19
+
+Prompt or workflow:
+Week 19 built a Discord bot that could only read. That was the right first
+step and it stopped being enough within a day: once the agent had summarised
+a channel, the obvious next request was "reply to that", and the answer was
+to switch to the browser and type it by hand.
+
+The risk is the whole problem. A model that can post in a team channel can
+post the wrong thing, post it twice, ping everyone, or be talked into posting
+by text it was asked to read. So the brief led with the gate, not the feature:
+
+  "every change needs my approval, in a prompt the model cannot answer. if the
+   client cannot show the prompt, nothing happens. it posts only to channels
+   I list for writing, and it never pings anyone I did not name."
+
+The order of work mirrored week 19:
+
+  1. send, edit and delete first, behind the approval prompt
+  2. test that live, once, in a real channel, and delete the test post
+  3. only then the rest: react, pin, upload, forward, threads, forum posts,
+     polls, events and direct messages, all through the same prompt
+  4. a security pass over the new surface, fixed in its own commit
+
+Result:
+23 tools where there were 4, and 123 tests where there were 53. The bot still
+does nothing on its own; it acts only when asked, and only after a yes.
+
+The approval lives in the server, not in the agent. It is an MCP elicitation:
+the server stops and asks the person at the keyboard, showing the exact text
+that will be posted. The model sees the answer but cannot give it. The live
+test confirmed the part that mattered most: the prompt still appeared with
+the terminal's own permission checks switched off. A rule the agent's harness
+enforces can be bypassed by a setting; a question the server puts to the
+human cannot. If the client cannot show the prompt, or the prompt times out,
+the change fails closed.
+
+The rest is the same idea applied to each way a post goes wrong:
+  - writes go only to channels on a per-server write list, separate from the
+    read list; events and DMs each need their own opt-in
+  - @everyone, @here and role pings are blocked; only people named in the
+    request, and the author being replied to, are pinged
+  - a post is retried only after a rate-limit refusal, never after a timeout,
+    so the same message cannot land twice
+  - a draft using Markdown that Discord does not render — tables, HTML, deep
+    headings, horizontal rules — is refused before the prompt, so the person
+    approves what will actually appear
+  - edit and delete refuse any message the bot did not write
+
+Review caught one real hole. The upload tool refused files in known secret
+folders, but followed a symlink without resolving it, so a link in the home
+directory pointing into a credentials folder would have passed. The fix
+resolves the real path first, limits uploads to the home and temp directories,
+and also blocks shell history and git credential files, which no list had
+named because nobody thinks of them as secrets until they are attached.
+
+Verified live: a post and its deletion in the team challenge channel, each
+behind the prompt; reading a message from its link, reactions, a member lookup,
+the events list and a date-range fetch. Not yet tried live: attachment
+download and every new change tool except send and delete. Each also needs its
+own Discord permission granted to the bot, which is a second gate.
+
+What it saved: the switch to a browser to answer what the agent had just read.
+Not measured. What it cost is one confirmation per change, which is the point.
+
+The lesson for prompting: decide where the gate lives before deciding what
+goes behind it. "Ask me before posting" written into a prompt is a request
+the model can forget or be argued out of. The same rule written as a server
+that cannot proceed without a human answer is not a request at all. And test
+the gate under the conditions most likely to defeat it — here, with every
+other permission check turned off.
