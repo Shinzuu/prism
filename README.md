@@ -5,6 +5,8 @@ A component gallery where every component takes its colour from an image.
 Thirty components, two a week, built over ninety days. All of them plain HTML, CSS and
 vanilla JavaScript — no framework, no build step to consume them, no dependencies to rot.
 
+Portfolio: https://shinzuu.asktechguy.com/
+
 ## The palette
 
 The theme is generated from a wallpaper. Hue and chroma are read from the image's pixels in
